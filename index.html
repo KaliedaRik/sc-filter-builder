@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SC Picture Editor</title>
+  <link rel='icon' type='image/png' href='/favicon.png'>
+  <link href="index.css" rel="stylesheet" />
+</head>
+
+<body>
+
+  <main>
+
+    <!-- App controls bar on left hand side -->
+    <div id="controls-panel">
+
+      <h1>SC Picture Editor</h1>
+
+      <!-- Instructions -->
+      <button type="button" id="instructions-modal-button">Instructions</button>
+
+      <!-- Image import -->
+      <details id='image-details-panel'>
+        <summary>Images</summary>
+        <div>
+
+          <p class="advice-text">Add an image by dragging it onto the browser window. Multiple images can be imported for batch processing by a filter.</p>
+
+          <p>
+            <label id="image-import-button" for="image-import">Browse for image files</label>
+            <input type="file" id="image-import" name="image-import" accept="image/png, image/jpeg, image/jpg, image/webp" multiple>
+          </p>
+
+          <h3>Current image batch</h3>
+
+          <button type="button" id="image-batch-modal-button">Remove images from batch</button>          
+          <div id="image-imports-hold"></div>
+        </div>
+      </details>
+
+    </div>
+
+    <div id="app-panel">
+      
+      <!-- Canvas app -->
+      <div id="my-canvas-container">
+        <canvas 
+          id="my-canvas" 
+          data-scrawl-canvas 
+          data-is-responsive="true"
+          data-base-background-color="lightgreen"
+          data-label="Scrawl-canvas picture editor canvas."
+          data-description="Apply filters to images and image areas using your browser. This is a proof-of-concept project."
+        >
+          <div class="assets" aria-hidden="true">
+            <p>This is where we put any images the tool needs</p>
+          </div>      
+        </canvas>
+      </div>
+
+      <!-- splitter bar -->
+      <div id="splitter"></div>
+
+      <!-- Filter building area -->
+      <div id="filter-builder-area">
+        <p>This is where the filter building work will happen</p>
+
+        <p>Interesting idea: I'm thinking that while for accessibility all filter controls and forms must be in HTML, this isn't a great concern as we can use a Scrawl-canvas stack for the filter editor - this allows us to position and drag/drop HTML elements within an SC-controlled div element. If we also include a second canvas in the stack, that can solve the issue of drawing connectors between filter boxes as we build up the chained filter</p>
+
+        <p>The filter-builder-area div needs minimum and maximum heights. We will also need to allow it to have horizontal and vertical things for when text (or the SC stack) goes beyond max dimensions.</p>
+      </div>
+
+    </div>
+    
+  </main>
+
+  <!-- image batch modal -->
+  <dialog id='image-batch-modal' closedby="any">
+
+    <button type="button" id="image-batch-modal-close" autofocus class="close">Close</button>
+
+    <h2>Manage image batch</h2>
+
+    <p>To remove the images you don't want to process in this batch, select them below and click on the "Remove images" button at the bottom of the list</p>
+
+    <div id="image-batch-modal-images-list"></div>
+
+    <button type="button" id="image-batch-modal-remove-action">Remove selected images from batch</button>
+
+  </dialog>
+
+  <!-- Instructions modal -->
+  <dialog id='instructions-modal' closedby="any">
+
+    <button type="button" id="instructions-modal-close" autofocus class="close">Close</button>
+
+    <h2>Using the SC Picture Editor</h2>
+
+    <p>The following instructions offer basic details about how to use the SC Screen capture tool. The concept behind the tool is simple:</p>
+    <ul>
+      <li>Brief bullpoints of workflow</li>
+    </ul>
+
+    <p>These instructions include the following sections:</p>
+    <ul>
+      <li>An illustrated step-by-step guide.</li>
+      <li>Keyboard controls &ndash; the tool aims to be as keyboard accessible as possible.</li>
+      <li>Some tool metadata (for interest).</li>
+    </ul>
+
+    <h3>Step-by-step guide</h3>
+    <div class="how-to-grid">
+      <img src="assets/instructions-01.png" alt="Screenshot - initial page load" />
+      <div>Initial page load. Most of the control buttons are kept in the accordion on the left hand side. Additional control buttons across the top will open dialog modals. The controls across the bottom of the screen are currently disabled. The recording area is in white, fitted into the responsive canvas.</div>
+    </div>
+
+    <h3>Keyboard controls</h3>
+
+    <p>The web page supports the following (hopefully cross-browser standard) keyboard controls and shortcuts.</p>
+
+    <p><b>Keyboard Navigation:</b></p>
+    <ul>
+      <li>`TAB` to navigate forwards</li>
+      <li>`SHIFT+TAB` to navigate backwards</li>
+      <li>`ENTER` to select</li>
+    </ul>
+     
+    <p><b>Additional input controls:</b></p>
+    <ul>
+      <li>For "select" inputs &ndash; `UP-ARROW`, `DOWN-ARROW`</li>
+      <li>For "range" inputs &ndash;  `RIGHT-ARROW`, `LEFT-ARROW` </li>
+      <li>For "color" inputs &ndash; `UP-ARROW`, `RIGHT-ARROW`, `DOWN-ARROW`, `LEFT-ARROW`</li>
+      <li>For checkbox toggling &ndash; `SPACE`</li>
+    </ul>
+
+    <h3>Tool metadata</h3>
+
+    <p>This picture editing tool is a Proof of Concept, released under the MIT licence. More details about the tool, alongside its code, can be found in its <a rel="noopener noreferrer"href="https://github.com/KaliedaRik/sc-screen-recorder" target="_blank">repository on GitHub</a>.</p>
+
+    <p>This tool has been designed to be hackable. Feel free to use the tool as-is on its github.io page, or fork the repository to coustomise and host your own version. The tool can also be downloaded and run locally &ndash; it has no backend or toolchain.</p>
+
+    <div aria-label="MIT Licence notice">
+      <p><b>MIT Licence</b></p>
+
+      <p>Copyright (c) 2026 Rik Roots</p>
+
+      <p>Permission is hereby granted, free of charge, to any person obtaining a copy
+      of this software and associated documentation files (the "Software"), to deal
+      in the Software without restriction, including without limitation the rights
+      to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+      copies of the Software, and to permit persons to whom the Software is
+      furnished to do so, subject to the following conditions:</p>
+
+      <ul>
+        <li>The above copyright notice and this permission notice shall be included in all
+      copies or substantial portions of the Software.</li>
+      </ul>
+   
+      <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+      IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+      FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+      AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+      LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+      OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+      SOFTWARE.</p>
+    </div>
+  </dialog>
+
+  <script type="module" src="index.js"></script>
+</body>
+</html>

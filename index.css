@@ -1,0 +1,433 @@
+:root {
+  /* Root font size (rem) */
+  font: 16px Arial, sans-serif;
+
+  /* Accessibility variables */
+  --outline-width: 3px;
+  --outline-color: rgb(0 215 255 / 1);
+
+  /* Tool logo variables */
+  --tool-logo-color: white;
+  --tool-logo-background: darkslateblue;
+
+  /* Left bar control variables */
+  --left-bar-width: 320px;
+  --left-bar-background: rgb(255 255 240 / 1);
+  --left-bar-right-border: rgb(60 60 60 / 1);
+
+  --left-bar-section-background: rgb(220 220 220 / 1);
+  --left-bar-section-border: rgb(60 60 60 / 1);
+  --left-bar-controls-background: rgb(240 240 240 / 1);
+  --left-bar-controls-border: rgb(60 60 60 / 1);
+  --control-button-panel-background: rgb(240 240 240 / 1);
+
+  /* Right bar app constants - values without measurement units are ratios */
+  --minimum-canvas-ratio: 0.3;
+  --minimum-builder-ratio: 0.15;
+  --splitter-height: 6px;
+
+  /*
+  --canvas-height app variables
+    - note that this starts (on page load) with a vh measure unit, but after user interaction (with the splitter bar) will become a px measure unit.
+  */
+  --canvas-height: 70vh;
+
+  /* Canvas */
+  --canvas-surround-color: rgb(255 255 0 / 1);
+
+  /* Splitter bar */
+  --splitter-background: rgb(200 200 200 / 1);
+  --splitter-background-hover: rgb(220 0 0 / 1);
+
+
+  /* Dialogues */
+  --dialog-border: rgb(60 60 60 / 1);
+  --dialog-button-background: rgb(220 220 220 / 1);
+  --dialog-button-border: rgb(60 60 60 / 1);
+  --dialog-row-separator: rgb(60 60 60 / 1);
+  --dialog-cta-button-background: rgb(220 0 0 / 1);
+  --dialog-cta-button-color: rgb(255 255 200 / 1);
+
+  /* Image batch dialogue */
+  --row-not-selected-background: rgb(240 240 240 / 1);
+  --row-is-selected-background: rgb(255 255 200 / 1);
+
+  /* Range input control variables */
+  --range-track: rgb(100 100 100 / 1);
+  --range-pin-background: rgb(200 200 200 / 1);
+  --range-pin-border: rgb(100 100 100 / 1);
+
+  --range-track-disabled: rgb(220 220 220 / 1);
+  --range-pin-background-disabled: rgb(240 240 240 / 1);
+  --range-pin-border-disabled: rgb(220 220 220 / 1);
+
+  --advice-color: rgb(220 0 0 / 1);
+}
+
+*:focus {
+  outline: var(--outline-width) solid var(--outline-color);
+}
+
+/* Styling the range sliders across browsers */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+  margin: 0.5rem 0;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::-webkit-slider-runnable-track {
+    background-color: var(--range-track);
+    border-radius: 2px;
+    height: 4px;
+  }
+
+  &:disabled::-webkit-slider-runnable-track {
+    background-color: var(--range-track-disabled);
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    margin-top: -6px;
+    background-color: var(--range-pin-background);
+    border: 1px solid var(--range-pin-border);
+    border-radius: 8px;
+    height: 16px;
+    width: 12px;
+  }
+
+  &:focus::-webkit-slider-thumb {
+    outline: var(--outline-width) solid var(--outline-color);
+  }
+
+  &:disabled::-webkit-slider-thumb {
+    background-color: var(--range-pin-background-disabled);
+    border-color: var(--range-pin-border-disabled);
+  }
+
+  &::-moz-range-track {
+    background-color: var(--range-track);
+    border-radius: 2px;
+    height: 4px;
+  }
+
+  &:disabled::-moz-range-track {
+    background-color: var(--range-track-disabled);
+  }
+
+  &::-moz-range-thumb {
+    background-color: var(--range-pin-background);
+    border: 1px solid var(--range-pin-border);
+    border-radius: 8px;
+    height: 16px;
+    width: 12px;
+  }
+
+  &:focus::-moz-range-thumb {
+    outline: var(--outline-width) solid var(--outline-color);
+  }
+
+  &:disabled::-moz-range-thumb {
+    background-color: var(--range-pin-background-disabled);
+    border-color: var(--range-pin-border-disabled);
+  }
+}
+
+body {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+main {
+  width: 100vw;
+  min-width: 720px;
+  height: 100vh;
+
+  display: grid;
+  grid-template-columns: var(--left-bar-width) 1fr;
+}
+
+#controls-panel {
+  width: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+  border-right: 1px solid var(--left-bar-right-border);
+  padding: 0 0.5rem;
+  background-color: var(--left-bar-background);
+
+  & h1 {
+    font-size: 150%;
+    margin: 0.5rem 0 0;
+    color: var(--tool-logo-color);
+    background-color: var(--tool-logo-background);
+    padding: 0.5rem;
+    text-align: center;
+    border-radius: 5px;
+  }
+
+  & > button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font-size: 100%;
+    margin: 0.5rem 0;
+    border: 1px solid var(--left-bar-section-border);
+    padding: 0.25rem 0.5rem;
+    border-radius: 5px;
+    background-color: var(--left-bar-section-background);
+    color: var(--advice-color);
+    font-weight: bold;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  & details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--left-bar-section-border);
+    padding: 0.25rem 0.5rem;
+    border-radius: 5px;
+    background-color: var(--left-bar-section-background);
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    & summary {
+      font-weight: bold;
+    }
+
+    & > div {
+      margin-top: 0.5rem;
+      border-radius: 5px;
+      background-color: var(--left-bar-controls-background);
+      border: 1px solid var(--left-bar-controls-border);
+      padding: 0.25rem 0.5rem;
+
+      & h2 {
+        font-size: 120%;
+        margin: 0;
+      }
+
+      & h3 {
+        font-size: 110%;
+        margin: 0;
+      }
+
+      & input {
+        margin: 0;
+      }
+    }
+  }
+}
+
+#image-details-panel {
+
+  & input {
+    opacity: 0;
+    height: 0;
+  }
+
+  & label {
+    border: 1px solid var(--dialog-button-border);
+    padding: 0.25rem 0.5rem;
+    border-radius: 5px;
+    background-color: var(--dialog-button-background);
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    &.is-focussed {
+      outline: var(--outline-width) solid var(--outline-color);
+    }
+  }
+
+  & button#image-batch-modal-button {
+    font-size: 100%;
+    border: 1px solid var(--dialog-button-border);
+    background-color: var(--dialog-button-background);
+    border-radius: 5px;
+    padding: 0.25rem 0.5rem;
+    margin: 0.5rem 0 0;
+  }
+
+  & #image-imports-hold {
+    width: 100%;
+    margin: 1rem 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    & button {
+      margin: 0.1rem;
+      padding: 0;
+      position: relative;
+
+      /* If these dimensions change, then they also need to be updated in the `js-modules/image-import.js` file */
+      width: 80px;
+      height: 80px;
+
+      & img {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        border: 0;
+        padding: 0;
+        object-fit: cover;
+      }
+    }
+  }
+}
+
+#app-panel {
+  width: 100%;
+  min-width: 360px;
+  height: 100vh;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: var(--canvas-height) 6px calc(100vh - var(--canvas-height) - 6px);
+}
+
+#splitter {
+  height: 6px;
+  cursor: row-resize;
+  background: var(--splitter-background);
+
+  &:hover {
+    background: var(--splitter-background-hover);
+  }
+}
+
+#filter-builder-area {
+  overflow-y: scroll;
+}
+
+dialog {
+  max-height: 80vh;
+  max-width: 80vw;
+  border: 1px dashed var(--dialog-border);
+  border-radius: 5px;
+
+  & button.close {
+    float: right;
+    font-size: 100%;
+    border-radius: 5px;
+    border: 1px solid var(--dialog-button-border);
+    background-color: var(--dialog-button-background);
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+#image-batch-modal {
+
+  width: 60vw;
+  max-width: 60rem;
+  height: 80vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  line-height: 1.5;
+
+  & .removal-row {
+    border-top: 1px solid var(--dialog-border);
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: no-wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: var(--row-not-selected-background);
+
+    &.removal-candidate {
+      background-color: var(--row-is-selected-background);
+    }
+
+    & input[type="checkbox"] {
+      display: block;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 5px;
+    }
+
+    & .removal-filename {
+      flex: 1;
+      text-align: left;
+      margin-left: 2rem;
+      font-size: 1.1rem;
+    }
+
+    & img {
+      border-radius: 5px;
+    }
+  }
+
+  & button#image-batch-modal-remove-action {
+    text-align: center;
+    width: 100%;
+    font-size: 1.2rem;
+    border: 1px solid var(--dialog-button-border);
+    background-color: var(--dialog-button-background);
+    border-radius: 5px;
+    padding: 0.25rem 0.5rem;
+    margin: 1rem 0 0;
+
+    &:hover {
+      background-color: var(--dialog-cta-button-background);
+      color: var(--dialog-cta-button-color);
+    }
+  }
+}
+
+#instructions-modal {
+
+  width: 60vw;
+  max-width: 60rem;
+  height: 80vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  line-height: 1.3;
+
+  img {
+    display: block;
+    width: 100%;
+  }
+
+  & li {
+    margin-bottom: 0.5rem;
+  }
+
+  & h2 {
+    font-size: 130%;
+    padding-bottom: 0.1rem;
+    border-bottom: 1px solid var(--dialog-border);
+  } 
+
+  & h3 {
+    font-size: 115%;
+    padding-bottom: 0.1rem;
+    border-bottom: 1px dashed var(--dialog-border);
+  }
+
+  & .how-to-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+  }
+}
+
+.advice-text {
+  font-size: 90%;
+  color: var(--advice-color);
+}

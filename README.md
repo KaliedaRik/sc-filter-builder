@@ -85,7 +85,7 @@ Because the tool uses browser media APIs, it must be served via HTTP rather than
 - `index.html` - Defines the interface and layout of the application.
 - `index.css` - Handles styling and layout.
 - `index.js` - Contains the application logic — screen capture, canvas composition, recording, teleprompter functionality and device management.
-- `js/scrawl-canvas.js` - The minified Scrawl‑canvas library used for canvas graphics and compositing.
+- `js/scrawl.js` - The minified Scrawl‑canvas library used for canvas graphics and compositing.
 - TODO: list other key files
 
 ## Project Philosophy
