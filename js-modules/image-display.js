@@ -48,9 +48,13 @@ const maxMinimapCoverage = 0.4;
 
 // liveView vars
 let assetWidth = 1,
-  assetHeight = 1,
-  assetStartX = 0,
-  assetStartY = 0;
+  assetHeight = 1;
+
+// Canonical view rectangle (IMAGE space)
+let viewX = 0,
+  viewY = 0,
+  viewWidth = 1,
+  viewHeight = 1;
 
 const recalculateDimensions = () => {
 
@@ -69,6 +73,52 @@ const recalculateDimensions = () => {
 
   minimapPivot.set({ dimensions: [minimapWidth, minimapHeight] });
   minimapCell.set({ dimensions: [minimapWidth, minimapHeight] });
+};
+
+
+const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+// Calculate view size based on canvas aspect ratio
+const calculateViewSize = () => {
+
+  const [canvasWidth, canvasHeight] = canvasHandle.get('dimensions');
+
+  let vw = canvasWidth;
+  let vh = canvasHeight;
+
+  vw = Math.min(vw, assetWidth);
+  vh = Math.min(vh, assetHeight);
+
+  return [vw, vh];
+};
+
+// Center view in IMAGE
+const centerView = () => {
+
+  [viewWidth, viewHeight] = calculateViewSize();
+
+  viewX = (assetWidth - viewWidth) / 2;
+  viewY = (assetHeight - viewHeight) / 2;
+};
+
+// Apply view -> canvas + minimap
+const applyView = () => {
+
+  // Canvas
+  liveView.set({
+    copyStart: [viewX, viewY],
+    copyDimensions: [viewWidth, viewHeight],
+  });
+
+  // Minimap frame
+  minimapFrameWidth = viewWidth * minimapScale;
+  minimapFrameHeight = viewHeight * minimapScale;
+
+  minimapFrame.set({
+    dimensions: [minimapFrameWidth, minimapFrameHeight],
+    startX: (viewX + viewWidth / 2) * minimapScale,
+    startY: (viewY + viewHeight / 2) * minimapScale,
+  });
 };
 
 
@@ -124,6 +174,8 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
   assetWidth = width;
   assetHeight = height;
 
+  centerView();
+
   // Large asset
   createImageBitmap(file)
   .then(bitmap => {
@@ -146,6 +198,7 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
 
     liveView.set({ asset: importedName });
 
+    applyView();
     removeDefaultScreen();
   });
 
@@ -190,19 +243,27 @@ const checkLiveView = () => {
 
     if (w !== currentDisplayWidth || h !== currentDisplayHeight) {
 
+      // Preserve center
+      const centerX = viewX + viewWidth / 2;
+      const centerY = viewY + viewHeight / 2;
+
       recalculateDimensions();
 
       currentDisplayWidth = w;
       currentDisplayHeight = h;
 
-      liveView.set({
-        dimensions: [currentDisplayWidth, currentDisplayHeight],
-        copyDimensions: [currentDisplayWidth, currentDisplayHeight],
-      });
+      // Recalculate view size
+      [viewWidth, viewHeight] = calculateViewSize();
 
-      minimapFrame.set({ dimensions: [minimapFrameWidth, minimapFrameHeight] });
+      // Restore center
+      viewX = centerX - viewWidth / 2;
+      viewY = centerY - viewHeight / 2;
 
-      minimapPivot.set({ start: ['center', 'center'] });
+      // Clamp
+      viewX = clamp(viewX, 0, assetWidth - viewWidth);
+      viewY = clamp(viewY, 0, assetHeight - viewHeight);
+
+      applyView();
     }
 
     minimapCell.updateHere();
@@ -454,49 +515,125 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     method: 'draw',
   });
 
+  const exitMinimapFrameDrag = () => {
+
+    const [x, y] = minimapFrame.get('position');
+
+    const centerX = x / minimapScale;
+    const centerY = y / minimapScale;
+
+    viewX = centerX - viewWidth / 2;
+    viewY = centerY - viewHeight / 2;
+
+    viewX = clamp(viewX, 0, assetWidth - viewWidth);
+    viewY = clamp(viewY, 0, assetHeight - viewHeight);
+
+    applyView();
+
+    const [w, h] = minimapCell.get('dimensions');
+    const [fx, fy] = minimapFrame.get('position');
+
+    minimapNavX.value = `${parseFloat((fx / w) * 100)}`;
+    minimapNavY.value = `${parseFloat((fy / h) * 100)}`;
+  };
+
+  const checkMinimapFrameDrag = () => {
+
+    const [x, y] = minimapFrame.get('position');
+
+    const [mw, mh] = minimapCell.get('dimensions');
+    const halfW = minimapFrameWidth / 2;
+    const halfH = minimapFrameHeight / 2;
+
+    const inside =
+      x - halfW >= 0 &&
+      y - halfH >= 0 &&
+      x + halfW <= mw &&
+      y + halfH <= mh;
+
+    if (inside) {
+
+      const centerX = x / minimapScale;
+      const centerY = y / minimapScale;
+
+      viewX = centerX - viewWidth / 2;
+      viewY = centerY - viewHeight / 2;
+
+      viewX = clamp(viewX, 0, assetWidth - viewWidth);
+      viewY = clamp(viewY, 0, assetHeight - viewHeight);
+
+      applyView();
+
+      minimapNavX.value = `${parseFloat((x / mw) * 100)}`;
+      minimapNavY.value = `${parseFloat((y / mh) * 100)}`;
+    }
+    else minimapFrameDragZone('exit');
+  };
+
   const minimapFrameDragZone = scrawl.makeDragZone({
 
     zone: canvas,
     collisionGroup: name('minimap-frame-group'),
     coordinateSource: minimapCell,
     endOn: ['up', 'leave'],
-    updateWhileMoving: () => {
-
-      const [x, y] = minimapFrame.get('position');
-      const [w, h] = minimapCell.get('dimensions');
-
-      minimapNavX.value = `${parseFloat((x / w) * 100)}`;
-      minimapNavY.value = `${parseFloat((y / h) * 100)}`;
-    },
+    updateWhileMoving: checkMinimapFrameDrag,
+    updateOnPrematureExit: exitMinimapFrameDrag,
     preventTouchDefaultWhenDragging: true,
     exposeCurrentArtefact: true,
     processingOrder: 0,
   });
 
-  scrawl.makeUpdater({
+  scrawl.addNativeListener(['input', 'change'], () => {
 
-    event: ['input', 'change'],
-    origin: '.navigation-controls',
+    const nx = parseFloat(minimapNavX.value) / 100;
+    const ny = parseFloat(minimapNavY.value) / 100;
 
-    target: minimapFrame,
+    const [mw, mh] = minimapCell.get('dimensions');
 
-    useNativeListener: true,
-    preventDefault: true,
+    let x = nx * mw;
+    let y = ny * mh;
 
-    updates: {
-      minimapNavX: ['startX', '%'],
-      minimapNavY: ['startY', '%'],
-    },
-  });
+    const halfW = minimapFrameWidth / 2;
+    const halfH = minimapFrameHeight / 2;
+
+    x = clamp(x, halfW, mw - halfW);
+    y = clamp(y, halfH, mh - halfH);
+
+    const centerX = x / minimapScale;
+    const centerY = y / minimapScale;
+
+    viewX = centerX - viewWidth / 2;
+    viewY = centerY - viewHeight / 2;
+
+    viewX = clamp(viewX, 0, assetWidth - viewWidth);
+    viewY = clamp(viewY, 0, assetHeight - viewHeight);
+
+    applyView();
+
+  }, '.navigation-controls');
 
   scrawl.addNativeListener('click', () => {
-    minimapFrame.set({ start: ['center', 'center'] });
+
+    const [mw, mh] = minimapCell.get('dimensions');
+
+    const x = mw / 2;
+    const y = mh / 2;
+
+    const centerX = x / minimapScale;
+    const centerY = y / minimapScale;
+
+    viewX = centerX - viewWidth / 2;
+    viewY = centerY - viewHeight / 2;
+
+    viewX = clamp(viewX, 0, assetWidth - viewWidth);
+    viewY = clamp(viewY, 0, assetHeight - viewHeight);
+
+    applyView();
+
     minimapNavX.value = '50';
     minimapNavY.value = '50';
+
   }, minimapNavCenter);
-
-
-
 
   return {
     displayDefaultScreen,
