@@ -1,8 +1,12 @@
-# Scrawl-canvas picture editor
+# Scrawl-canvas filter builder
 
-A browser-native picture editing studio.
+A browser-native, local-only filter builder tool. 
 
-- TODO: 3-5 bullpoints giving the top level overview of the tool  
+**WARNING** tool under construction!
+
+- Build a filter (using the Scrawl-canvas filter engine)
+- Import images and review the (non-destructive) filter effect on them
+- Download images (in various formats) with filter applied
 
 <table>
 <tr>
