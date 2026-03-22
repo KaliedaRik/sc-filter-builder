@@ -3,6 +3,14 @@
 // ------------------------------------------------------------------------
 
 
+// Imports
+import { 
+  prepareImageForDisplay,
+  getDisplayedImageId,
+  displayDefaultScreen,
+} from './image-display.js';
+
+
 // General
 let counter = 0;
 
@@ -26,6 +34,14 @@ const ingest = () => {
   if (!ingester.length) {
 
     ingesterIsRunning = false;
+
+    if (!getDisplayedImageId()) {
+
+      displayDefaultScreen(Object.keys(imageState).length > 0);
+
+      const panel = domHandles['image-details-panel'];
+      panel.setAttribute('open', '');
+    }
     return;
   }
 
@@ -50,20 +66,16 @@ const ingest = () => {
       const btn = document.createElement('button');
       btn.setAttribute('data-target', stateId);
 
-      // Function to run when user clicks on an image button in the images panel
-      const buttonLoad = function () {
+      imageState[stateId].clickListener = scrawlHandle.addNativeListener('click', () => {
 
-        console.log(`user want to look at image ${stateId}`);
+        const oldStateId = getDisplayedImageId();
+        prepareImageForDisplay(stateId, imageState[stateId], imageState[oldStateId])
 
-        // TODO: work to show image in canvas
-        // + This functionality can be coded in a separate module file and imported here
-      }
+      }, btn);
 
-      scrawlHandle.addNativeListener('click', buttonLoad, btn);
-
-      // Capture handle to <img> element for appearance in image management modal
-      imageState[stateId].thumbnail = thumbnailImg;
+      // Capture handle to button and URL
       imageState[stateId].thumbnailUrl = thumbnailUrl;
+      imageState[stateId].thumbnailButton = btn;
 
       btn.appendChild(thumbnailImg);
       imageImportsHold.appendChild(btn);
@@ -92,7 +104,6 @@ const importImageFile = (file) => {
 
   imageState[stateId] = {
     id: stateId,
-
     // `file.name` and `file.type` values are defined in the file object
     file: file,
   }
@@ -132,8 +143,6 @@ const importImageFile = (file) => {
 const imageRemovalCandidates = [];
 
 const updateCandidatesArray = (e) => {
-
-  console.log(e)
 
   if (e && e.target) {
 
@@ -208,12 +217,38 @@ export const buildImageModalList = () => {
 
 export const actionImageModalList = () => {
 
-  console.log('actionImageModalList ready to do some removals');
+  imageRemovalCandidates.forEach(img => {
+
+    const data = imageState[img];
+
+    // Remove button from images panel
+    data.clickListener();
+    data.thumbnailButton.remove();
+
+    // Clean up URL
+    URL.revokeObjectURL(data.thumbnailUrl);
+
+    // Cleanup state
+    delete imageState[img];
+  });
+
+  // Close the modal
+  const modal = domHandles['image-batch-modal'];
+  modal.close();
+
+  if (imageRemovalCandidates.includes(getDisplayedImageId())) {
+
+    displayDefaultScreen(!!Object.keys(imageState).length);
+
+    // display the image panel, if closed
+    const panel = domHandles['image-details-panel'];
+    panel.setAttribute('open', '');
+  }
+
+  imageRemovalCandidates.length = 0;
 };
 
 export const closeImageModalList = () => {
-
-  console.log('closeImageModalList ready to do some cleaning up');
 
   if (checkboxListeners) {
 

@@ -2,29 +2,17 @@
 // Scrawl-canvas boilerplate
 // ------------------------------------------------------------------------
 import * as scrawl from './js-libraries/scrawl.js';
-const name = (n) => `canvas-${n}`;
 const canvas = scrawl.findCanvas('my-canvas');
+const name = (n) => `${canvas.name}-${n}`;
 
 
 // ------------------------------------------------------------------------
 // Module imports
 // ------------------------------------------------------------------------
 import { initSplitter } from './js-modules/dom-layout-ui.js';
-import { initImageImport } from './js-modules/image-import.js';
 import { initModalManagement } from './js-modules/modal-management.js';
-
-
-// ------------------------------------------------------------------------
-// Scrawl-canvas check - is it working?
-// ------------------------------------------------------------------------
-scrawl.makeLabel({
-
-  name: name('temp-label'),
-  start: ['center', 'center'],
-  handle: ['center', 'center'],
-  text: 'Hello World',
-  fontString: '60px Arial, sans-serif',
-});
+import { initImageImport } from './js-modules/image-import.js';
+import { initImageDisplay } from './js-modules/image-display.js';
 
 
 // ------------------------------------------------------------------------
@@ -51,6 +39,16 @@ const dom = scrawl.initializeDomInputs([
   ['input', 'image-import', ''],
   ['by-id', 'image-import-button'],
   ['by-id', 'image-imports-hold'],
+  ['by-id', 'image-details-panel'],
+
+  // Capture handles to the minimap HTML elements
+  ['input', 'minimap-horizontal', '50'],
+  ['input', 'minimap-vertical', '50'],
+  ['button', 'minimap-show-hide', 'Hide minimap'],
+  ['button', 'minimap-center', 'Bring to center'],
+  ['input', 'navigation-horizontal', '50'],
+  ['input', 'navigation-vertical', '50'],
+  ['button', 'navigation-center', 'Bring to center'],
 ]);
 
 
@@ -61,6 +59,15 @@ initSplitter(scrawl, dom);
 initModalManagement(scrawl, dom);
 initImageImport(scrawl, dom, canvas);
 
+const {
+  displayDefaultScreen,
+  checkLiveView,
+} = initImageDisplay(scrawl, dom, canvas);
+
+
+// Show the default canvas display
+displayDefaultScreen(false);
+
 
 // ------------------------------------------------------------------------
 // Scrawl-canvas animation
@@ -69,6 +76,7 @@ scrawl.makeRender({
 
   name: name('render'),
   target: canvas,
+  commence: checkLiveView,
 });
 
 

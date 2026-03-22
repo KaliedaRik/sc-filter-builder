@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SC Picture Editor</title>
+  <title>SC Filter Builder</title>
   <link rel='icon' type='image/png' href='/favicon.png'>
   <link href="index.css" rel="stylesheet" />
 </head>
@@ -17,14 +17,14 @@
     <!-- App controls bar on left hand side -->
     <div id="controls-panel">
 
-      <h1>SC Picture Editor</h1>
+      <h1>SC Filter Builder</h1>
 
       <!-- Instructions -->
       <button type="button" id="instructions-modal-button">Instructions</button>
 
       <!-- Image import -->
       <details id='image-details-panel'>
-        <summary>Images</summary>
+        <summary>Image management</summary>
         <div>
 
           <p class="advice-text">Add an image by dragging it onto the browser window. Multiple images can be imported for batch processing by a filter.</p>
@@ -41,6 +41,45 @@
         </div>
       </details>
 
+      <!-- Image import -->
+      <details id='minimap-panel'>
+        <summary>Minimap</summary>
+        <div>
+
+          <h3>Positioning</h3>
+
+          <div class="minimap-parameters">
+
+            <label for="minimap-horizontal">Horizontal</label>
+            <input type="range" class="minimap-controls" id="minimap-horizontal" name="minimap-horizontal" min="-25" max="125" value="50">
+
+            <label for="minimap-vertical">Vertical</label>
+            <input type="range" class="minimap-controls" id="minimap-vertical" name="minimap-vertical" min="-25" max="125" value="50">
+
+            <button type="button" id="minimap-show-hide">Hide minimap</button>
+            <button type="button" id="minimap-center">Bring to center</button>
+
+          </div>
+
+          <hr />
+
+          <h3>Navigation</h3>
+
+          <div class="minimap-parameters">
+
+            <label for="navigation-horizontal">Horizontal</label>
+            <input type="range" class="navigation-controls" id="navigation-horizontal" name="navigation-horizontal" min="-25" max="125" value="50">
+
+            <label for="navigation-vertical">Vertical</label>
+            <input type="range" class="navigation-controls" id="navigation-vertical" name="navigation-vertical" min="-25" max="125" value="50">
+
+          </div>
+
+          <button type="button" id="navigation-center">Bring to center</button>
+        </div>
+
+      </details>
+
     </div>
 
     <div id="app-panel">
@@ -53,7 +92,7 @@
           data-is-responsive="true"
           data-base-background-color="lightgreen"
           data-label="Scrawl-canvas picture editor canvas."
-          data-description="Apply filters to images and image areas using your browser. This is a proof-of-concept project."
+          data-description="Build and apply filters to image batches using your browser. This is a proof-of-concept project."
         >
           <div class="assets" aria-hidden="true">
             <p>This is where we put any images the tool needs</p>
