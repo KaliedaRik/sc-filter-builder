@@ -5,7 +5,6 @@
 
 // Local handles to SC and DOM
 let scrawlHandle = null,
-  domHandle = null,
   canvasHandle = null;
 
 // Scrawl-canvas boilerplate
@@ -30,12 +29,12 @@ let currentDisplayWidth = 1,
 let minimapWidth = 200,
   minimapHeight = 200,
   minimapScale = 1,
+  minimapFrameWidth = 50,
+  minimapFrameHeight = 50,
   minimapPivot = null,
   minimapCell = null,
   minimapFrame = null,
   minimapPicture = null,
-  minimapFrameWidth = 50,
-  minimapFrameHeight = 50,
   minimapShowHide = null,
   minimapCenter = null,
   minimapX = null,
@@ -76,9 +75,9 @@ const recalculateDimensions = () => {
 };
 
 
+// Calculate view size based on canvas aspect ratio
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
-// Calculate view size based on canvas aspect ratio
 const calculateViewSize = () => {
 
   const [canvasWidth, canvasHeight] = canvasHandle.get('dimensions');
@@ -129,8 +128,7 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
 
   if (selectedKey === currentlyDisplaying) return;
 
-  // Prevent possibility of double-triggering (may not need `oldDisplaying` now we're getting oldState directly)
-  const oldDisplaying = currentlyDisplaying;
+  // Prevent possibility of double-triggering
   currentlyDisplaying = selectedKey;
 
   // Dispose of previous asset if required
@@ -310,7 +308,6 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
 
   // Populate local handles
   scrawlHandle = scrawl;
-  domHandle = dom;
   canvasHandle = canvas;
 
   name = (n) => `${canvas.name}-${n}`;
@@ -390,14 +387,34 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     name: name('live-view'),
     dimensions: ['100%', '100%'],
 
+    start: ['center', 'center'],
+    handle: ['center', 'center'],
+
     copyStart: [1, 1],
     copyDimensions: [1, 1],
 
     // We'll be building and applying the filter dynamically
     filters: [],
 
+    ImageSmoothingEnabled: false,
     visibility: false,
   });
+
+  scrawl.makeUpdater({
+
+    event: ['input', 'change'],
+    origin: '.scale-controls',
+
+    target: liveView,
+
+    useNativeListener: true,
+    preventDefault: true,
+
+    updates: {
+      ['image-scale']: ['scale', 'float'],
+    },
+  });
+
 
   // Create the infrastructure for the minimap
   scrawl.makeGroup({
@@ -635,8 +652,10 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
 
   }, minimapNavCenter);
 
+  // Init return
   return {
     displayDefaultScreen,
+    liveView,
     checkLiveView,
   };
 };

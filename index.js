@@ -2,8 +2,8 @@
 // Scrawl-canvas boilerplate
 // ------------------------------------------------------------------------
 import * as scrawl from './js-libraries/scrawl.js';
-const canvas = scrawl.findCanvas('my-canvas');
-const name = (n) => `${canvas.name}-${n}`;
+const mainCanvas = scrawl.findCanvas('main-canvas');
+const name = (n) => `${mainCanvas.name}-${n}`;
 
 
 // ------------------------------------------------------------------------
@@ -49,6 +49,7 @@ const dom = scrawl.initializeDomInputs([
   ['input', 'navigation-horizontal', '50'],
   ['input', 'navigation-vertical', '50'],
   ['button', 'navigation-center', 'Bring to center'],
+  ['input', 'image-scale', '1'],
 ]);
 
 
@@ -57,12 +58,13 @@ const dom = scrawl.initializeDomInputs([
 // ------------------------------------------------------------------------
 initSplitter(scrawl, dom);
 initModalManagement(scrawl, dom);
-initImageImport(scrawl, dom, canvas);
+initImageImport(scrawl, dom, mainCanvas);
 
 const {
   displayDefaultScreen,
+  liveView,
   checkLiveView,
-} = initImageDisplay(scrawl, dom, canvas);
+} = initImageDisplay(scrawl, dom, mainCanvas);
 
 
 // Show the default canvas display
@@ -75,7 +77,7 @@ displayDefaultScreen(false);
 scrawl.makeRender({
 
   name: name('render'),
-  target: canvas,
+  target: mainCanvas,
   commence: checkLiveView,
 });
 
