@@ -41,6 +41,12 @@ const dom = scrawl.initializeDomInputs([
   ['by-id', 'image-imports-hold'],
   ['by-id', 'image-details-panel'],
 
+  // Capture handles for the downloads modal
+  ['button', 'downloads-modal-button', 'Downloads'],
+  ['button', 'downloads-modal-close', 'Close'],
+  ['by-id', 'downloads-modal'],
+  ['button', 'process-and-download-action', 'Process and download images'],
+
   // Capture handles to the minimap HTML elements
   ['input', 'minimap-horizontal', '50'],
   ['input', 'minimap-vertical', '50'],

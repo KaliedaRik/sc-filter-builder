@@ -41,7 +41,7 @@
         </div>
       </details>
 
-      <!-- Image import -->
+      <!-- Minimap + scaling -->
       <details id='minimap-panel'>
         <summary>Minimap + scale</summary>
         <div>
@@ -97,6 +97,9 @@
         </div>
       </details>
 
+      <!-- Downloads -->
+      <button type="button" id="downloads-modal-button">Downloads</button>
+
     </div>
 
     <div id="app-panel">
@@ -145,6 +148,19 @@
     <div id="image-batch-modal-images-list"></div>
 
     <button type="button" id="image-batch-modal-remove-action">Remove selected images from batch</button>
+
+  </dialog>
+
+  <!-- Downloads modal -->
+  <dialog id='downloads-modal' closedby="any">
+
+    <button type="button" id="downloads-modal-close" autofocus class="close">Close</button>
+
+    <h2>Downloads management</h2>
+
+    <p>A placeholder modal where downloading a batch of processed images can be set up and triggered</p>
+
+    <button type="button" id="process-and-download-action">Process and download images</button>
 
   </dialog>
 

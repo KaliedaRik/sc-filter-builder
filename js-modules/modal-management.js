@@ -67,5 +67,14 @@ export const initModalManagement = (scrawl = null, dom = null) => {
   scrawl.addNativeListener('close', () => closeModal(closeImageModalList), imageBatchModal);
   scrawl.addNativeListener('click', actionImageModalList, imageBatchModalRemoveAction);
 
+  // Setup: instructions modal
+  const downloadsModal = dom['downloads-modal'],
+    downloadsButton = dom['downloads-modal-button'],
+    downloadsCloseButton = dom['downloads-modal-close'];
+
+  scrawl.addNativeListener('click', () => openModal(downloadsModal), downloadsButton);
+  scrawl.addNativeListener('click', closeModal, downloadsCloseButton);
+  scrawl.addNativeListener('close', closeModal, downloadsModal);
+
   return {};
 };

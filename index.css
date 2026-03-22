@@ -419,6 +419,32 @@ dialog {
   }
 }
 
+#downloads-modal {
+
+  width: 60vw;
+  max-width: 60rem;
+  height: 80vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  line-height: 1.5;
+
+  & button#process-and-download-action {
+    text-align: center;
+    width: 100%;
+    font-size: 1.2rem;
+    border: 1px solid var(--dialog-button-border);
+    background-color: var(--dialog-button-background);
+    border-radius: 5px;
+    padding: 0.25rem 0.5rem;
+    margin: 1rem 0 0;
+
+    &:hover {
+      background-color: var(--dialog-cta-button-background);
+      color: var(--dialog-cta-button-color);
+    }
+  }
+}
+
 #instructions-modal {
 
   width: 60vw;
