@@ -1,0 +1,1 @@
+["grayscale-starter-filter","Filter","filter",{"name":"grayscale-starter-filter","actions":[{"action":"grayscale","lineIn":"","lineOut":"","opacity":1}]}]

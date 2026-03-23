@@ -400,6 +400,7 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     visibility: false,
   });
 
+  // TODO: extend scale so that the entire image can be shown in the liveView - but fit: contain (no scaling down to 0 - this is to allow the user to see the effect of filters on the whole image. We will need to point out that filters are being applied to liveView, not the image itself, so filters that include spatial details (tiles, swirl, zoomBlur, etc) may lie to people when viewing only part of the image)
   scrawl.makeUpdater({
 
     event: ['input', 'change'],

@@ -1,0 +1,1 @@
+["blur-starter-filter","Filter","filter",{"name":"blur-starter-filter","actions":[{"action":"gaussian-blur","lineIn":"","lineOut":"","includeRed":true,"includeGreen":true,"includeBlue":true,"includeAlpha":true,"excludeTransparentPixels":false,"opacity":1,"premultiply":false,"radiusHorizontal":1,"radiusVertical":1,"angle":0}]}]
