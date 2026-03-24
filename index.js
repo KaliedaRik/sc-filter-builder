@@ -3,7 +3,9 @@
 // ------------------------------------------------------------------------
 import * as scrawl from './js-libraries/scrawl.js';
 const mainCanvas = scrawl.findCanvas('main-canvas');
-const name = (n) => `${mainCanvas.name}-${n}`;
+
+const builderStack = scrawl.findStack('filter-builder-area');
+const builderCanvas = scrawl.findCanvas('builder-canvas');
 
 
 // ------------------------------------------------------------------------
@@ -82,14 +84,35 @@ displayDefaultScreen(false);
 // ------------------------------------------------------------------------
 scrawl.makeRender({
 
-  name: name('render'),
+  name: 'main-canvas-render',
   target: mainCanvas,
   commence: checkLiveView,
+});
+
+scrawl.makeRender({
+
+  name: 'builder-stack-render',
+  target: builderStack,
+});
+
+scrawl.makeRender({
+
+  name: 'builder-canvas-render',
+  target: builderCanvas,
 });
 
 
 // ------------------------------------------------------------------------
 // Development
 // ------------------------------------------------------------------------
+
+scrawl.makeLabel({
+  name: 'temp-label',
+  group: builderCanvas.get('baseGroup'),
+  text: 'Filter builder area',
+  start: ['center', 'center'],
+  handle: ['center', 'center'],
+  fontString: '2rem Arial, sans-serif',
+})
 
 console.log(scrawl.library);
