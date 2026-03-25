@@ -20,13 +20,13 @@ const requiredControls = {
     controlType: 'line-text',
     default: '',
     label: 'Line in',
-    description: '',
+    description: 'ID string of chained filter input',
   },
   lineOut: {
     controlType: 'line-text',
     default: '',
     label: 'Line out',
-    description: '',
+    description: 'ID string of chained filter output',
   },
   opacity: {
     controlType: 'number',
@@ -35,7 +35,7 @@ const requiredControls = {
     maxValue: 1,
     step: 0.01,
     label: 'Opacity',
-    description: '',
+    description: 'Float number between 0 and 1',
   },
 };
 
@@ -58,53 +58,57 @@ const actionSchemas = {
 
   ['alpha-to-channels']: {
     label: 'Set alpha to channels',
-    description: '',
+    description: 'Copies an input\'s alpha channel value over to each selected channel\'s value or, alternatively, sets that channel\'s value to zero, or leaves the channel\'s value unchanged. Setting the appropriate includeChannel flags will copy the alpha channel value to that channel; when that flag is false, setting the appropriate excludeChannel flag will set that channel\'s value to zero.',
+    group: 'Color channel filter',
     action: 'alpha-to-channels',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       includeRed: {
         controlType: 'boolean',
         default: true,
         label: 'Include red channel',
-        description: '',
+        description: 'Copy the alpha channel value to the red channel',
       },
       includeGreen: {
         controlType: 'boolean',
         default: true,
         label: 'Include green channel',
-        description: '',
+        description: 'Copy the alpha channel value to the green channel',
       },
       includeBlue: {
         controlType: 'boolean',
         default: true,
         label: 'Include blue channel',
-        description: '',
+        description: 'Copy the alpha channel value to the blue channel',
       },
       excludeRed: {
         controlType: 'boolean',
         default: true,
         label: 'Exclude red channel',
-        description: '',
+        description: 'If includeRed is false, set the red channel\'s value to 0',
       },
       excludeGreen: {
         controlType: 'boolean',
         default: true,
         label: 'Exclude green channel',
-        description: '',
+        description: 'If includeGreen is false, set the green channel\'s value to 0',
       },
       excludeBlue: {
         controlType: 'boolean',
         default: true,
         label: 'Exclude blue channel',
-        description: '',
+        description: 'If includeBlue is false, set the blue channel\'s value to 0',
       },
     },
   },
 
   ['alpha-to-luminance']: {
     label: 'Set alpha to luminance',
-    description: 'alpha-to-luminance',
+    description: '',
+    group: 'OK color space filter',
     action: 'alpha-to-luminance',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
     },
@@ -112,77 +116,81 @@ const actionSchemas = {
 
   ['area-alpha']: {
     label: 'Area alpha',
-    description: '',
+    description: 'Places a tile schema across the input, quarters each tile and then sets the alpha channels of the pixels in selected quarters of each tile to the appropriate value specified in the areaAlphaLevels attribute.',
+    group: 'Alpha channel filter',
     action: 'area-alpha',
+    hasOrigin: true,
     controls: {
       ...requiredControls,
       tileWidth: {
         controlType: 'number',
         default: 1,
         minValue: 0,
-        maxValue: Infinity,
+        maxValue: 200,
         step: 1,
         label: 'Tile width',
-        description: '',
+        description: 'Left portion width',
       },
       tileHeight: {
         controlType: 'number',
         default: 1,
         minValue: 0,
-        maxValue: Infinity,
+        maxValue: 200,
         step: 1,
         label: 'Tile height',
-        description: '',
+        description: 'Top portion height',
       },
       offsetX: {
         controlType: 'number',
         default: 0,
         minValue: 0,
-        maxValue: Infinity,
+        maxValue: 200,
         step: 1,
         label: 'Horizontal offset',
-        description: '',
+        description: 'Shift tiles rightwards',
       },
       offsetY: {
         controlType: 'number',
         default: 0,
         minValue: 0,
-        maxValue: Infinity,
+        maxValue: 200,
         step: 1,
         label: 'Vertical offset',
-        description: '',
+        description: 'Shift tiles downwards',
       },
       gutterWidth: {
         controlType: 'number',
         default: 1,
         minValue: 0,
-        maxValue: Infinity,
+        maxValue: 200,
         step: 1,
         label: 'Gutter width',
-        description: '',
+        description: 'Right portion width',
       },
       gutterHeight: {
         controlType: 'number',
         default: 1,
         minValue: 0,
-        maxValue: Infinity,
+        maxValue: 200,
         step: 1,
         label: 'Gutter height',
-        description: '',
+        description: 'Bottom portion height',
       },
       areaAlphaLevels: {
         controlType: 'bespoke-area-alpha',
         default: [255, 0, 0, 0],
-        label: '',
-        description: 'Array of four numbers, each between 0 and 255, representing the alpha values for each [?, ?, ?, ?] area',
+        label: 'Tile quadrant alpha levels',
+        description: 'Array of four alpha values between 0 and 255 for each quadrant, in the order [tile-tile, tile-gutter, gutter-tile, gutter-gutter]',
       },
     },
   },
 
   ['average-channels']: {
     label: 'Average channels',
-    description: '',
+    description: 'Calculates an average value from each pixel\'s included channels and applies that value to all channels that have not been specifically excluded; excluded channels have their values set to 0.',
+    group: 'Color channel filter',
     action: 'average-channels',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       excludeRed: {
@@ -227,7 +235,9 @@ const actionSchemas = {
   ['blend']: {
     label: 'Blend operations',
     description: '',
+    group: 'Composition filter',
     action: 'blend',
+    hasOrigin: true,
     controls: {
       ...requiredControls,
       lineMix: {
@@ -239,8 +249,8 @@ const actionSchemas = {
       offsetX: {
         controlType: 'number',
         default: 0,
-        minValue: -Infinity,
-        maxValue: Infinity,
+        minValue: -500,
+        maxValue: 500,
         step: 1,
         label: 'Horizontal offset',
         description: '',
@@ -248,8 +258,8 @@ const actionSchemas = {
       offsetY: {
         controlType: 'number',
         default: 0,
-        minValue: -Infinity,
-        maxValue: Infinity,
+        minValue: -500,
+        maxValue: 500,
         step: 1,
         label: 'Vertical offset',
         description: '',
@@ -267,7 +277,9 @@ const actionSchemas = {
   ['blur']: {
     label: 'Box blur',
     description: '',
+    group: 'Convolution filter',
     action: 'blur',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       includeRed: {
@@ -310,7 +322,7 @@ const actionSchemas = {
         controlType: 'number',
         default: 1,
         minValue: 0,
-        maxValue: Infinity,
+        maxValue: 60,
         step: 1,
         label: 'Horizontal radius',
         description: '',
@@ -319,7 +331,7 @@ const actionSchemas = {
         controlType: 'number',
         default: 1,
         minValue: 0,
-        maxValue: Infinity,
+        maxValue: 20,
         step: 1,
         label: 'Horizontal step',
         description: '',
@@ -328,7 +340,7 @@ const actionSchemas = {
         controlType: 'number',
         default: 1,
         minValue: 0,
-        maxValue: Infinity,
+        maxValue: 10,
         step: 1,
         label: 'Horizontal passes',
         description: '',
@@ -343,7 +355,7 @@ const actionSchemas = {
         controlType: 'number',
         default: 1,
         minValue: 0,
-        maxValue: Infinity,
+        maxValue: 60,
         step: 1,
         label: 'Vertical radius',
         description: '',
@@ -352,7 +364,7 @@ const actionSchemas = {
         controlType: 'number',
         default: 1,
         minValue: 0,
-        maxValue: Infinity,
+        maxValue: 20,
         step: 1,
         label: 'Vertical steps',
         description: '',
@@ -361,7 +373,7 @@ const actionSchemas = {
         controlType: 'number',
         default: 1,
         minValue: 0,
-        maxValue: Infinity,
+        maxValue: 10,
         step: 1,
         label: 'Vertical passes',
         description: '',
@@ -371,35 +383,39 @@ const actionSchemas = {
 
   ['channels-to-alpha']: {
     label: 'Set channels to alpha',
-    description: '',
+    description: 'Calculates an average value from each pixel\'s included channels and applies that value to the pixel\'s alpha channel.',
+    group: 'Alpha channel filter',
     action: 'channels-to-alpha',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       includeRed: {
         controlType: 'boolean',
         default: true,
         label: 'Include red channel',
-        description: '',
+        description: 'To exclude this channel from the averaging calculation, make this flag false',
       },
       includeGreen: {
         controlType: 'boolean',
         default: true,
         label: 'Include green channel',
-        description: '',
+        description: 'To exclude this channel from the averaging calculation, make this flag false',
       },
       includeBlue: {
         controlType: 'boolean',
         default: true,
         label: 'Include blue channel',
-        description: '',
+        description: 'To exclude this channel from the averaging calculation, make this flag false',
       },
     },
   },
 
   ['chroma']: {
     label: 'Chroma ranges',
-    description: '',
+    description: 'Produces a chroma key compositing effect across the input, using an array of range arrays to determine whether a pixel\'s values lie entirely within a range\'s values and, if true, sets that pixel\'s alpha channel value to zero.',
+    group: 'Alpha channel filter',
     action: 'chroma',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       ranges: {
@@ -415,7 +431,7 @@ const actionSchemas = {
         maxValue: 255,
         step: 1,
         label: 'Feather red channel',
-        description: '',
+        description: 'For red channel values outside of a range value, but less than the feather value\s distance, reduce the alpha value to form a feather effect',
       },
       featherGreen: {
         controlType: 'number',
@@ -424,7 +440,7 @@ const actionSchemas = {
         maxValue: 255,
         step: 1,
         label: 'Feather green channel',
-        description: '',
+        description: 'For green channel values outside of a range value, but less than the feather value\s distance, reduce the alpha value to form a feather effect',
       },
       featherBlue: {
         controlType: 'number',
@@ -433,27 +449,17 @@ const actionSchemas = {
         maxValue: 255,
         step: 1,
         label: 'Feather blue channel',
-        description: '',
-      },
-      feather: {
-        controlType: 'number',
-        alternativeControl: true,
-        alternativeFor: ['featherRed', 'featherGreen', 'featherBlue'],
-        alternativeAction: 'set-alternatives-to-this',
-        default: 0,
-        minValue: 0,
-        maxValue: 255,
-        step: 1,
-        label: '',
-        description: '',
+        description: 'For blue channel values outside of a range value, but less than the feather value\s distance, reduce the alpha value to form a feather effect',
       },
     },
   },
 
   ['clamp-channels']: {
     label: 'Clamp channels',
-    description: '',
+    description: 'Clamp each color channel to a range determined by a set of low and high channel values.',
+    group: 'Color channel filter',
     action: 'clamp-channels',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       lowRed: {
@@ -483,15 +489,6 @@ const actionSchemas = {
         label: 'Blue channel low bound',
         description: '',
       },
-      lowColor: {
-        controlType: 'color',
-        alternativeControl: true,
-        alternativeFor: ['lowRed', 'lowGreen', 'lowBlue'],
-        alternativeAction: 'set-color-channels-to-this',
-        default: 'rgb(0 0 0)',
-        label: 'Low color',
-        description: '',
-      },
       highRed: {
         controlType: 'number',
         default: 255,
@@ -499,7 +496,7 @@ const actionSchemas = {
         maxValue: 255,
         step: 1,
         label: 'Red channel high bound',
-        description: '',
+        description: 'Red channel\'s contribution to the filter\'s upper bound',
       },
       highGreen: {
         controlType: 'number',
@@ -508,7 +505,7 @@ const actionSchemas = {
         maxValue: 255,
         step: 1,
         label: 'Green channel high bound',
-        description: '',
+        description: 'Green channel\'s contribution to the filter\'s upper bound',
       },
       highBlue: {
         controlType: 'number',
@@ -517,16 +514,63 @@ const actionSchemas = {
         maxValue: 255,
         step: 1,
         label: 'Blue channel high bound',
-        description: '',
+        description: 'Blue channel\'s contribution to the filter\'s upper bound',
       },
-      highColor: {
-        controlType: 'color',
-        alternativeControl: true,
-        alternativeFor: ['highRed', 'highGreen', 'highBlue'],
-        alternativeAction: 'set-color-channels-to-this',
-        default: 'rgb(255 255 255)',
-        label: 'High color',
-        description: '',
+    },
+  },
+
+  ['colors-to-alpha']: {
+    label: 'Chroma key',
+    description: 'Produces a chroma key compositing effect across the input by determining the alpha channel value for each pixel depending on the closeness to that pixel\'s color channel values to a reference color supplied in the red, green and blue arguments.',
+    group: 'Alpha channel filter',
+    action: 'colors-to-alpha',
+    hasOrigin: false,
+    controls: {
+      ...requiredControls,
+      red: {
+        controlType: 'number',
+        default: 0,
+        minValue: 0,
+        maxValue: 255,
+        step: 1,
+        label: 'Red channel',
+        description: 'Reference color red channel value',
+      },
+      green: {
+        controlType: 'number',
+        default: 255,
+        minValue: 0,
+        maxValue: 255,
+        step: 1,
+        label: 'Green channel',
+        description: 'Reference color green channel value',
+      },
+      blue: {
+        controlType: 'number',
+        default: 0,
+        minValue: 0,
+        maxValue: 255,
+        step: 1,
+        label: 'Blue channel',
+        description: 'Reference color blue channel value',
+      },
+      transparentAt: {
+        controlType: 'number',
+        default: 0,
+        minValue: 0,
+        maxValue: 1,
+        step: 0.01,
+        label: 'Effect transparent at',
+        description: 'Manipulate the sensitivity of thge chroma key effect',
+      },
+      opaqueAt: {
+        controlType: 'number',
+        default: 1,
+        minValue: 0,
+        maxValue: 1,
+        step: 0.01,
+        label: 'Effect opaque at',
+        description: 'Manipulate the sensitivity of thge chroma key effect',
       },
     },
   },
@@ -534,11 +578,13 @@ const actionSchemas = {
   ['compose']: {
     label: 'Composition operations',
     description: '',
+    group: 'Composition filter',
     action: 'compose',
+    hasOrigin: true,
     controls: {
       ...requiredControls,
       lineMix: {
-        controlType: 'text',
+        controlType: 'line-text',
         default: '',
         label: 'Line mix',
         description: '',
@@ -546,8 +592,8 @@ const actionSchemas = {
       offsetX: {
         controlType: 'number',
         default: 0,
-        minValue: -Infinity,
-        maxValue: Infinity,
+        minValue: -500,
+        maxValue: 500,
         step: 1,
         label: 'Horizontal offset',
         description: '',
@@ -555,8 +601,8 @@ const actionSchemas = {
       offsetY: {
         controlType: 'number',
         default: 0,
-        minValue: -Infinity,
-        maxValue: Infinity,
+        minValue: -500,
+        maxValue: 500,
         step: 1,
         label: 'Vertical offset',
         description: '',
@@ -574,14 +620,16 @@ const actionSchemas = {
   ['corrode']: {
     label: 'Corrode',
     description: '',
+    group: 'Convolution filter',
     action: 'corrode',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       width: {
         controlType: 'number',
         default: 3,
         minValue: 0,
-        maxValue: Infinity,
+        maxValue: 10,
         step: 1,
         label: 'Width',
         description: '',
@@ -590,7 +638,7 @@ const actionSchemas = {
         controlType: 'number',
         default: 3,
         minValue: 0,
-        maxValue: Infinity,
+        maxValue: 10,
         step: 1,
         label: 'Height',
         description: '',
@@ -599,7 +647,7 @@ const actionSchemas = {
         controlType: 'number',
         default: 1,
         minValue: 0,
-        maxValue: Infinity,
+        maxValue: 10,
         step: 1,
         label: 'Horizontal offset',
         description: '',
@@ -608,7 +656,7 @@ const actionSchemas = {
         controlType: 'number',
         default: 1,
         minValue: 0,
-        maxValue: Infinity,
+        maxValue: 10,
         step: 1,
         label: 'Vertical offset',
         description: '',
@@ -647,73 +695,12 @@ const actionSchemas = {
     },
   },
 
-  ['colors-to-alpha']: {
-    label: 'Chroma key',
-    description: '',
-    action: 'colors-to-alpha',
-    controls: {
-      ...requiredControls,
-      red: {
-        controlType: 'number',
-        default: 0,
-        minValue: 0,
-        maxValue: 255,
-        step: 1,
-        label: 'Red channel',
-        description: '',
-      },
-      green: {
-        controlType: 'number',
-        default: 255,
-        minValue: 0,
-        maxValue: 255,
-        step: 1,
-        label: 'Green channel',
-        description: '',
-      },
-      blue: {
-        controlType: 'number',
-        default: 0,
-        minValue: 0,
-        maxValue: 255,
-        step: 1,
-        label: 'Blue channel',
-        description: '',
-      },
-      transparentAt: {
-        controlType: 'number',
-        default: 0,
-        minValue: 0,
-        maxValue: 1,
-        step: 0.01,
-        label: 'Effect transparent at',
-        description: '',
-      },
-      opaqueAt: {
-        controlType: 'number',
-        default: 1,
-        minValue: 0,
-        maxValue: 1,
-        step: 0.01,
-        label: 'Effect opaque at',
-        description: '',
-      },
-      reference: {
-        controlType: 'color',
-        alternativeControl: true,
-        alternativeFor: ['red', 'green', 'blue'],
-        alternativeAction: 'set-color-channels-to-this',
-        default: 'rgb(0 255 0)',
-        label: 'Reference color',
-        description: '',
-      },
-    },
-  },
-
   ['deconvolute']: {
     label: 'Deconvolute',
     description: '',
+    group: 'OK color space filter',
     action: 'deconvolute',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       strength: {
@@ -797,11 +784,13 @@ const actionSchemas = {
   ['displace']: {
     label: 'Displace',
     description: '',
+    group: 'Displacement filter',
     action: 'displace',
+    hasOrigin: true,
     controls: {
       ...requiredControls,
       lineMix: {
-        controlType: 'text',
+        controlType: 'line-text',
         default: '',
         label: 'Line mix',
         description: '',
@@ -874,7 +863,9 @@ const actionSchemas = {
   ['emboss']: {
     label: 'Emboss',
     description: '',
+    group: 'Convolution filter',
     action: 'emboss',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       angle: {
@@ -921,8 +912,10 @@ const actionSchemas = {
 
   ['flood']: {
     label: 'Flood',
-    description: '',
+    description: 'Creates a uniform sheet of the required color, which can then be used by other filter actions.',
+    group: 'Color channel filter',
     action: 'flood',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       red: {
@@ -932,7 +925,7 @@ const actionSchemas = {
         maxValue: 255,
         step: 1,
         label: 'Red channel',
-        description: '',
+        description: 'Red channel value of the flood color',
       },
       green: {
         controlType: 'number',
@@ -941,7 +934,7 @@ const actionSchemas = {
         maxValue: 255,
         step: 1,
         label: 'Green channel',
-        description: '',
+        description: 'Green channel value of the flood color',
       },
       blue: {
         controlType: 'number',
@@ -950,7 +943,7 @@ const actionSchemas = {
         maxValue: 255,
         step: 1,
         label: 'Blue channel',
-        description: '',
+        description: 'Blue channel value of the flood color',
       },
       alpha: {
         controlType: 'number',
@@ -959,7 +952,7 @@ const actionSchemas = {
         maxValue: 255,
         step: 1,
         label: 'Alpha channel',
-        description: '',
+        description: 'Alpha channel value of the flood color',
       },
       excludeAlpha: {
         controlType: 'boolean',
@@ -973,7 +966,9 @@ const actionSchemas = {
   ['gaussian-blur']: {
     label: 'Gaussian blur',
     description: '',
+    group: 'Convolution filter',
     action: 'gaussian-blur',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       includeRed: {
@@ -1045,7 +1040,9 @@ const actionSchemas = {
   ['glitch']: {
     label: 'Glitch',
     description: '',
+    group: 'Displacement filter',
     action: 'glitch',
+    hasOrigin: true,
     controls: {
       ...requiredControls,
       useMixedChannel: {
@@ -1186,7 +1183,9 @@ const actionSchemas = {
   ['grayscale']: {
     label: 'Grayscale',
     description: '',
+    group: 'Color channel filter',
     action: 'grayscale',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
     },
@@ -1195,7 +1194,9 @@ const actionSchemas = {
   ['invert-channels']: {
     label: 'Invert channels',
     description: '',
+    group: 'Color channel filter',
     action: 'invert-channels',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       includeRed: {
@@ -1222,7 +1223,9 @@ const actionSchemas = {
   ['lock-channels-to-levels']: {
     label: 'Posterize by channel',
     description: '',
+    group: 'Color channel filter',
     action: 'lock-channels-to-levels',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       red: {
@@ -1255,7 +1258,9 @@ const actionSchemas = {
   ['luminance-to-alpha']: {
     label: 'Luminance to alpha',
     description: '',
+    group: 'OK color space filter',
     action: 'luminance-to-alpha',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
     },
@@ -1264,7 +1269,9 @@ const actionSchemas = {
   ['map-to-gradient']: {
     label: 'Map to gradient',
     description: '',
+    group: 'Color channel filter',
     action: 'map-to-gradient',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       useNaturalGrayscale: {
@@ -1285,7 +1292,9 @@ const actionSchemas = {
   ['matrix']: {
     label: 'Matrix',
     description: '',
+    group: 'Convolution filter',
     action: 'matrix',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       includeRed: {
@@ -1372,7 +1381,9 @@ const actionSchemas = {
   ['modify-ok-channels']: {
     label: 'Modify OK channels',
     description: '',
+    group: 'OK color space filter',
     action: 'modify-ok-channels',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       channelL: {
@@ -1408,7 +1419,9 @@ const actionSchemas = {
   ['modulate-channels']: {
     label: 'Modulate channels',
     description: '',
+    group: 'Color channel filter',
     action: 'modulate-channels',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       red: {
@@ -1459,7 +1472,9 @@ const actionSchemas = {
   ['modulate-ok-channels']: {
     label: 'Modulate OK channels',
     description: '',
+    group: 'OK color space filter',
     action: 'modulate-ok-channels',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       channelL: {
@@ -1494,7 +1509,9 @@ const actionSchemas = {
   ['negative']: {
     label: 'Negative',
     description: 'Invert OKLab channel colors',
+    group: 'OK color space filter',
     action: 'negative',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
     },
@@ -1503,7 +1520,9 @@ const actionSchemas = {
   ['newsprint']: {
     label: 'Newsprint',
     description: '',
+    group: 'Convolution filter',
     action: 'newsprint',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       width: {
@@ -1521,7 +1540,9 @@ const actionSchemas = {
   ['offset']: {
     label: 'Offset',
     description: '',
+    group: 'Displacement filter',
     action: 'offset',
+    hasOrigin: true,
     controls: {
       ...requiredControls,
       offsetRedX: {
@@ -1596,30 +1617,6 @@ const actionSchemas = {
         label: 'Alpha channel vertical offset',
         description: '',
       },
-      offsetX: {
-        controlType: 'number',
-        alternativeControl: true,
-        alternativeFor: ['offsetRedX', 'offsetGreenX', 'offsetBlueX', 'offsetAlphaX'],
-        alternativeAction: 'set-alternatives-to-this',
-        default: 0,
-        minValue: -500,
-        maxValue: 500,
-        step: 1,
-        label: 'Horizontal offset',
-        description: '',
-      },
-      offsetY: {
-        controlType: 'number',
-        alternativeControl: true,
-        alternativeFor: ['offsetRedY', 'offsetGreenY', 'offsetBlueY', 'offsetAlphaY'],
-        alternativeAction: 'set-alternatives-to-this',
-        default: 0,
-        minValue: -500,
-        maxValue: 500,
-        step: 1,
-        label: 'Vertical offset',
-        description: '',
-      },
       useInputAsMask: {
         controlType: 'boolean',
         default: false,
@@ -1632,7 +1629,9 @@ const actionSchemas = {
   ['ok-perceptual-curves']: {
     label: 'OK pereceptual curves',
     description: '',
+    group: 'OK color space filter',
     action: 'ok-perceptual-curves',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       weights: {
@@ -1652,7 +1651,9 @@ const actionSchemas = {
   ['pixelate']: {
     label: 'Pixelate',
     description: '',
+    group: 'Convolution filter',
     action: 'pixelate',
+    hasOrigin: true,
     controls: {
       ...requiredControls,
       tileWidth: {
@@ -1721,7 +1722,9 @@ const actionSchemas = {
   ['random-noise']: {
     label: 'Random noise',
     description: '',
+    group: 'Displacement filter',
     action: 'random-noise',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       width: {
@@ -1806,7 +1809,9 @@ const actionSchemas = {
   ['reduce-palette']: {
     label: 'Reduce palette',
     description: '',
+    group: 'OK color space filter',
     action: 'reduce-palette',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       seed: {
@@ -1843,7 +1848,9 @@ const actionSchemas = {
   ['rotate-hue']: {
     label: 'Rotate hue',
     description: '',
+    group: 'OK color space filter',
     action: 'rotate-hue',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       angle: {
@@ -1861,7 +1868,9 @@ const actionSchemas = {
   ['set-channel-to-level']: {
     label: 'Set channels to level',
     description: '',
+    group: 'Color channel filter',
     action: 'set-channel-to-level',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       includeRed: {
@@ -1903,7 +1912,9 @@ const actionSchemas = {
   ['step-channels']: {
     label: 'Channel step',
     description: '',
+    group: 'Color channel filter',
     action: 'step-channels',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       red: {
@@ -1946,7 +1957,9 @@ const actionSchemas = {
   ['tiles']: {
     label: 'Tiles',
     description: '',
+    group: 'Convolution filter',
     action: 'tiles',
+    hasOrigin: true,
     controls: {
       ...requiredControls,
       mode: {
@@ -2080,10 +2093,12 @@ const actionSchemas = {
     },
   },
 
-  ['tint']: {
+  ['tint-channels']: {
     label: 'Tint',
     description: '',
-    action: 'tint',
+    group: 'Color channel filter',
+    action: 'tint-channels',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       redInRed: {
@@ -2167,40 +2182,15 @@ const actionSchemas = {
         label: 'Blue-in-blue',
         description: '',
       },
-      redColor: {
-        controlType: 'color',
-        alternativeControl: true,
-        alternativeFor: ['redInRed', 'greenInRed', 'blueInRed'],
-        alternativeAction: 'set-color-channels-to-this',
-        default: 'rgb(255 0 0)',
-        label: 'Red color',
-        description: '',
-      },
-      greenColor: {
-        controlType: 'color',
-        alternativeControl: true,
-        alternativeFor: ['redInGreen', 'greenInGreen', 'blueInGreen'],
-        alternativeAction: 'set-color-channels-to-this',
-        default: 'rgb(0 255 0)',
-        label: 'Green color',
-        description: '',
-      },
-      blueColor: {
-        controlType: 'color',
-        alternativeControl: true,
-        alternativeFor: ['redInBlue', 'greenInBlue', 'blueInBlue'],
-        alternativeAction: 'set-color-channels-to-this',
-        default: 'rgb(0 0 255)',
-        label: 'Blue color',
-        description: '',
-      },
     },
   },
 
   ['unsharp']: {
     label: 'Unsharpen',
     description: '',
+    group: 'OK color space filter',
     action: 'unsharp',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       strength: {
@@ -2218,7 +2208,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 10,
         step: 0.1,
-        label: 'CHANGE ME',
+        label: 'Radius',
         description: '',
       },
       level: {
@@ -2260,7 +2250,9 @@ const actionSchemas = {
   ['vary-channels-by-weights']: {
     label: 'Vary channels by weights',
     description: '',
+    group: 'Color channel filter',
     action: 'vary-channels-by-weights',
+    hasOrigin: false,
     controls: {
       ...requiredControls,
       weights: {
@@ -2281,7 +2273,9 @@ const actionSchemas = {
   ['zoom-blur']: {
     label: 'Zoom blur',
     description: '',
+    group: 'Convolution filter',
     action: 'zoom-blur',
+    hasOrigin: true,
     controls: {
       ...requiredControls,
       includeRed: {
@@ -2416,212 +2410,570 @@ const actionSchemas = {
 };
 
 /*
-The __filterSchemas__ objects map directly to the Scrawl-canvas filter factory's methods. Note that they actually get their definitions from the actionSchemas object, most without changing anything. A few are variations on an action object, overriding default values. Some also populate the `excludeFromUI` array, hopefully to make the editing forms a little simpler for the user.
+The __filterSchemas__ objects map directly to the Scrawl-canvas filter factory's methods. Note that they actually get their definitions from the actionSchemas object, most without changing anything. A few are variations on an action object, overriding default values.
 
-We will be presenting the user with this object's keys when they choose to add a new action object 
+We will be presenting the user with this object's keys when they choose to add a new action object. The `presentation object details how controls should be grouped together in the form`
 */ 
-const filterSchemaObjects = {
+const filterSchemas = {
 
   alphaToChannels: {
     ...actionSchemas['alpha-to-channels'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   alphaToLuminance: {
     ...actionSchemas['alpha-to-luminance'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   areaAlpha: {
     ...actionSchemas['area-alpha'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   blend: {
     ...actionSchemas['blend'],
-    excludeFromUI: [],
-    kind: 'action',
-  },
-  blur: {
-    ...actionSchemas['blur'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   channelLevels: {
     ...actionSchemas['lock-channels-to-levels'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   channelstep: {
     ...actionSchemas['step-channels'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   channelsToAlpha: {
     ...actionSchemas['channels-to-alpha'],
-    excludeFromUI: [],
-    kind: 'action',
-  },
-  chroma: {
-    ...actionSchemas['chroma'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   chromakey: {
     ...actionSchemas['colors-to-alpha'],
-    excludeFromUI: [],
-    kind: 'action',
+    controls: {
+      ...actionSchemas['colors-to-alpha'].controls,
+      reference: {
+        controlType: 'color',
+        alternativeControl: true,
+        alternativeFor: ['red', 'green', 'blue'],
+        alternativeAction: 'set-color-channels-to-this',
+        sync: 'down-and-up',
+        default: 'rgb(0 255 0)',
+        label: 'Reference color',
+        description: 'Color string value of the reference color',
+      },
+    },
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   clampChannels: {
     ...actionSchemas['clamp-channels'],
-    excludeFromUI: [],
-    kind: 'action',
+    controls: {
+      ...actionSchemas['clamp-channels'].controls,
+      lowColor: {
+        controlType: 'color',
+        alternativeControl: true,
+        alternativeFor: ['lowRed', 'lowGreen', 'lowBlue'],
+        alternativeAction: 'set-color-channels-to-this',
+        sync: 'down-and-up',
+        default: 'rgb(0 0 0)',
+        label: 'Low color',
+        description: 'Color string value of the lower bound color',
+      },
+      highColor: {
+        controlType: 'color',
+        alternativeControl: true,
+        alternativeFor: ['highRed', 'highGreen', 'highBlue'],
+        alternativeAction: 'set-color-channels-to-this',
+        sync: 'down-and-up',
+        default: 'rgb(255 255 255)',
+        label: 'High color',
+        description: 'Color string value of the upper bound color',
+      },
+    },
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   compose: {
     ...actionSchemas['compose'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   corrode: {
     ...actionSchemas['corrode'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   curveWeights: {
     ...actionSchemas['vary-channels-by-weights'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   deconvolute: {
     ...actionSchemas['deconvolute'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   displace: {
     ...actionSchemas['displace'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   emboss: {
     ...actionSchemas['emboss'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   flood: {
     ...actionSchemas['flood'],
-    excludeFromUI: [],
-    kind: 'action',
+    controls: {
+      reference: {
+        controlType: 'color',
+        alternativeControl: true,
+        alternativeFor: ['red', 'green', 'blue', 'alpha'],
+        alternativeAction: 'set-color-channels-to-this',
+        sync: 'down-and-up',
+        default: 'rgb(0 0 0 / 255)',
+        label: 'Reference color',
+        description: 'Color string value of the flood color',
+      },
+    },
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   gaussianBlur: {
     ...actionSchemas['gaussian-blur'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   glitch: {
     ...actionSchemas['glitch'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   grayscale: {
     ...actionSchemas['grayscale'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   invert: {
     ...actionSchemas['invert-channels'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   luminanceToAlpha: {
     ...actionSchemas['luminance-to-alpha'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   mapToGradient: {
     ...actionSchemas['map-to-gradient'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   matrix: {
     ...actionSchemas['matrix'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   modifyOk: {
     ...actionSchemas['modify-ok-channels'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   modulateOk: {
     ...actionSchemas['modulate-ok-channels'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   negative: {
     ...actionSchemas['negative'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   newsprint: {
     ...actionSchemas['newsprint'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   offset: {
     ...actionSchemas['offset'],
-    excludeFromUI: [],
-    kind: 'action',
+    controls: {
+      offsetX: {
+        controlType: 'number',
+        alternativeControl: true,
+        alternativeFor: ['offsetRedX', 'offsetGreenX', 'offsetBlueX', 'offsetAlphaX'],
+        alternativeAction: 'set-alternatives-to-this',
+        sync: 'down-only',
+        default: 0,
+        minValue: -500,
+        maxValue: 500,
+        step: 1,
+        label: 'Horizontal offset',
+        description: '',
+      },
+      offsetY: {
+        controlType: 'number',
+        alternativeControl: true,
+        alternativeFor: ['offsetRedY', 'offsetGreenY', 'offsetBlueY', 'offsetAlphaY'],
+        alternativeAction: 'set-alternatives-to-this',
+        sync: 'down-only',
+        default: 0,
+        minValue: -500,
+        maxValue: 500,
+        step: 1,
+        label: 'Vertical offset',
+        description: '',
+      },
+    },
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   okCurveWeights: {
     ...actionSchemas['ok-perceptual-curves'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   pixelate: {
     ...actionSchemas['pixelate'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   randomNoise: {
     ...actionSchemas['random-noise'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   reducePalette: {
     ...actionSchemas['reduce-palette'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   rotateHue: {
     ...actionSchemas['rotate-hue'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   tiles: {
     ...actionSchemas['tiles'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   tint: {
-    ...actionSchemas['tint'],
-    excludeFromUI: [],
-    kind: 'action',
+    ...actionSchemas['tint-channels'],
+    controls: {
+      redColor: {
+        controlType: 'color',
+        alternativeControl: true,
+        alternativeFor: ['redInRed', 'greenInRed', 'blueInRed'],
+        alternativeAction: 'set-color-channels-to-this',
+        sync: 'down-and-up',
+        default: 'rgb(255 0 0)',
+        label: 'Red color',
+        description: 'Color string value of the red colors reference',
+      },
+      greenColor: {
+        controlType: 'color',
+        alternativeControl: true,
+        alternativeFor: ['redInGreen', 'greenInGreen', 'blueInGreen'],
+        alternativeAction: 'set-color-channels-to-this',
+        sync: 'down-and-up',
+        default: 'rgb(0 255 0)',
+        label: 'Green color',
+        description: 'Color string value of the green colors reference',
+      },
+      blueColor: {
+        controlType: 'color',
+        alternativeControl: true,
+        alternativeFor: ['redInBlue', 'greenInBlue', 'blueInBlue'],
+        alternativeAction: 'set-color-channels-to-this',
+        sync: 'down-and-up',
+        default: 'rgb(0 0 255)',
+        label: 'Blue color',
+        description: 'Color string value of the blue colors reference',
+      },
+    },
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   unsharp: {
     ...actionSchemas['unsharp'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
   zoomBlur: {
     ...actionSchemas['zoom-blur'],
-    excludeFromUI: [],
-    kind: 'action',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
   blue: {
     label: 'Blue only',
     description: '',
     action: 'average-channels',
+    hasOrigin: false,
     controls: {
       ...actionSchemas['average-channels'].controls,
       excludeRed: {
@@ -2633,36 +2985,137 @@ const filterSchemaObjects = {
         default: true,
       },
     },
-    excludeFromUI: ['excludeRed', 'excludeGreen', 'excludeBlue', 'includeRed', 'includeGreen', 'includeBlue'],
-    kind: 'preset',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
+  },
+
+  blur: {
+    ...actionSchemas['blur'],
+    controls: {
+      ...actionSchemas['blur'].controls,
+      radius: {
+        controlType: 'number',
+        alternativeControl: true,
+        alternativeFor: ['radiusHorizontal', 'radiusVertical'],
+        alternativeAction: 'set-alternatives-to-this',
+        sync: 'down-only',
+        default: 1,
+        label: 'Radius',
+        description: '',
+      },
+      step: {
+        controlType: 'number',
+        alternativeControl: true,
+        alternativeFor: ['stepHorizontal', 'stepVertical'],
+        alternativeAction: 'set-alternatives-to-this',
+        sync: 'down-only',
+        default: 1,
+        label: 'Step',
+        description: '',
+      },
+      passes: {
+        controlType: 'number',
+        alternativeControl: true,
+        alternativeFor: ['passesHorizontal', 'passesVertical'],
+        alternativeAction: 'set-alternatives-to-this',
+        sync: 'down-only',
+        default: 1,
+        label: 'Passes',
+        description: '',
+      },
+    },
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
   brightness: {
     label: 'Brightness',
     description: '',
     action: 'modulate-channels',
+    hasOrigin: false,
     controls: {
       ...actionSchemas['modulate-channels'].controls,
     },
-    excludeFromUI: ['saturation', 'alpha'],
-    kind: 'preset',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
   channels: {
     label: 'Channels modulation',
     description: '',
     action: 'modulate-channels',
+    hasOrigin: false,
     controls: {
       ...actionSchemas['modulate-channels'].controls,
     },
-    excludeFromUI: ['saturation'],
-    kind: 'preset',
+    presentation: [
+      {
+        title: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        title: 'Channels',
+        inputs: ['red', 'green', 'blue', 'alpha'],
+      },{
+        title: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
+  chroma: {
+    ...actionSchemas['blur'],
+    controls: {
+      ...actionSchemas['average-channels'].controls,
+      feather: {
+        controlType: 'number',
+        alternativeControl: true,
+        alternativeFor: ['featherRed', 'featherGreen', 'featherBlue'],
+        alternativeAction: 'set-alternatives-to-this',
+        sync: 'down-only',
+        default: 0,
+        minValue: 0,
+        maxValue: 255,
+        step: 1,
+        label: '',
+        description: '',
+      },
+    },
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
+  },
   cyan: {
     label: 'Cyan only',
     description: '',
     action: 'average-channels',
+    hasOrigin: false,
     controls: {
       ...actionSchemas['average-channels'].controls,
       excludeRed: {
@@ -2678,14 +3131,22 @@ const filterSchemaObjects = {
         default: true,
       },
     },
-    excludeFromUI: ['excludeRed', 'excludeGreen', 'excludeBlue', 'includeRed', 'includeGreen', 'includeBlue'],
-    kind: 'preset',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
   edgeDetect: {
     label: 'Edge detect',
     description: '',
     action: 'matrix',
+    hasOrigin: false,
     controls: {
       ...actionSchemas['matrix'].controls,
       weights: {
@@ -2693,8 +3154,15 @@ const filterSchemaObjects = {
         default: [0, 1, 0, 1, -4, 1, 0, 1, 0],
       },
     },
-    excludeFromUI: ['width', 'height', 'offsetX', 'offsetY', 'includeRed', 'includeGreen', 'includeBlue', 'includeAlpha', 'weights'],
-    kind: 'preset',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
   // We will need to specifically listen out for any invocation of this filter as it needs special treatment. While `helpers/filter-engine.js` does define an 'emboss' filter, the `factory/filters.js` does work to expand the user request to a set of four chained filters, each taking attributes specific to that method. The controls below are the ones listed for the method approach because: they do combine to give a more convincing "emboss" result; and the "method" approach can be used to emulate (in a very rough fashion) some SVG filter lighting effects.
@@ -2703,6 +3171,7 @@ const filterSchemaObjects = {
     label: 'Enhanced emboss',
     description: '',
     action: 'emboss',
+    hasOrigin: false,
     controls: {
       ...actionSchemas['emboss'].controls,
       useNaturalGrayscale: {
@@ -2730,14 +3199,22 @@ const filterSchemaObjects = {
         description: 'Applied as part of the gaussian-blur action',
       },
     },
-    excludeFromUI: [],
-    kind: 'method',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
   gray: {
     label: 'Monochrome gray',
     description: '',
     action: 'average-channels',
+    hasOrigin: false,
     controls: {
       ...actionSchemas['average-channels'].controls,
       includeRed: {
@@ -2753,14 +3230,22 @@ const filterSchemaObjects = {
         default: true,
       },
     },
-    excludeFromUI: ['excludeRed', 'excludeGreen', 'excludeBlue', 'includeRed', 'includeGreen', 'includeBlue'],
-    kind: 'preset',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
   green: {
     label: 'Green only',
     description: '',
     action: 'average-channels',
+    hasOrigin: false,
     controls: {
       ...actionSchemas['average-channels'].controls,
       excludeRed: {
@@ -2772,15 +3257,22 @@ const filterSchemaObjects = {
         default: true,
       },
     },
-    excludeFromUI: ['excludeRed', 'excludeGreen', 'excludeBlue', 'includeRed', 'includeGreen', 'includeBlue'],
-    kind: 'preset',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
   magenta: {
     label: 'Magenta only',
     description: '',
     action: 'average-channels',
-    required: true,
+    hasOrigin: false,
     controls: {
       ...actionSchemas['average-channels'].controls,
       includeRed: {
@@ -2796,14 +3288,22 @@ const filterSchemaObjects = {
         default: true,
       },
     },
-    excludeFromUI: ['excludeRed', 'excludeGreen', 'excludeBlue', 'includeRed', 'includeGreen', 'includeBlue'],
-    kind: 'preset',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
   notblue: {
     label: 'Remove blue channel',
     description: '',
     action: 'set-channel-to-level',
+    hasOrigin: false,
     controls: {
       ...actionSchemas['set-channel-to-level'].controls,
       includeBlue: {
@@ -2811,14 +3311,22 @@ const filterSchemaObjects = {
         default: true,
       },
     },
-    excludeFromUI: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha', 'level'],
-    kind: 'preset',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
   notgreen: {
     label: 'Remove green channel',
     description: '',
     action: 'set-channel-to-level',
+    hasOrigin: false,
     controls: {
       ...actionSchemas['set-channel-to-level'].controls,
       includeGreen: {
@@ -2826,14 +3334,22 @@ const filterSchemaObjects = {
         default: true,
       },
     },
-    excludeFromUI: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha', 'level'],
-    kind: 'preset',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
   notred: {
     label: 'Remove red channel',
     description: '',
     action: 'set-channel-to-level',
+    hasOrigin: false,
     controls: {
       ...actionSchemas['set-channel-to-level'].controls,
       includeRed: {
@@ -2841,14 +3357,22 @@ const filterSchemaObjects = {
         default: true,
       },
     },
-    excludeFromUI: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha', 'level'],
-    kind: 'preset',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
   red: {
     label: 'Red only',
     description: '',
     action: 'average-channels',
+    hasOrigin: false,
     controls: {
       ...actionSchemas['average-channels'].controls,
       excludeGreen: {
@@ -2860,14 +3384,22 @@ const filterSchemaObjects = {
         default: true,
       },
     },
-    excludeFromUI: ['excludeRed', 'excludeGreen', 'excludeBlue', 'includeRed', 'includeGreen', 'includeBlue'],
-    kind: 'preset',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
   saturation: {
     label: 'Saturation',
     description: '',
     action: 'modulate-channels',
+    hasOrigin: false,
     controls: {
       ...actionSchemas['modulate-channels'].controls,
       saturation: {
@@ -2875,61 +3407,77 @@ const filterSchemaObjects = {
         default: true,
       },
     },
-    excludeFromUI: ['saturation', 'alpha'],
-    kind: 'preset',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
   sepia: {
     label: 'Sepia',
     description: '',
-    action: 'tint',
+    action: 'tint-channels',
+    hasOrigin: false,
     controls: {
-      ...actionSchemas['tint'].controls,
+      ...actionSchemas['tint-channels'].controls,
       redInRed: {
-        ...actionSchemas['tint'].controls.redInRed,
+        ...actionSchemas['tint-channels'].controls.redInRed,
         default: 0.393,
       },
       redInGreen: {
-        ...actionSchemas['tint'].controls.redInGreen,
+        ...actionSchemas['tint-channels'].controls.redInGreen,
         default: 0.349,
       },
       redInBlue: {
-        ...actionSchemas['tint'].controls.redInBlue,
+        ...actionSchemas['tint-channels'].controls.redInBlue,
         default: 0.272,
       },
       greenInRed: {
-        ...actionSchemas['tint'].controls.greenInRed,
+        ...actionSchemas['tint-channels'].controls.greenInRed,
         default: 0.769,
       },
       greenInGreen: {
-        ...actionSchemas['tint'].controls.greenInGreen,
+        ...actionSchemas['tint-channels'].controls.greenInGreen,
         default: 0.686,
       },
       greenInBlue: {
-        ...actionSchemas['tint'].controls.greenInBlue,
+        ...actionSchemas['tint-channels'].controls.greenInBlue,
         default: 0.534,
       },
       blueInRed: {
-        ...actionSchemas['tint'].controls.blueInRed,
+        ...actionSchemas['tint-channels'].controls.blueInRed,
         default: 0.189,
       },
       blueInGreen: {
-        ...actionSchemas['tint'].controls.blueInGreen,
+        ...actionSchemas['tint-channels'].controls.blueInGreen,
         default: 0.168,
       },
       blueInBlue: {
-        ...actionSchemas['tint'].controls.blueInBlue,
+        ...actionSchemas['tint-channels'].controls.blueInBlue,
         default: 0.131,
       },
     },
-    excludeFromUI: ['redInRed', 'redInGreen', 'redInBlue', 'greenInRed', 'greenInGreen', 'greenInBlue', 'blueInRed', 'blueInGreen', 'blueInBlue', 'redColor', 'greenColor', 'blueColor'],
-    kind: 'preset',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
   sharpen: {
     label: 'Sharpen',
     description: '',
     action: 'matrix',
+    hasOrigin: false,
     controls: {
       ...actionSchemas['matrix'].controls,
       weights: {
@@ -2937,14 +3485,22 @@ const filterSchemaObjects = {
         default: [0, -1, 0, -1, 5, -1, 0, -1, 0],
       },
     },
-    excludeFromUI: ['width', 'height', 'offsetX', 'offsetY', 'includeRed', 'includeGreen', 'includeBlue', 'includeAlpha', 'weights'],
-    kind: 'preset',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 
   yellow: {
     label: 'Yellow only',
     description: '',
     action: 'average-channels',
+    hasOrigin: false,
     controls: {
       ...actionSchemas['average-channels'].controls,
       includeRed: {
@@ -2960,27 +3516,26 @@ const filterSchemaObjects = {
         default: true,
       },
     },
-    excludeFromUI: ['excludeRed', 'excludeGreen', 'excludeBlue', 'includeRed', 'includeGreen', 'includeBlue'],
-    kind: 'preset',
+    presentation: [
+      {
+        header: 'Connections',
+        inputs: ['lineIn', 'lineOut'],
+      },{
+        header: 'Impact',
+        inputs: ['opacity'],
+      }
+    ],
   },
 };
 
-// For protection, we'll export a JSON.stringified version of `filterSchemaObjects` - whenever code elsewhere wants to use the data, it can JSON.parse the string before doing anything. 
-const FILTER_SCHEMAS_JSON = JSON.stringify(filterSchemaObjects);
+export const getActionSchema = (name) => {
 
-// Export a function that always returns a fresh copy
-export const getFilterSchemas = () => {
-  try {
-    return JSON.parse(FILTER_SCHEMAS_JSON);
-  }
-  catch (e) {
-    throw new Error(`getFilterSchemas(): failed to parse FILTER_SCHEMAS_JSON - ${e?.message ?? e}`);
-  }
+  if (filterSchemas[name]) return structuredClone(filterSchemas[name]);
+  return null;
 };
 
-
-
-
+// Temporary, just to test there's no code mistakes in the schemas while developing them
+export const getFilterSchemas = () => JSON.parse(JSON.stringify(filterSchemas));
 
 
 
@@ -3039,7 +3594,7 @@ Ignore these next few lines
       controls: {
         ...actionSchemas['UPDATE-ME'].controls,
       },
-      excludeFromUI: [],
+      presentation: {},
    }],
   },
 */
