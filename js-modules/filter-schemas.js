@@ -560,7 +560,7 @@ const actionSchemas = {
         maxValue: 1,
         step: 0.01,
         label: 'Effect transparent at',
-        description: 'Manipulate the sensitivity of thge chroma key effect',
+        description: 'Manipulate the sensitivity of the chroma key effect',
       },
       opaqueAt: {
         controlType: 'number',
@@ -569,7 +569,7 @@ const actionSchemas = {
         maxValue: 1,
         step: 0.01,
         label: 'Effect opaque at',
-        description: 'Manipulate the sensitivity of thge chroma key effect',
+        description: 'Manipulate the sensitivity of the chroma key effect',
       },
     },
   },
@@ -1626,7 +1626,7 @@ const actionSchemas = {
   },
 
   ['ok-perceptual-curves']: {
-    label: 'OK pereceptual curves',
+    label: 'OK perceptual curves',
     description: '',
     group: 'OK color space filter',
     action: 'ok-perceptual-curves',
@@ -1764,7 +1764,7 @@ const actionSchemas = {
         label: 'Copy horizontal start',
         description: '',
       },
-      copyHeight: {
+      copyY: {
         controlType: 'number',
         default: 0,
         minValue: 0,
@@ -2701,7 +2701,7 @@ F.presentation = [{
 
 // blue ('average-channels' variant)
 F = filterSchemas.blue = structuredClone(actionSchemas['average-channels']);
-F.label = 'Blue channel',
+F.label = 'Blue channel';
 F.description = '';
 F.controls.excludeRed.default = true;
 F.controls.excludeGreen.default = true;
@@ -2755,7 +2755,7 @@ F.presentation = [{
 
 // brightness ('modulate-channels' variant)
 F = filterSchemas.brightness = structuredClone(actionSchemas['modulate-channels']);
-F.label = 'Brightness',
+F.label = 'Brightness';
 F.description = '';
 F.presentation = [{
     header: 'Connections',
@@ -2777,13 +2777,13 @@ F.presentation = [{
 
 // channels ('modulate-channels' variant)
 F = filterSchemas.channels = structuredClone(actionSchemas['modulate-channels']);
-F.label = 'Channels modulation',
+F.label = 'Channels modulation';
 F.description = '';
 F.presentation = [{
     header: 'Connections',
     inputs: ['lineIn', 'lineOut'],
   },{
-    title: 'Channels',
+    header: 'Channels',
     inputs: ['red', 'green', 'blue', 'alpha'],
   },{
     header: 'Impact',
@@ -2915,7 +2915,7 @@ F.presentation = [{
 
 // cyan ('average-channels' variant)
 F = filterSchemas.cyan = structuredClone(actionSchemas['average-channels']);
-F.label = 'Cyan channels',
+F.label = 'Cyan channels';
 F.description = '';
 F.controls.excludeRed.default = true;
 F.controls.includeGreen.default = true;
@@ -2950,7 +2950,7 @@ F.presentation = [{
 
 // edgeDetect ('matrix' variant)
 F = filterSchemas.edgeDetect = structuredClone(actionSchemas['matrix']);
-F.label = 'Edge detect',
+F.label = 'Edge detect';
 F.description = '';
 F.controls.weights.default = [0, 1, 0, 1, -4, 1, 0, 1, 0];
 F.presentation = [{
@@ -2975,7 +2975,7 @@ F.presentation = [{
 // - This filter can have 1-3 action objects, thus cannot build in the normal way.
 // - Instead, invoke `scrawl.makeFilter()` with the supplied arguments and extract the action objects it creates and then bring them into alignment with the system
 F = filterSchemas.enhancedEmboss = structuredClone(actionSchemas['emboss']);
-F.label = 'Enhanced emboss',
+F.label = 'Enhanced emboss';
 F.description = '';
 F.controls.useNaturalGrayscale = {
   controlType: 'boolean',
@@ -3051,7 +3051,7 @@ F.presentation = [{
 
 // gray ('average-channels' variant)
 F = filterSchemas.gray = structuredClone(actionSchemas['average-channels']);
-F.label = 'Desaturate',
+F.label = 'Desaturate';
 F.description = '';
 F.controls.includeRed.default = true;
 F.controls.includeGreen.default = true;
@@ -3076,7 +3076,7 @@ F.presentation = [{
 
 // green ('average-channels' variant)
 F = filterSchemas.green = structuredClone(actionSchemas['average-channels']);
-F.label = 'Green channel',
+F.label = 'Green channel';
 F.description = '';
 F.controls.excludeRed.default = true;
 F.controls.excludeBlue.default = true;
@@ -3126,7 +3126,7 @@ F.presentation = [{
 
 // magenta ('average-channels' variant)
 F = filterSchemas.magenta = structuredClone(actionSchemas['average-channels']);
-F.label = 'Magenta channels',
+F.label = 'Magenta channels';
 F.description = '';
 F.controls.includeRed.default = true;
 F.controls.excludeGreen.default = true;
@@ -3191,16 +3191,6 @@ F.presentation = [{
 
 // newsprint
 F = filterSchemas.newsprint = structuredClone(actionSchemas['newsprint']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
-
-// setChannelsToLevel
-F = filterSchemas.setChannelsToLevel = structuredClone(actionSchemas['set-channel-to-level']);
 F.presentation = [{
     header: 'Connections',
     inputs: ['lineIn', 'lineOut'],
@@ -3316,7 +3306,7 @@ F.presentation = [{
 
 // red ('average-channels' variant)
 F = filterSchemas.red = structuredClone(actionSchemas['average-channels']);
-F.label = 'Red channel',
+F.label = 'Red channel';
 F.description = '';
 F.controls.excludeGreen.default = true;
 F.controls.excludeBlue.default = true;
@@ -3350,7 +3340,7 @@ F.presentation = [{
 
 // saturation  ('modulate-channels' variant)
 F = filterSchemas.saturation = structuredClone(actionSchemas['modulate-channels']);
-F.label = 'Saturation',
+F.label = 'Saturation';
 F.description = '';
 F.controls.saturation.default = true;
 F.presentation = [{
@@ -3363,7 +3353,7 @@ F.presentation = [{
 
 // sepia ('tint' variant)
 F = filterSchemas.sepia = structuredClone(actionSchemas['tint-channels']);
-F.label = 'Sepia',
+F.label = 'Sepia';
 F.description = '';
 F.controls.redInRed.default = 0.393;
 F.controls.redInGreen.default = 0.349;
@@ -3394,7 +3384,7 @@ F.presentation = [{
 
 // sharpen ('matrix' variant)
 F = filterSchemas.sharpen = structuredClone(actionSchemas['matrix']);
-F.label = 'Sharpen',
+F.label = 'Sharpen';
 F.description = '';
 F.controls.weights.default = [0, -1, 0, -1, 5, -1, 0, -1, 0];
 F.presentation = [{
@@ -3415,8 +3405,8 @@ F = filterSchemas.swirl = structuredClone(actionSchemas['swirl']);
 F.controls.startX = {
   controlType: 'percentage-number',
   default: '50',
-  minValue: 0,
-  maxValue: 1,
+  minValue: '-20',
+  maxValue: '120',
   step: 0.001,
   label: 'Horizontal start',
   description: '',
@@ -3477,7 +3467,7 @@ F = filterSchemas.threshold = structuredClone(actionSchemas['threshold']);
 F.controls.lowColor = {
   controlType: 'color',
   alternativeControl: true,
-  alternativeFor: ['lowRed', 'lowGreen', 'lowBlue', lowAlpha],
+  alternativeFor: ['lowRed', 'lowGreen', 'lowBlue', 'lowAlpha'],
   alternativeAction: 'set-color-channels-to-this',
   sync: 'down-and-up',
   default: 'rgb(0 0 0 / 1)',
@@ -3487,7 +3477,7 @@ F.controls.lowColor = {
 F.controls.highColor = {
   controlType: 'color',
   alternativeControl: true,
-  alternativeFor: ['highRed', 'highGreen', 'highBlue', highAlpha],
+  alternativeFor: ['highRed', 'highGreen', 'highBlue', 'highAlpha'],
   alternativeAction: 'set-color-channels-to-this',
   sync: 'down-and-up',
   default: 'rgb(255 255 255 / 1)',
@@ -3574,7 +3564,7 @@ F.presentation = [{
 
 // yellow ('average-channels' variant)
 F = filterSchemas.yellow = structuredClone(actionSchemas['average-channels']);
-F.label = 'Magenta channels',
+F.label = 'Yellow channels';
 F.description = '';
 F.controls.includeRed.default = true;
 F.controls.includeGreen.default = true;
