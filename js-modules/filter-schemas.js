@@ -430,7 +430,7 @@ const actionSchemas = {
         maxValue: 255,
         step: 1,
         label: 'Feather red channel',
-        description: 'For red channel values outside of a range value, but less than the feather value\s distance, reduce the alpha value to form a feather effect',
+        description: 'For red channel values outside of a range value, but less than the feather value\'s distance, reduce the alpha value to form a feather effect',
       },
       featherGreen: {
         controlType: 'number',
@@ -439,7 +439,7 @@ const actionSchemas = {
         maxValue: 255,
         step: 1,
         label: 'Feather green channel',
-        description: 'For green channel values outside of a range value, but less than the feather value\s distance, reduce the alpha value to form a feather effect',
+        description: 'For green channel values outside of a range value, but less than the feather value\'s distance, reduce the alpha value to form a feather effect',
       },
       featherBlue: {
         controlType: 'number',
@@ -448,7 +448,7 @@ const actionSchemas = {
         maxValue: 255,
         step: 1,
         label: 'Feather blue channel',
-        description: 'For blue channel values outside of a range value, but less than the feather value\s distance, reduce the alpha value to form a feather effect',
+        description: 'For blue channel values outside of a range value, but less than the feather value\'s distance, reduce the alpha value to form a feather effect',
       },
     },
   },
@@ -2685,6 +2685,15 @@ F.presentation = [{
   header: 'Connections',
   inputs: ['lineIn', 'lineOut'],
 },{
+  header: 'Tile section dimensions',
+  inputs: ['tileWidth', 'tileHeight', 'gutterWidth', 'gutterHeight'],
+},{
+  header: 'Tile section alphas',
+  inputs: ['areaAlphaLevels'],
+},{
+  header: 'Tile offset',
+  inputs: ['offsetX', 'offsetY'],
+},{
   header: 'Impact',
   inputs: ['opacity'],
 }];
@@ -2694,6 +2703,12 @@ F = filterSchemas.blend = structuredClone(actionSchemas['blend']);
 F.presentation = [{
     header: 'Connections',
     inputs: ['lineIn', 'lineMix', 'lineOut'],
+  },{
+    header: 'Mix input offset',
+    inputs: ['offsetX', 'offsetY'],
+  },{
+    header: 'Blend operation',
+    inputs: ['blend'],
   },{
     header: 'Impact',
     inputs: ['opacity'],
@@ -2749,6 +2764,21 @@ F.presentation = [{
     header: 'Connections',
     inputs: ['lineIn', 'lineOut'],
   },{
+    header: 'Quick inputs',
+    inputs: ['radius', 'step', 'passes'],
+  },{
+    header: 'Horizontal',
+    inputs: ['processHorizontal', 'radiusHorizontal', 'stepHorizontal', 'passesHorizontal'],
+  },{
+    header: 'Vertical',
+    inputs: ['processVertical', 'radiusVertical', 'stepVertical', 'passesVertical'],
+  },{
+    header: 'Inclusions',
+    inputs: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha'],
+  },{
+    header: 'Exclusions',
+    inputs: ['excludeTransparentPixels'],
+  },{
     header: 'Impact',
     inputs: ['opacity'],
 }];
@@ -2757,9 +2787,25 @@ F.presentation = [{
 F = filterSchemas.brightness = structuredClone(actionSchemas['modulate-channels']);
 F.label = 'Brightness';
 F.description = '';
+F.controls.level = {
+  controlType: 'number',
+  alternativeControl: true,
+  alternativeFor: ['red', 'green', 'blue'],
+  alternativeAction: 'set-alternatives-to-this',
+  sync: 'down-only',
+  default: 1,
+  minValue: 0,
+  maxValue: 3,
+  step: 0.01,
+  label: 'Level',
+  description: ''
+};
 F.presentation = [{
     header: 'Connections',
     inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Modulation',
+    inputs: ['level'],
   },{
     header: 'Impact',
     inputs: ['opacity'],
@@ -2770,6 +2816,9 @@ F = filterSchemas.channelLevels = structuredClone(actionSchemas['lock-channels-t
 F.presentation = [{
     header: 'Connections',
     inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Reference values',
+    inputs: ['red', 'green', 'blue', 'alpha'],
   },{
     header: 'Impact',
     inputs: ['opacity'],
@@ -2795,6 +2844,9 @@ F = filterSchemas.channelstep = structuredClone(actionSchemas['step-channels']);
 F.presentation = [{
     header: 'Connections',
     inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Effect',
+    inputs: ['red', 'green', 'blue', 'clamp'],
   },{
     header: 'Impact',
   inputs: ['opacity'],
@@ -2829,6 +2881,12 @@ F.presentation = [{
     header: 'Connections',
     inputs: ['lineIn', 'lineOut'],
   },{
+    header: 'Reference colors',
+    inputs: ['ranges'],
+  },{
+    header: 'Feathering',
+    inputs: ['feather', 'featherRed', 'featherGreen', 'featherBlue'],
+  },{
     header: 'Impact',
     inputs: ['opacity'],
 }];
@@ -2848,6 +2906,12 @@ F.controls.reference = {
 F.presentation = [{
     header: 'Connections',
     inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Reference color',
+    inputs: ['color', 'red', 'green', 'blue'],
+  },{
+    header: 'Effect controls',
+    inputs: ['transparentAt', 'opaqueAt'],
   },{
     header: 'Impact',
     inputs: ['opacity'],
@@ -2879,6 +2943,12 @@ F.presentation = [{
     header: 'Connections',
     inputs: ['lineIn', 'lineOut'],
   },{
+    header: 'Low color',
+    inputs: ['lowColor', 'lowRed', 'lowGreen', 'lowBlue'],
+  },{
+    header: 'High color',
+    inputs: ['highColor', 'highRed', 'highGreen', 'highBlue'],
+  },{
     header: 'Impact',
     inputs: ['opacity'],
 }];
@@ -2888,6 +2958,12 @@ F = filterSchemas.compose = structuredClone(actionSchemas['compose']);
 F.presentation = [{
     header: 'Connections',
     inputs: ['lineIn', 'lineMix', 'lineOut'],
+  },{
+    header: 'Mix input offset',
+    inputs: ['offsetX', 'offsetY'],
+  },{
+    header: 'Compose operation',
+    inputs: ['compose'],
   },{
     header: 'Impact',
     inputs: ['opacity'],
@@ -2900,7 +2976,7 @@ F.presentation = [{
     inputs: ['lineIn', 'lineOut'],
   },{
     header: 'Impact',
-  inputs: ['opacity'],
+    inputs: ['opacity'],
 }];
 
 // curveWeights
@@ -3095,7 +3171,7 @@ F.controls.import = {
   default: '',
   label: 'Select image to import',
   description: '',
-},
+};
 F.presentation = [{
     header: 'Connections',
     inputs: ['lineIn', 'lineOut'],
@@ -3343,9 +3419,25 @@ F = filterSchemas.saturation = structuredClone(actionSchemas['modulate-channels'
 F.label = 'Saturation';
 F.description = '';
 F.controls.saturation.default = true;
+F.controls.level = {
+  controlType: 'number',
+  alternativeControl: true,
+  alternativeFor: ['red', 'green', 'blue'],
+  alternativeAction: 'set-alternatives-to-this',
+  sync: 'down-only',
+  default: 1,
+  minValue: 0,
+  maxValue: 3,
+  step: 0.01,
+  label: 'Level',
+  description: ''
+};
 F.presentation = [{
     header: 'Connections',
     inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Modulation',
+    inputs: ['level'],
   },{
     header: 'Impact',
     inputs: ['opacity'],
@@ -3491,7 +3583,7 @@ F.controls.referenceColor = {
   alternativeAction: 'set-color-channels-to-this',
   sync: 'down-and-up',
   default: 'rgb(128 128 128 / 1)',
-  label: 'High color reference',
+  label: 'Levels color reference',
   description: 'Color string value for the level reference color',
 };
 F.presentation = [{
