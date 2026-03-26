@@ -53,7 +53,6 @@ We define the attributes that an individual action object takes on the actionSch
 - `label`  - suggested label for input/select control
 - `description` - could be used for tool tips, etc
 */
-
 const actionSchemas = {
 
   ['alpha-to-channels']: {
@@ -2012,6 +2011,189 @@ const actionSchemas = {
     },
   },
 
+  // For the tool, we shall allow the user to define just one swirl per action
+  // - To make the UI easier to manage/navigate
+  // - Each swirl is defined by an array in the form `[startX, startY, innerRadius, outerRadius, angle, easing]`
+  // - swirl arrays then get pushed into the `swirls` attribute
+  // - Might be easier to just feed the arguments into the `makeFilter({method: 'swirl'}) function and extract what we need`
+  ['swirl']: {
+    label: 'Swirl',
+    description: '',
+    group: 'Displacement filter',
+    action: 'swirl',
+    hasOrigin: true,
+    controls: {
+      ...requiredControls,
+      swirls: {
+        controlType: 'bespoke-swirl',
+        default: [],
+        label: 'Swirls array',
+        description: '',
+      },
+      transparentEdges: {
+        controlType: 'boolean',
+        default: false,
+        label: 'Transparent edges',
+        description: '',
+      },
+      useInputAsMask: {
+        controlType: 'boolean',
+        default: false,
+        label: 'Use input as mask',
+        description: '',
+      },
+    },
+  },
+
+  ['threshold']: {
+    label: 'Threshold',
+    description: '',
+    group: 'Color channel filter',
+    action: 'threshold',
+    hasOrigin: false,
+    controls: {
+      ...requiredControls,
+      lowRed: {
+        controlType: 'number',
+        default: 0,
+        minValue: 0,
+        maxValue: 255,
+        step: 1,
+        label: 'Low color red channel',
+        description: '',
+      },
+      lowGreen: {
+        controlType: 'number',
+        default: 0,
+        minValue: 0,
+        maxValue: 255,
+        step: 1,
+        label: 'Low color green channel',
+        description: '',
+      },
+      lowBlue: {
+        controlType: 'number',
+        default: 0,
+        minValue: 0,
+        maxValue: 255,
+        step: 1,
+        label: 'Low color blue channel',
+        description: '',
+      },
+      lowAlpha: {
+        controlType: 'number',
+        default: 1,
+        minValue: 0,
+        maxValue: 1,
+        step: 0.005,
+        label: 'Low color alpha channel',
+        description: '',
+      },
+      highRed: {
+        controlType: 'number',
+        default: 255,
+        minValue: 0,
+        maxValue: 255,
+        step: 1,
+        label: 'High color red channel',
+        description: '',
+      },
+      highGreen: {
+        controlType: 'number',
+        default: 255,
+        minValue: 0,
+        maxValue: 255,
+        step: 1,
+        label: 'High color green channel',
+        description: '',
+      },
+      highBlue: {
+        controlType: 'number',
+        default: 255,
+        minValue: 0,
+        maxValue: 255,
+        step: 1,
+        label: 'High color blue channel',
+        description: '',
+      },
+      highAlpha: {
+        controlType: 'number',
+        default: 1,
+        minValue: 0,
+        maxValue: 1,
+        step: 0.005,
+        label: 'High color alpha channel',
+        description: '',
+      },
+      red: {
+        controlType: 'number',
+        default: 128,
+        minValue: 0,
+        maxValue: 255,
+        step: 1,
+        label: 'Level reference color red channel',
+        description: '',
+      },
+      green: {
+        controlType: 'number',
+        default: 128,
+        minValue: 0,
+        maxValue: 255,
+        step: 1,
+        label: 'Level reference color green channel',
+        description: '',
+      },
+      blue: {
+        controlType: 'number',
+        default: 128,
+        minValue: 0,
+        maxValue: 255,
+        step: 1,
+        label: 'Level reference color blue channel',
+        description: '',
+      },
+      alpha: {
+        controlType: 'number',
+        default: 1,
+        minValue: 0,
+        maxValue: 1,
+        step: 0.005,
+        label: 'Level reference color alpha channel',
+        description: '',
+      },
+      includeRed: {
+        controlType: 'boolean',
+        default: true,
+        label: 'Include red channel',
+        description: '',
+      },
+      includeGreen: {
+        controlType: 'boolean',
+        default: true,
+        label: 'Include green channel',
+        description: '',
+      },
+      includeBlue: {
+        controlType: 'boolean',
+        default: true,
+        label: 'Include blue channel',
+        description: '',
+      },
+      includeAlpha: {
+        controlType: 'boolean',
+        default: false,
+        label: 'Include alpha channel',
+        description: '',
+      },
+      useMixedChannel: {
+        controlType: 'boolean',
+        default: true,
+        label: 'Use mixed channels',
+        description: '',
+      },
+    },
+  },
+
   ['tiles']: {
     label: 'Tiles',
     description: '',
@@ -2467,12 +2649,12 @@ const actionSchemas = {
   },
 };
 
+
 /*
 The __filterSchemas__ object defines objects which either:
 - Port through the related actionSchema object, adding presentation details and (sometimes) convenience controls; or
 - Create a variant of an actionSchema object as a convenience filter, overwriting some of the actionSchema object's controls attribute default values
 */ 
-
 const filterSchemas = {};
 
 let F;
@@ -2909,7 +3091,7 @@ F.presentation = [{
 // image
 F = filterSchemas.image = structuredClone(actionSchemas['process-image']);
 F.controls.import = {
-  controlType: 'file-loader',
+  controlType: 'bespoke-file-loader',
   default: '',
   label: 'Select image to import',
   description: '',
@@ -3223,6 +3405,113 @@ F.presentation = [{
     inputs: ['opacity'],
 }];
 
+// swirl
+// For the tool, we shall allow the user to define just one swirl per action
+// - To make the UI easier to manage/navigate
+// - Each swirl is defined by an array in the form `[startX, startY, innerRadius, outerRadius, angle, easing]`
+// - swirl arrays then get pushed into the `swirls` attribute
+// - Might be easier to just feed the arguments into the `makeFilter({method: 'swirl'}) function and extract what we need`
+F = filterSchemas.swirl = structuredClone(actionSchemas['swirl']);
+F.controls.startX = {
+  controlType: 'percentage-number',
+  default: '50',
+  minValue: 0,
+  maxValue: 1,
+  step: 0.001,
+  label: 'Horizontal start',
+  description: '',
+};
+F.controls.startY = {
+  controlType: 'percentage-number',
+  default: '50',
+  minValue: '-20',
+  maxValue: '120',
+  step: 1,
+  label: 'Vertical start',
+  description: '',
+};
+F.controls.innerRadius = {
+  controlType: 'percentage-number',
+  default: '0',
+  minValue: '0',
+  maxValue: '120',
+  step: 1,
+  label: 'Inner radius',
+  description: '',
+};
+F.controls.outerRadius = {
+  controlType: 'percentage-number',
+  default: '30',
+  minValue: '0',
+  maxValue: '120',
+  step: 1,
+  label: 'Outer radius',
+  description: '',
+};
+F.controls.angle = {
+  controlType: 'number',
+  default: 0,
+  minValue: 0,
+  maxValue: 360,
+  step: 0.1,
+  label: 'Angle',
+  description: '',
+};
+F.controls.easing = {
+  controlType: 'select',
+  default: 'linear',
+  options: ['linear', 'easeOut', 'easeOutIn', 'easeInOut', 'easeIn'],
+  label: 'Easing',
+  description: '',
+};
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// threshold
+F = filterSchemas.threshold = structuredClone(actionSchemas['threshold']);
+F.controls.lowColor = {
+  controlType: 'color',
+  alternativeControl: true,
+  alternativeFor: ['lowRed', 'lowGreen', 'lowBlue', lowAlpha],
+  alternativeAction: 'set-color-channels-to-this',
+  sync: 'down-and-up',
+  default: 'rgb(0 0 0 / 1)',
+  label: 'Low color reference',
+  description: 'Color string value for the low color',
+};
+F.controls.highColor = {
+  controlType: 'color',
+  alternativeControl: true,
+  alternativeFor: ['highRed', 'highGreen', 'highBlue', highAlpha],
+  alternativeAction: 'set-color-channels-to-this',
+  sync: 'down-and-up',
+  default: 'rgb(255 255 255 / 1)',
+  label: 'High color reference',
+  description: 'Color string value for the high color',
+};
+F.controls.referenceColor = {
+  controlType: 'color',
+  alternativeControl: true,
+  alternativeFor: ['red', 'green', 'blue', 'alpha'],
+  alternativeAction: 'set-color-channels-to-this',
+  sync: 'down-and-up',
+  default: 'rgb(128 128 128 / 1)',
+  label: 'High color reference',
+  description: 'Color string value for the level reference color',
+};
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
 // tiles
 F = filterSchemas.tiles = structuredClone(actionSchemas['tiles']);
 F.presentation = [{
@@ -3316,141 +3605,3 @@ export const getDefinedFilterSchema = (name) => {
 
 // Temporary, just to test there's no code mistakes in the schemas while developing them
 export const getFilterSchemas = () => JSON.parse(JSON.stringify(filterSchemas));
-
-
-
-/*
-Below, the few remaining actionSchemas to be defined in the above system
-
-
-
-
-  // ====================================
-  //   swirl: function (f) {
-  //       controls: [{
-  //           isPreset: false,
-  //           requiresMix: false,
-  //           requiresImage: false,
-  //           requiresGradient: false,
-  //       }],
-  //       action: [{
-  //       }]
-
-// Check to see if startX/startY can take % values - if not, update filter to make this happen
-  //       const startX = (f.startX != null) ? f.startX : PC50,
-  //           startY = (f.startY != null) ? f.startY : PC50,
-// Check to see if innerRadius/outerRadius can take % values - if not, update filter to make this happen
-  //           innerRadius = (f.innerRadius != null) ? f.innerRadius : 0,
-  //           outerRadius = (f.outerRadius != null) ? f.outerRadius : PC30,
-  //           angle = (f.angle != null) ? f.angle : 0,
-  //           easing = (f.easing != null) ? f.easing : LINEAR,
-  //           staticSwirls = (f.staticSwirls != null) ? f.staticSwirls : [];
-
-  //       const swirls = [...staticSwirls];
-  //       swirls.push([startX, startY, innerRadius, outerRadius, angle, easing]);
-
-  //       f.actions = [{
-  //           action: SWIRL,
-  //           lineIn: '',
-  //           lineOut: '',
-  //           opacity: 1,
-  //           swirls,
-  //           transparentEdges: (f.transparentEdges != null) ? f.transparentEdges : false,
-  //           useInputAsMask: (f.useInputAsMask != null) ? f.useInputAsMask : false,
-  //       }];
-  //   },
-  // ====================================
-
-
-
-
-  // ====================================
-  //   threshold: function (f) {
-  //       controls: [{
-  //           isPreset: false,
-  //           requiresMix: false,
-  //           requiresImage: false,
-  //           requiresGradient: false,
-  //       }],
-  //       action: [{
-  //       }]
-
-  //       let lowRed = (f.lowRed != null) ? f.lowRed : 0,
-  //           lowGreen = (f.lowGreen != null) ? f.lowGreen : 0,
-  //           lowBlue = (f.lowBlue != null) ? f.lowBlue : 0,
-  //           lowAlpha = (f.lowAlpha != null) ? f.lowAlpha : 255,
-  //           highRed = (f.highRed != null) ? f.highRed : 255,
-  //           highGreen = (f.highGreen != null) ? f.highGreen : 255,
-  //           highBlue = (f.highBlue != null) ? f.highBlue : 255,
-  //           highAlpha = (f.highAlpha != null) ? f.highAlpha : 255;
-
-  //       if (f.lowColor != null) {
-
-  //           [lowRed, lowGreen, lowBlue, lowAlpha] = colorEngine.extractRGBfromColorString(f.lowColor);
-
-  //           lowAlpha = _round(lowAlpha * 255);
-
-  //           f.lowRed = lowRed;
-  //           f.lowGreen = lowGreen;
-  //           f.lowBlue = lowBlue;
-  //           f.lowAlpha = lowAlpha;
-
-  //           f.low = [lowRed, lowGreen, lowBlue, lowAlpha];
-
-  //           delete f.lowColor;
-  //       }
-
-  //       if (f.highColor != null) {
-
-  //           [highRed, highGreen, highBlue, highAlpha] = colorEngine.extractRGBfromColorString(f.highColor);
-
-  //           highAlpha = _round(highAlpha * 255);
-
-  //           f.highRed = highRed;
-  //           f.highGreen = highGreen;
-  //           f.highBlue = highBlue;
-  //           f.highAlpha = highAlpha;
-
-  //           f.high = [highRed, highGreen, highBlue, highAlpha];
-
-  //           delete f.highColor;
-  //       }
-
-  //       const low = (f.low != null) ? f.low : [lowRed, lowGreen, lowBlue, lowAlpha],
-  //           high = (f.high != null) ? f.high : [highRed, highGreen, highBlue, highAlpha];
-
-  //       f.actions = [{
-  //           action: THRESHOLD,
-  //           lineIn: '',
-  //           lineOut: '',
-  //           opacity: 1,
-  //           level: (f.level != null) ? f.level : 128,
-  //           red: (f.red != null) ? f.red : 128,
-  //           green: (f.green != null) ? f.green : 128,
-  //           blue: (f.blue != null) ? f.blue : 128,
-  //           alpha: (f.alpha != null) ? f.alpha : 128,
-  //           low,
-  //           high,
-  //           includeRed: (f.includeRed != null) ? f.includeRed : true,
-  //           includeGreen: (f.includeGreen != null) ? f.includeGreen : true,
-  //           includeBlue: (f.includeBlue != null) ? f.includeBlue : true,
-  //           includeAlpha: (f.includeAlpha != null) ? f.includeAlpha : false,
-  //           useMixedChannel: (f.useMixedChannel != null) ? f.useMixedChannel : true,
-  //       }];
-  //   },
-  // ====================================
-
-
-
-
-/*
-AFTERTHOUGHTS and DISTRACTIONS from the work in this file:
-
-- want to add functionality to allow user to define a filter that can be treated as an image asset that can then be applied to the whole image (eg blend the gradient into the image)
-
-- something about the "https://petapixel.com/2017/02/23/orange-teal-look-popular-hollywood/" teal-and-orange contrast effect? Research if we can already achieve such an effect with existing filters (if yes, create an easy-to-apply filter to make it happen)
-
-- would be fabulous to include a way to create repeating watermarks across an image
-*/
-
-
