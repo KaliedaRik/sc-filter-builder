@@ -1719,6 +1719,64 @@ const actionSchemas = {
     },
   },
 
+  ['process-image']: {
+    label: 'Image asset',
+    description: 'Upload an image asset for use in other actions.',
+    group: 'Asset',
+    action: 'process-image',
+    hasOrigin: false,
+    controls: {
+      lineOut: {
+        controlType: 'line-text',
+        default: '',
+        label: 'Line out',
+        description: 'ID string of asset',
+      },
+      identifier: {
+        controlType: 'text',
+        default: '',
+        label: 'Asset identifier',
+        description: 'Acts as the `lineIn` alternative for the action',
+      },
+      copyWidth: {
+        controlType: 'number',
+        default: 1,
+        minValue: 1,
+        maxValue: 4092,
+        step: 1,
+        label: 'Copy width',
+        description: '',
+      },
+      copyHeight: {
+        controlType: 'number',
+        default: 1,
+        minValue: 1,
+        maxValue: 4092,
+        step: 1,
+        label: 'Copy height',
+        description: '',
+      },
+      copyX: {
+        controlType: 'number',
+        default: 0,
+        minValue: 0,
+        maxValue: 4091,
+        step: 1,
+        label: 'Copy horizontal start',
+        description: '',
+      },
+      copyHeight: {
+        controlType: 'number',
+        default: 0,
+        minValue: 0,
+        maxValue: 4091,
+        step: 1,
+        label: 'Copy vertical start',
+        description: '',
+      },
+    },
+  },
+
   ['random-noise']: {
     label: 'Random noise',
     description: '',
@@ -2410,1125 +2468,847 @@ const actionSchemas = {
 };
 
 /*
-The __filterSchemas__ objects map directly to the Scrawl-canvas filter factory's methods. Note that they actually get their definitions from the actionSchemas object, most without changing anything. A few are variations on an action object, overriding default values.
-
-We will be presenting the user with this object's keys when they choose to add a new action object. The `presentation object details how controls should be grouped together in the form`
+The __filterSchemas__ object defines objects which either:
+- Port through the related actionSchema object, adding presentation details and (sometimes) convenience controls; or
+- Create a variant of an actionSchema object as a convenience filter, overwriting some of the actionSchema object's controls attribute default values
 */ 
-const filterSchemas = {
 
-  alphaToChannels: {
-    ...actionSchemas['alpha-to-channels'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  alphaToLuminance: {
-    ...actionSchemas['alpha-to-luminance'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  areaAlpha: {
-    ...actionSchemas['area-alpha'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  blend: {
-    ...actionSchemas['blend'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  channelLevels: {
-    ...actionSchemas['lock-channels-to-levels'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  channelstep: {
-    ...actionSchemas['step-channels'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  channelsToAlpha: {
-    ...actionSchemas['channels-to-alpha'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  chromakey: {
-    ...actionSchemas['colors-to-alpha'],
-    controls: {
-      ...actionSchemas['colors-to-alpha'].controls,
-      reference: {
-        controlType: 'color',
-        alternativeControl: true,
-        alternativeFor: ['red', 'green', 'blue'],
-        alternativeAction: 'set-color-channels-to-this',
-        sync: 'down-and-up',
-        default: 'rgb(0 255 0)',
-        label: 'Reference color',
-        description: 'Color string value of the reference color',
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  clampChannels: {
-    ...actionSchemas['clamp-channels'],
-    controls: {
-      ...actionSchemas['clamp-channels'].controls,
-      lowColor: {
-        controlType: 'color',
-        alternativeControl: true,
-        alternativeFor: ['lowRed', 'lowGreen', 'lowBlue'],
-        alternativeAction: 'set-color-channels-to-this',
-        sync: 'down-and-up',
-        default: 'rgb(0 0 0)',
-        label: 'Low color',
-        description: 'Color string value of the lower bound color',
-      },
-      highColor: {
-        controlType: 'color',
-        alternativeControl: true,
-        alternativeFor: ['highRed', 'highGreen', 'highBlue'],
-        alternativeAction: 'set-color-channels-to-this',
-        sync: 'down-and-up',
-        default: 'rgb(255 255 255)',
-        label: 'High color',
-        description: 'Color string value of the upper bound color',
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  compose: {
-    ...actionSchemas['compose'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  corrode: {
-    ...actionSchemas['corrode'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  curveWeights: {
-    ...actionSchemas['vary-channels-by-weights'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  deconvolute: {
-    ...actionSchemas['deconvolute'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  displace: {
-    ...actionSchemas['displace'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  emboss: {
-    ...actionSchemas['emboss'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  flood: {
-    ...actionSchemas['flood'],
-    controls: {
-      reference: {
-        controlType: 'color',
-        alternativeControl: true,
-        alternativeFor: ['red', 'green', 'blue', 'alpha'],
-        alternativeAction: 'set-color-channels-to-this',
-        sync: 'down-and-up',
-        default: 'rgb(0 0 0 / 255)',
-        label: 'Reference color',
-        description: 'Color string value of the flood color',
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  gaussianBlur: {
-    ...actionSchemas['gaussian-blur'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  glitch: {
-    ...actionSchemas['glitch'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  grayscale: {
-    ...actionSchemas['grayscale'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  invert: {
-    ...actionSchemas['invert-channels'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  luminanceToAlpha: {
-    ...actionSchemas['luminance-to-alpha'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  mapToGradient: {
-    ...actionSchemas['map-to-gradient'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  matrix: {
-    ...actionSchemas['matrix'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  modifyOk: {
-    ...actionSchemas['modify-ok-channels'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  modulateOk: {
-    ...actionSchemas['modulate-ok-channels'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  negative: {
-    ...actionSchemas['negative'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  newsprint: {
-    ...actionSchemas['newsprint'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  offset: {
-    ...actionSchemas['offset'],
-    controls: {
-      offsetX: {
-        controlType: 'number',
-        alternativeControl: true,
-        alternativeFor: ['offsetRedX', 'offsetGreenX', 'offsetBlueX', 'offsetAlphaX'],
-        alternativeAction: 'set-alternatives-to-this',
-        sync: 'down-only',
-        default: 0,
-        minValue: -500,
-        maxValue: 500,
-        step: 1,
-        label: 'Horizontal offset',
-        description: '',
-      },
-      offsetY: {
-        controlType: 'number',
-        alternativeControl: true,
-        alternativeFor: ['offsetRedY', 'offsetGreenY', 'offsetBlueY', 'offsetAlphaY'],
-        alternativeAction: 'set-alternatives-to-this',
-        sync: 'down-only',
-        default: 0,
-        minValue: -500,
-        maxValue: 500,
-        step: 1,
-        label: 'Vertical offset',
-        description: '',
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  okCurveWeights: {
-    ...actionSchemas['ok-perceptual-curves'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  pixelate: {
-    ...actionSchemas['pixelate'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  randomNoise: {
-    ...actionSchemas['random-noise'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  reducePalette: {
-    ...actionSchemas['reduce-palette'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  rotateHue: {
-    ...actionSchemas['rotate-hue'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  tiles: {
-    ...actionSchemas['tiles'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  tint: {
-    ...actionSchemas['tint-channels'],
-    controls: {
-      redColor: {
-        controlType: 'color',
-        alternativeControl: true,
-        alternativeFor: ['redInRed', 'greenInRed', 'blueInRed'],
-        alternativeAction: 'set-color-channels-to-this',
-        sync: 'down-and-up',
-        default: 'rgb(255 0 0)',
-        label: 'Red color',
-        description: 'Color string value of the red colors reference',
-      },
-      greenColor: {
-        controlType: 'color',
-        alternativeControl: true,
-        alternativeFor: ['redInGreen', 'greenInGreen', 'blueInGreen'],
-        alternativeAction: 'set-color-channels-to-this',
-        sync: 'down-and-up',
-        default: 'rgb(0 255 0)',
-        label: 'Green color',
-        description: 'Color string value of the green colors reference',
-      },
-      blueColor: {
-        controlType: 'color',
-        alternativeControl: true,
-        alternativeFor: ['redInBlue', 'greenInBlue', 'blueInBlue'],
-        alternativeAction: 'set-color-channels-to-this',
-        sync: 'down-and-up',
-        default: 'rgb(0 0 255)',
-        label: 'Blue color',
-        description: 'Color string value of the blue colors reference',
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  unsharp: {
-    ...actionSchemas['unsharp'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  zoomBlur: {
-    ...actionSchemas['zoom-blur'],
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
+const filterSchemas = {};
 
-  blue: {
-    label: 'Blue only',
-    description: '',
-    action: 'average-channels',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['average-channels'].controls,
-      excludeRed: {
-        ...actionSchemas['average-channels'].controls.excludeRed,
-        default: true,
-      },
-      excludeGreen: {
-        ...actionSchemas['average-channels'].controls.excludeGreen,
-        default: true,
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
+let F;
 
-  blur: {
-    ...actionSchemas['blur'],
-    controls: {
-      ...actionSchemas['blur'].controls,
-      radius: {
-        controlType: 'number',
-        alternativeControl: true,
-        alternativeFor: ['radiusHorizontal', 'radiusVertical'],
-        alternativeAction: 'set-alternatives-to-this',
-        sync: 'down-only',
-        default: 1,
-        label: 'Radius',
-        description: '',
-      },
-      step: {
-        controlType: 'number',
-        alternativeControl: true,
-        alternativeFor: ['stepHorizontal', 'stepVertical'],
-        alternativeAction: 'set-alternatives-to-this',
-        sync: 'down-only',
-        default: 1,
-        label: 'Step',
-        description: '',
-      },
-      passes: {
-        controlType: 'number',
-        alternativeControl: true,
-        alternativeFor: ['passesHorizontal', 'passesVertical'],
-        alternativeAction: 'set-alternatives-to-this',
-        sync: 'down-only',
-        default: 1,
-        label: 'Passes',
-        description: '',
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
+// alphaToChannels
+F = filterSchemas.alphaToChannels = structuredClone(actionSchemas['alpha-to-channels']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
 
-  brightness: {
-    label: 'Brightness',
-    description: '',
-    action: 'modulate-channels',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['modulate-channels'].controls,
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
+// alphaToLuminance
+F = filterSchemas.alphaToLuminance = structuredClone(actionSchemas['alpha-to-luminance']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
 
-  channels: {
-    label: 'Channels modulation',
-    description: '',
-    action: 'modulate-channels',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['modulate-channels'].controls,
-    },
-    presentation: [
-      {
-        title: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        title: 'Channels',
-        inputs: ['red', 'green', 'blue', 'alpha'],
-      },{
-        title: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
+// areaAlpha
+F = filterSchemas.areaAlpha = structuredClone(actionSchemas['area-alpha']);
+F.presentation = [{
+  header: 'Connections',
+  inputs: ['lineIn', 'lineOut'],
+},{
+  header: 'Impact',
+  inputs: ['opacity'],
+}];
 
-  chroma: {
-    ...actionSchemas['blur'],
-    controls: {
-      ...actionSchemas['average-channels'].controls,
-      feather: {
-        controlType: 'number',
-        alternativeControl: true,
-        alternativeFor: ['featherRed', 'featherGreen', 'featherBlue'],
-        alternativeAction: 'set-alternatives-to-this',
-        sync: 'down-only',
-        default: 0,
-        minValue: 0,
-        maxValue: 255,
-        step: 1,
-        label: '',
-        description: '',
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-  cyan: {
-    label: 'Cyan only',
-    description: '',
-    action: 'average-channels',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['average-channels'].controls,
-      excludeRed: {
-        ...actionSchemas['average-channels'].controls.excludeRed,
-        default: true,
-      },
-      includeGreen: {
-        ...actionSchemas['average-channels'].controls.includeGreen,
-        default: true,
-      },
-      includeBlue: {
-        ...actionSchemas['average-channels'].controls.includeBlue,
-        default: true,
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
+// blend
+F = filterSchemas.blend = structuredClone(actionSchemas['blend']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineMix', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
 
-  edgeDetect: {
-    label: 'Edge detect',
-    description: '',
-    action: 'matrix',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['matrix'].controls,
-      weights: {
-        ...actionSchemas['matrix'].controls.weights,
-        default: [0, 1, 0, 1, -4, 1, 0, 1, 0],
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
+// blue ('average-channels' variant)
+F = filterSchemas.blue = structuredClone(actionSchemas['average-channels']);
+F.label = 'Blue channel',
+F.description = '';
+F.controls.excludeRed.default = true;
+F.controls.excludeGreen.default = true;
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
 
-  // We will need to specifically listen out for any invocation of this filter as it needs special treatment. While `helpers/filter-engine.js` does define an 'emboss' filter, the `factory/filters.js` does work to expand the user request to a set of four chained filters, each taking attributes specific to that method. The controls below are the ones listed for the method approach because: they do combine to give a more convincing "emboss" result; and the "method" approach can be used to emulate (in a very rough fashion) some SVG filter lighting effects.
-  // - The best approach may be to just invoke the factory function using method, capture it and then steal its actions so we can proceed to create our dynamic actions in this tool ...?
-  enhancedEmboss: {
-    label: 'Enhanced emboss',
-    description: '',
-    action: 'emboss',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['emboss'].controls,
-      useNaturalGrayscale: {
-        controlType: 'boolean',
-        default: false,
-        label: 'Use natural grayscale',
-        description: 'When true, starts the action sequence by converting input to grayscale; when false, will use the simpler average-channels approach to strip away color',
-      },
-      clamp: {
-        controlType: 'number',
-        default: 0,
-        minValue: 0,
-        maxValue: 100,
-        step: 0.01,
-        label: 'Clamp',
-        description: 'Applied as part of the clamp action',
-      },
-      smoothing: {
-        controlType: 'number',
-        default: 0,
-        minValue: 0,
-        maxValue: 12,
-        step: 1,
-        label: 'Smoothing',
-        description: 'Applied as part of the gaussian-blur action',
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-
-  gray: {
-    label: 'Monochrome gray',
-    description: '',
-    action: 'average-channels',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['average-channels'].controls,
-      includeRed: {
-        ...actionSchemas['average-channels'].controls.includeRed,
-        default: true,
-      },
-      includeGreen: {
-        ...actionSchemas['average-channels'].controls.includeGreen,
-        default: true,
-      },
-      includeBlue: {
-        ...actionSchemas['average-channels'].controls.includeBlue,
-        default: true,
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-
-  green: {
-    label: 'Green only',
-    description: '',
-    action: 'average-channels',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['average-channels'].controls,
-      excludeRed: {
-        ...actionSchemas['average-channels'].controls.excludeRed,
-        default: true,
-      },
-      excludeBlue: {
-        ...actionSchemas['average-channels'].controls.excludeBlue,
-        default: true,
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-
-  magenta: {
-    label: 'Magenta only',
-    description: '',
-    action: 'average-channels',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['average-channels'].controls,
-      includeRed: {
-        ...actionSchemas['average-channels'].controls.includeRed,
-        default: true,
-      },
-      excludeGreen: {
-        ...actionSchemas['average-channels'].controls.excludeGreen,
-        default: true,
-      },
-      includeBlue: {
-        ...actionSchemas['average-channels'].controls.includeBlue,
-        default: true,
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-
-  notblue: {
-    label: 'Remove blue channel',
-    description: '',
-    action: 'set-channel-to-level',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['set-channel-to-level'].controls,
-      includeBlue: {
-        ...actionSchemas['set-channel-to-level'].controls.includeBlue,
-        default: true,
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-
-  notgreen: {
-    label: 'Remove green channel',
-    description: '',
-    action: 'set-channel-to-level',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['set-channel-to-level'].controls,
-      includeGreen: {
-        ...actionSchemas['set-channel-to-level'].controls.includeGreen,
-        default: true,
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-
-  notred: {
-    label: 'Remove red channel',
-    description: '',
-    action: 'set-channel-to-level',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['set-channel-to-level'].controls,
-      includeRed: {
-        ...actionSchemas['set-channel-to-level'].controls.includeRed,
-        default: true,
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-
-  red: {
-    label: 'Red only',
-    description: '',
-    action: 'average-channels',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['average-channels'].controls,
-      excludeGreen: {
-        ...actionSchemas['average-channels'].controls.excludeGreen,
-        default: true,
-      },
-      excludeBlue: {
-        ...actionSchemas['average-channels'].controls.excludeBlue,
-        default: true,
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-
-  saturation: {
-    label: 'Saturation',
-    description: '',
-    action: 'modulate-channels',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['modulate-channels'].controls,
-      saturation: {
-        ...actionSchemas['modulate-channels'].controls.saturation,
-        default: true,
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-
-  sepia: {
-    label: 'Sepia',
-    description: '',
-    action: 'tint-channels',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['tint-channels'].controls,
-      redInRed: {
-        ...actionSchemas['tint-channels'].controls.redInRed,
-        default: 0.393,
-      },
-      redInGreen: {
-        ...actionSchemas['tint-channels'].controls.redInGreen,
-        default: 0.349,
-      },
-      redInBlue: {
-        ...actionSchemas['tint-channels'].controls.redInBlue,
-        default: 0.272,
-      },
-      greenInRed: {
-        ...actionSchemas['tint-channels'].controls.greenInRed,
-        default: 0.769,
-      },
-      greenInGreen: {
-        ...actionSchemas['tint-channels'].controls.greenInGreen,
-        default: 0.686,
-      },
-      greenInBlue: {
-        ...actionSchemas['tint-channels'].controls.greenInBlue,
-        default: 0.534,
-      },
-      blueInRed: {
-        ...actionSchemas['tint-channels'].controls.blueInRed,
-        default: 0.189,
-      },
-      blueInGreen: {
-        ...actionSchemas['tint-channels'].controls.blueInGreen,
-        default: 0.168,
-      },
-      blueInBlue: {
-        ...actionSchemas['tint-channels'].controls.blueInBlue,
-        default: 0.131,
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-
-  sharpen: {
-    label: 'Sharpen',
-    description: '',
-    action: 'matrix',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['matrix'].controls,
-      weights: {
-        ...actionSchemas['matrix'].controls.weights,
-        default: [0, -1, 0, -1, 5, -1, 0, -1, 0],
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
-
-  yellow: {
-    label: 'Yellow only',
-    description: '',
-    action: 'average-channels',
-    hasOrigin: false,
-    controls: {
-      ...actionSchemas['average-channels'].controls,
-      includeRed: {
-        ...actionSchemas['average-channels'].controls.includeRed,
-        default: true,
-      },
-      includeGreen: {
-        ...actionSchemas['average-channels'].controls.includeGreen,
-        default: true,
-      },
-      excludeBlue: {
-        ...actionSchemas['average-channels'].controls.excludeBlue,
-        default: true,
-      },
-    },
-    presentation: [
-      {
-        header: 'Connections',
-        inputs: ['lineIn', 'lineOut'],
-      },{
-        header: 'Impact',
-        inputs: ['opacity'],
-      }
-    ],
-  },
+// blur
+F = filterSchemas.blur = structuredClone(actionSchemas['blur']);
+F.controls.radius = {
+  controlType: 'number',
+  alternativeControl: true,
+  alternativeFor: ['radiusHorizontal', 'radiusVertical'],
+  alternativeAction: 'set-alternatives-to-this',
+  sync: 'down-only',
+  default: 1,
+  label: 'Radius',
+  description: '',
 };
+F.controls.step = {
+  controlType: 'number',
+  alternativeControl: true,
+  alternativeFor: ['stepHorizontal', 'stepVertical'],
+  alternativeAction: 'set-alternatives-to-this',
+  sync: 'down-only',
+  default: 1,
+  label: 'Step',
+  description: '',
+};
+F.controls.passes = {
+  controlType: 'number',
+  alternativeControl: true,
+  alternativeFor: ['passesHorizontal', 'passesVertical'],
+  alternativeAction: 'set-alternatives-to-this',
+  sync: 'down-only',
+  default: 1,
+  label: 'Passes',
+  description: ''
+};
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
 
-export const getActionSchema = (name) => {
+// brightness ('modulate-channels' variant)
+F = filterSchemas.brightness = structuredClone(actionSchemas['modulate-channels']);
+F.label = 'Brightness',
+F.description = '';
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// channelLevels
+F = filterSchemas.channelLevels = structuredClone(actionSchemas['lock-channels-to-levels']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// channels ('modulate-channels' variant)
+F = filterSchemas.channels = structuredClone(actionSchemas['modulate-channels']);
+F.label = 'Channels modulation',
+F.description = '';
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    title: 'Channels',
+    inputs: ['red', 'green', 'blue', 'alpha'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// channelstep
+F = filterSchemas.channelstep = structuredClone(actionSchemas['step-channels']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+  inputs: ['opacity'],
+}];
+
+// channelsToAlpha
+F = filterSchemas.channelsToAlpha = structuredClone(actionSchemas['channels-to-alpha']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// chroma
+F = filterSchemas.chroma = structuredClone(actionSchemas['chroma']);
+F.controls.feather = {
+  controlType: 'number',
+  alternativeControl: true,
+  alternativeFor: ['featherRed', 'featherGreen', 'featherBlue'],
+  alternativeAction: 'set-alternatives-to-this',
+  sync: 'down-only',
+  default: 0,
+  minValue: 0,
+  maxValue: 255,
+  step: 1,
+  label: 'Feather',
+  description: '',
+};
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// chromakey
+F = filterSchemas.chromakey = structuredClone(actionSchemas['colors-to-alpha']);
+F.controls.reference = {
+  controlType: 'color',
+  alternativeControl: true,
+  alternativeFor: ['red', 'green', 'blue'],
+  alternativeAction: 'set-color-channels-to-this',
+  sync: 'down-and-up',
+  default: 'rgb(0 255 0)',
+  label: 'Reference color',
+  description: 'Color string value of the reference color',
+};
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// clampChannels
+F = filterSchemas.clampChannels = structuredClone(actionSchemas['clamp-channels']);
+F.controls.lowColor = {
+  controlType: 'color',
+  alternativeControl: true,
+  alternativeFor: ['lowRed', 'lowGreen', 'lowBlue'],
+  alternativeAction: 'set-color-channels-to-this',
+  sync: 'down-and-up',
+  default: 'rgb(0 0 0)',
+  label: 'Low color reference',
+  description: 'Color string value of the lower bound color',
+};
+F.controls.highColor = {
+  controlType: 'color',
+  alternativeControl: true,
+  alternativeFor: ['highRed', 'highGreen', 'highBlue'],
+  alternativeAction: 'set-color-channels-to-this',
+  sync: 'down-and-up',
+  default: 'rgb(255 255 255)',
+  label: 'High color reference',
+  description: 'Color string value of the upper bound color',
+};
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// compose
+F = filterSchemas.compose = structuredClone(actionSchemas['compose']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineMix', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// corrode
+F = filterSchemas.corrode = structuredClone(actionSchemas['corrode']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+  inputs: ['opacity'],
+}];
+
+// curveWeights
+F = filterSchemas.curveWeights = structuredClone(actionSchemas['vary-channels-by-weights']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// cyan ('average-channels' variant)
+F = filterSchemas.cyan = structuredClone(actionSchemas['average-channels']);
+F.label = 'Cyan channels',
+F.description = '';
+F.controls.excludeRed.default = true;
+F.controls.includeGreen.default = true;
+F.controls.includeBlue.default = true;
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// deconvolute
+F = filterSchemas.deconvolute = structuredClone(actionSchemas['deconvolute']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// displace
+F = filterSchemas.displace = structuredClone(actionSchemas['displace']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// edgeDetect ('matrix' variant)
+F = filterSchemas.edgeDetect = structuredClone(actionSchemas['matrix']);
+F.label = 'Edge detect',
+F.description = '';
+F.controls.weights.default = [0, 1, 0, 1, -4, 1, 0, 1, 0];
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// emboss
+F = filterSchemas.emboss = structuredClone(actionSchemas['emboss']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// enhancedEmboss ('emboss' variant)
+// - This filter can have 1-3 action objects, thus cannot build in the normal way.
+// - Instead, invoke `scrawl.makeFilter()` with the supplied arguments and extract the action objects it creates and then bring them into alignment with the system
+F = filterSchemas.enhancedEmboss = structuredClone(actionSchemas['emboss']);
+F.label = 'Enhanced emboss',
+F.description = '';
+F.controls.useNaturalGrayscale = {
+  controlType: 'boolean',
+  default: false,
+  label: 'Use natural grayscale',
+  description: 'When true, starts the action sequence by converting input to grayscale; when false, will use the simpler average-channels approach to strip away color',
+};
+F.controls.clamp = {
+  controlType: 'number',
+  default: 0,
+  minValue: 0,
+  maxValue: 100,
+  step: 0.01,
+  label: 'Clamp',
+  description: 'Applied as part of the clamp action',
+};
+F.controls.smoothing = {
+  controlType: 'number',
+  default: 0,
+  minValue: 0,
+  maxValue: 12,
+  step: 1,
+  label: 'Smoothing',
+  description: 'Applied as part of the gaussian-blur action',
+};
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// flood
+F = filterSchemas.flood = structuredClone(actionSchemas['flood']);
+F.controls.reference = {
+  controlType: 'color',
+  alternativeControl: true,
+  alternativeFor: ['red', 'green', 'blue', 'alpha'],
+  alternativeAction: 'set-color-channels-to-this',
+  sync: 'down-and-up',
+  default: 'rgb(0 0 0 / 255)',
+  label: 'Reference color',
+  description: 'Color string value of the flood color',
+};
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// gaussianBlur
+F = filterSchemas.gaussianBlur = structuredClone(actionSchemas['gaussian-blur']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// glitch
+F = filterSchemas.glitch = structuredClone(actionSchemas['glitch']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// gray ('average-channels' variant)
+F = filterSchemas.gray = structuredClone(actionSchemas['average-channels']);
+F.label = 'Desaturate',
+F.description = '';
+F.controls.includeRed.default = true;
+F.controls.includeGreen.default = true;
+F.controls.includeBlue.default = true;
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// grayscale
+F = filterSchemas.grayscale = structuredClone(actionSchemas['grayscale']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// green ('average-channels' variant)
+F = filterSchemas.green = structuredClone(actionSchemas['average-channels']);
+F.label = 'Green channel',
+F.description = '';
+F.controls.excludeRed.default = true;
+F.controls.excludeBlue.default = true;
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// image
+F = filterSchemas.image = structuredClone(actionSchemas['process-image']);
+F.controls.import = {
+  controlType: 'file-loader',
+  default: '',
+  label: 'Select image to import',
+  description: '',
+},
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// invert
+F = filterSchemas.invert = structuredClone(actionSchemas['invert-channels']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// luminanceToAlpha
+F = filterSchemas.luminanceToAlpha = structuredClone(actionSchemas['luminance-to-alpha']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// magenta ('average-channels' variant)
+F = filterSchemas.magenta = structuredClone(actionSchemas['average-channels']);
+F.label = 'Magenta channels',
+F.description = '';
+F.controls.includeRed.default = true;
+F.controls.excludeGreen.default = true;
+F.controls.includeBlue.default = true;
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// mapToGradient
+F = filterSchemas.mapToGradient = structuredClone(actionSchemas['map-to-gradient']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// matrix
+F = filterSchemas.matrix = structuredClone(actionSchemas['matrix']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// modifyOk
+F = filterSchemas.modifyOk = structuredClone(actionSchemas['modify-ok-channels']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// modulateOk
+F = filterSchemas.modulateOk = structuredClone(actionSchemas['modulate-ok-channels']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// negative
+F = filterSchemas.negative = structuredClone(actionSchemas['negative']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// newsprint
+F = filterSchemas.newsprint = structuredClone(actionSchemas['newsprint']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// setChannelsToLevel
+F = filterSchemas.setChannelsToLevel = structuredClone(actionSchemas['set-channel-to-level']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// notblue ('set-channel-to-level' variant)
+F = filterSchemas.notblue = structuredClone(actionSchemas['set-channel-to-level']);
+F.label = 'Remove blue channel';
+F.description = '';
+F.controls.includeBlue.default = true;
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// notgreen ('set-channel-to-level' variant)
+F = filterSchemas.notgreen = structuredClone(actionSchemas['set-channel-to-level']);
+F.label = 'Remove green channel';
+F.description = '';
+F.controls.includeGreen.default = true;
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// notred ('set-channel-to-level' variant)
+F = filterSchemas.notred = structuredClone(actionSchemas['set-channel-to-level']);
+F.label = 'Remove red channel';
+F.description = '';
+F.controls.includeRed.default = true;
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// offset
+F = filterSchemas.offset = structuredClone(actionSchemas['offset']);
+F.controls.offsetX = {
+  controlType: 'number',
+  alternativeControl: true,
+  alternativeFor: ['offsetRedX', 'offsetGreenX', 'offsetBlueX', 'offsetAlphaX'],
+  alternativeAction: 'set-alternatives-to-this',
+  sync: 'down-only',
+  default: 0,
+  minValue: -500,
+  maxValue: 500,
+  step: 1,
+  label: 'Horizontal offset',
+  description: '',
+};
+F.controls.offsetY = {
+  controlType: 'number',
+  alternativeControl: true,
+  alternativeFor: ['offsetRedY', 'offsetGreenY', 'offsetBlueY', 'offsetAlphaY'],
+  alternativeAction: 'set-alternatives-to-this',
+  sync: 'down-only',
+  default: 0,
+  minValue: -500,
+  maxValue: 500,
+  step: 1,
+  label: 'Vertical offset',
+  description: '',
+};
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// okCurveWeights
+F = filterSchemas.okCurveWeights = structuredClone(actionSchemas['ok-perceptual-curves']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// pixelate
+F = filterSchemas.pixelate = structuredClone(actionSchemas['pixelate']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// randomNoise
+F = filterSchemas.randomNoise = structuredClone(actionSchemas['random-noise']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// red ('average-channels' variant)
+F = filterSchemas.red = structuredClone(actionSchemas['average-channels']);
+F.label = 'Red channel',
+F.description = '';
+F.controls.excludeGreen.default = true;
+F.controls.excludeBlue.default = true;
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// reducePalette
+F = filterSchemas.reducePalette = structuredClone(actionSchemas['reduce-palette']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// rotateHue
+F = filterSchemas.rotateHue = structuredClone(actionSchemas['rotate-hue']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// saturation  ('modulate-channels' variant)
+F = filterSchemas.saturation = structuredClone(actionSchemas['modulate-channels']);
+F.label = 'Saturation',
+F.description = '';
+F.controls.saturation.default = true;
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// sepia ('tint' variant)
+F = filterSchemas.sepia = structuredClone(actionSchemas['tint-channels']);
+F.label = 'Sepia',
+F.description = '';
+F.controls.redInRed.default = 0.393;
+F.controls.redInGreen.default = 0.349;
+F.controls.redInBlue.default = 0.272;
+F.controls.greenInRed.default = 0.769;
+F.controls.greenInGreen.default = 0.686;
+F.controls.greenInBlue.default = 0.534;
+F.controls.blueInRed.default = 0.189;
+F.controls.blueInGreen.default = 0.168;
+F.controls.blueInBlue.default = 0.131;
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// setChannelsToLevel
+F = filterSchemas.setChannelsToLevel = structuredClone(actionSchemas['set-channel-to-level']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// sharpen ('matrix' variant)
+F = filterSchemas.sharpen = structuredClone(actionSchemas['matrix']);
+F.label = 'Sharpen',
+F.description = '';
+F.controls.weights.default = [0, -1, 0, -1, 5, -1, 0, -1, 0];
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// tiles
+F = filterSchemas.tiles = structuredClone(actionSchemas['tiles']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// tint
+F = filterSchemas.tint = structuredClone(actionSchemas['tint-channels']);
+F.controls.redColor = {
+  controlType: 'color',
+  alternativeControl: true,
+  alternativeFor: ['redInRed', 'greenInRed', 'blueInRed'],
+  alternativeAction: 'set-color-channels-to-this',
+  sync: 'down-and-up',
+  default: 'rgb(255 0 0)',
+  label: 'Red color',
+  description: 'Color string value of the red colors reference',
+};
+F.controls.greenColor = {
+  controlType: 'color',
+  alternativeControl: true,
+  alternativeFor: ['redInGreen', 'greenInGreen', 'blueInGreen'],
+  alternativeAction: 'set-color-channels-to-this',
+  sync: 'down-and-up',
+  default: 'rgb(0 255 0)',
+  label: 'Green color',
+  description: 'Color string value of the green colors reference',
+};
+F.controls.blueColor = {
+  controlType: 'color',
+  alternativeControl: true,
+  alternativeFor: ['redInBlue', 'greenInBlue', 'blueInBlue'],
+  alternativeAction: 'set-color-channels-to-this',
+  sync: 'down-and-up',
+  default: 'rgb(0 0 255)',
+  label: 'Blue color',
+  description: 'Color string value of the blue colors reference',
+};
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// unsharp
+F = filterSchemas.unsharp = structuredClone(actionSchemas['unsharp']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// yellow ('average-channels' variant)
+F = filterSchemas.yellow = structuredClone(actionSchemas['average-channels']);
+F.label = 'Magenta channels',
+F.description = '';
+F.controls.includeRed.default = true;
+F.controls.includeGreen.default = true;
+F.controls.excludeBlue.default = true;
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+// zoomBlur
+F = filterSchemas.zoomBlur = structuredClone(actionSchemas['zoom-blur']);
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
+export const getDefinedFilterSchema = (name) => {
 
   if (filterSchemas[name]) return structuredClone(filterSchemas[name]);
   return null;
@@ -3540,92 +3320,8 @@ export const getFilterSchemas = () => JSON.parse(JSON.stringify(filterSchemas));
 
 
 /*
-Below, the few remaining filters to be defined in the above system
+Below, the few remaining actionSchemas to be defined in the above system
 
-Ignore these next few lines
-  ['UPDATE-ME']: {
-    label: 'CHANGE ME',
-    description: '',
-    controls: {
-      ...requiredControls,
-      NUMBER: {
-        controlType: 'number',
-        default: 1,
-        minValue: 0,
-        maxValue: 3,
-        step: 0.01,
-        label: 'CHANGE ME',
-        description: '',
-      },
-      BOOLEAN: {
-        controlType: 'boolean',
-        default: false,
-        label: 'CHANGE ME',
-        description: '',
-      },
-      TEXT: {
-        controlType: 'text',
-        default: '',
-        label: 'CHANGE ME',
-        description: '',
-      },
-      SELECT: {
-        controlType: 'select',
-        default: 'mean',
-        options: ['mean', 'lowest', 'highest'],
-        label: 'CHANGE ME',
-        description: '',
-      },
-      BESPOKE: {
-        controlType: 'bespoke',
-        default: [0],
-        label: 'CHANGE ME',
-        description: '',
-      },
-    },
-  },
-
-  FIX_ME: {
-    label: 'CHANGE ME',
-    description: '',
-    actions: [{
-      action: 'UPDATE-ME',
-      required: true,
-      controls: {
-        ...actionSchemas['UPDATE-ME'].controls,
-      },
-      presentation: {},
-   }],
-  },
-*/
-
-  // ====================================
-  //   image: function (f) {
-  //       controls: [{
-  //           isPreset: false,
-  //           requiresMix: false,
-  //           requiresImage: false,
-  //           requiresGradient: false,
-  //       }],
-  //       action: [{
-  //       }]
-
-
-  //       const o = {
-  //           action: PROCESS_IMAGE,
-  //           lineIn: '',
-  //           asset: (f.asset != null) ? f.asset : '',
-  //           copyWidth: (f.copyWidth != null) ? f.copyWidth : 1,
-  //           copyHeight: (f.copyHeight != null) ? f.copyHeight : 1,
-  //           copyX: (f.copyX != null) ? f.copyX : 0,
-  //           copyY: (f.copyY != null) ? f.copyY : 0,
-  //       };
-
-  //       o.identifier = `user-image-${o.asset}-${generateUuid()}`;
-
-  //       f.actions = [o];
-  //   },
-  // ====================================
 
 
 

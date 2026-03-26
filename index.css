@@ -345,10 +345,14 @@ main {
 #filter-builder-area {
   min-width: 0;
   min-height: 0;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  display: block;
+
+  & #filter-builder-stack {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
 }
 
 dialog {

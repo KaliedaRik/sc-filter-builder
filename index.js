@@ -4,7 +4,7 @@
 import * as scrawl from './js-libraries/scrawl.js';
 const mainCanvas = scrawl.findCanvas('main-canvas');
 
-const builderStack = scrawl.findStack('filter-builder-area');
+const builderStack = scrawl.findStack('filter-builder-stack');
 const builderCanvas = scrawl.findCanvas('builder-canvas');
 
 
@@ -84,13 +84,6 @@ displayDefaultScreen(false);
 // ------------------------------------------------------------------------
 scrawl.makeRender({
 
-  name: 'main-canvas-render',
-  target: mainCanvas,
-  commence: checkLiveView,
-});
-
-scrawl.makeRender({
-
   name: 'builder-stack-render',
   target: builderStack,
 });
@@ -99,6 +92,13 @@ scrawl.makeRender({
 
   name: 'builder-canvas-render',
   target: builderCanvas,
+});
+
+scrawl.makeRender({
+
+  name: 'main-canvas-render',
+  target: mainCanvas,
+  commence: checkLiveView,
 });
 
 
