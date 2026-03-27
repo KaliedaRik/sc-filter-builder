@@ -1,7 +1,7 @@
 /*
 TODO: we need to sort out the following issues:
 
-1. When an image that is smaller than the current canvas dimensions is imported, the Picture entity displaying the image will appear stretched.
+1. FIXED: When an image that is smaller than the current canvas dimensions is imported, the Picture entity displaying the image will appear stretched.
 
 Requirements to fix:
 - the Picture entity dimensions should equal the image dimensions, with the canvas background color displaying in areas not covered by the Picture
@@ -107,6 +107,28 @@ const recalculateDimensions = () => {
 // Calculate view size based on canvas aspect ratio
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
+// Calculate liveView (destination) dimensions in CANVAS space
+// - Prevent stretching when the asset is smaller than the canvas in either dimension
+const calculateLiveViewDimensions = () => {
+
+  const [canvasWidth, canvasHeight] = canvasHandle.get('dimensions');
+
+  const destW = (assetWidth < canvasWidth) ? assetWidth : '100%';
+  const destH = (assetHeight < canvasHeight) ? assetHeight : '100%';
+
+  return [destW, destH];
+};
+
+const applyLiveViewDimensions = () => {
+
+  const [destW, destH] = calculateLiveViewDimensions();
+
+  // Keep the Picture centered (start/handle already set to center in init)
+  liveView.set({
+    dimensions: [destW, destH],
+  });
+};
+
 const calculateViewSize = () => {
 
   const [canvasWidth, canvasHeight] = canvasHandle.get('dimensions');
@@ -201,6 +223,10 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
   assetWidth = width;
   assetHeight = height;
 
+  // Fix stretching: if asset is smaller than canvas in either axis,
+  // - set liveView destination dimensions to the asset dimension for that axis.
+  applyLiveViewDimensions();
+
   centerView();
 
   // Large asset
@@ -278,6 +304,8 @@ const checkLiveView = () => {
 
       currentDisplayWidth = w;
       currentDisplayHeight = h;
+
+      applyLiveViewDimensions();
 
       // Recalculate view size
       [viewWidth, viewHeight] = calculateViewSize();
