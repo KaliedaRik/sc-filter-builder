@@ -70,7 +70,8 @@ let minimapWidth = 200,
   minimapY = null,
   minimapNavX = null,
   minimapNavY = null,
-  minimapNavCenter = null;
+  minimapNavCenter = null,
+  minimapFrameDragZone = null;
 
 const maxMinimapCoverage = 0.4;
 
@@ -101,6 +102,82 @@ const recalculateDimensions = () => {
 
   minimapPivot.set({ dimensions: [minimapWidth, minimapHeight] });
   minimapCell.set({ dimensions: [minimapWidth, minimapHeight] });
+};
+
+
+// Minimap frame drag functionality
+const exitMinimapFrameDrag = () => {
+
+  const [x, y] = minimapFrame.get('position');
+
+  const centerX = x / minimapScale;
+  const centerY = y / minimapScale;
+
+  viewX = centerX - viewWidth / 2;
+  viewY = centerY - viewHeight / 2;
+
+  viewX = clamp(viewX, 0, assetWidth - viewWidth);
+  viewY = clamp(viewY, 0, assetHeight - viewHeight);
+
+  applyView();
+
+  const [w, h] = minimapCell.get('dimensions');
+  const [fx, fy] = minimapFrame.get('position');
+
+  minimapNavX.value = `${parseFloat((fx / w) * 100)}`;
+  minimapNavY.value = `${parseFloat((fy / h) * 100)}`;
+};
+
+const checkMinimapFrameDrag = () => {
+
+  const [x, y] = minimapFrame.get('position');
+
+  const [mw, mh] = minimapCell.get('dimensions');
+  const halfW = minimapFrameWidth / 2;
+  const halfH = minimapFrameHeight / 2;
+
+  const inside =
+    x - halfW >= 0 &&
+    y - halfH >= 0 &&
+    x + halfW <= mw &&
+    y + halfH <= mh;
+
+  if (inside) {
+
+    const centerX = x / minimapScale;
+    const centerY = y / minimapScale;
+
+    viewX = centerX - viewWidth / 2;
+    viewY = centerY - viewHeight / 2;
+
+    viewX = clamp(viewX, 0, assetWidth - viewWidth);
+    viewY = clamp(viewY, 0, assetHeight - viewHeight);
+
+    applyView();
+
+    minimapNavX.value = `${parseFloat((x / mw) * 100)}`;
+    minimapNavY.value = `${parseFloat((y / mh) * 100)}`;
+  }
+  else minimapFrameDragZone('exit');
+};
+
+const createMinimapFrameDragZone = () => {
+
+  if (!minimapFrameDragZone) {
+
+    minimapFrameDragZone = scrawlHandle.makeDragZone({
+
+      zone: canvasHandle,
+      collisionGroup: name('minimap-frame-group'),
+      coordinateSource: minimapCell,
+      endOn: ['up', 'leave'],
+      updateWhileMoving: checkMinimapFrameDrag,
+      updateOnPrematureExit: exitMinimapFrameDrag,
+      preventTouchDefaultWhenDragging: true,
+      exposeCurrentArtefact: true,
+      processingOrder: 0,
+    });
+  }
 };
 
 
@@ -151,26 +228,6 @@ const centerView = () => {
   viewY = (assetHeight - viewHeight) / 2;
 };
 
-// Apply view -> canvas + minimap
-// const applyView = () => {
-
-//   // Canvas
-//   liveView.set({
-//     copyStart: [viewX, viewY],
-//     copyDimensions: [viewWidth, viewHeight],
-//   });
-
-//   // Minimap frame
-//   minimapFrameWidth = viewWidth * minimapScale;
-//   minimapFrameHeight = viewHeight * minimapScale;
-
-//   minimapFrame.set({
-//     dimensions: [minimapFrameWidth, minimapFrameHeight],
-//     startX: (viewX + viewWidth / 2) * minimapScale,
-//     startY: (viewY + viewHeight / 2) * minimapScale,
-//   });
-// };
-// Apply view -> canvas + minimap
 const applyView = () => {
 
   // Canvas
@@ -187,7 +244,15 @@ const applyView = () => {
   });
 
   // If hidden, don't update frame geometry
-  if (!shouldShowFrame) return;
+  if (!shouldShowFrame) {
+
+    if (minimapFrameDragZone) {
+
+      minimapFrameDragZone(true);
+      minimapFrameDragZone = null;
+    }
+    return;
+  }
 
   // Minimap frame geometry
   minimapFrameWidth = viewWidth * minimapScale;
@@ -198,6 +263,8 @@ const applyView = () => {
     startX: (viewX + viewWidth / 2) * minimapScale,
     startY: (viewY + viewHeight / 2) * minimapScale,
   });
+
+  if (!minimapFrameDragZone) createMinimapFrameDragZone();
 };
 
 // Export function to display an image
@@ -617,73 +684,7 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     method: 'draw',
   });
 
-  const exitMinimapFrameDrag = () => {
-
-    const [x, y] = minimapFrame.get('position');
-
-    const centerX = x / minimapScale;
-    const centerY = y / minimapScale;
-
-    viewX = centerX - viewWidth / 2;
-    viewY = centerY - viewHeight / 2;
-
-    viewX = clamp(viewX, 0, assetWidth - viewWidth);
-    viewY = clamp(viewY, 0, assetHeight - viewHeight);
-
-    applyView();
-
-    const [w, h] = minimapCell.get('dimensions');
-    const [fx, fy] = minimapFrame.get('position');
-
-    minimapNavX.value = `${parseFloat((fx / w) * 100)}`;
-    minimapNavY.value = `${parseFloat((fy / h) * 100)}`;
-  };
-
-  const checkMinimapFrameDrag = () => {
-
-    const [x, y] = minimapFrame.get('position');
-
-    const [mw, mh] = minimapCell.get('dimensions');
-    const halfW = minimapFrameWidth / 2;
-    const halfH = minimapFrameHeight / 2;
-
-    const inside =
-      x - halfW >= 0 &&
-      y - halfH >= 0 &&
-      x + halfW <= mw &&
-      y + halfH <= mh;
-
-    if (inside) {
-
-      const centerX = x / minimapScale;
-      const centerY = y / minimapScale;
-
-      viewX = centerX - viewWidth / 2;
-      viewY = centerY - viewHeight / 2;
-
-      viewX = clamp(viewX, 0, assetWidth - viewWidth);
-      viewY = clamp(viewY, 0, assetHeight - viewHeight);
-
-      applyView();
-
-      minimapNavX.value = `${parseFloat((x / mw) * 100)}`;
-      minimapNavY.value = `${parseFloat((y / mh) * 100)}`;
-    }
-    else minimapFrameDragZone('exit');
-  };
-
-  const minimapFrameDragZone = scrawl.makeDragZone({
-
-    zone: canvas,
-    collisionGroup: name('minimap-frame-group'),
-    coordinateSource: minimapCell,
-    endOn: ['up', 'leave'],
-    updateWhileMoving: checkMinimapFrameDrag,
-    updateOnPrematureExit: exitMinimapFrameDrag,
-    preventTouchDefaultWhenDragging: true,
-    exposeCurrentArtefact: true,
-    processingOrder: 0,
-  });
+  createMinimapFrameDragZone();
 
   scrawl.addNativeListener(['input', 'change'], () => {
 
