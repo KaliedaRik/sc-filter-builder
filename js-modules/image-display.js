@@ -7,7 +7,7 @@ Requirements to fix:
 - the Picture entity dimensions should equal the image dimensions, with the canvas background color displaying in areas not covered by the Picture
 - the red minimap frame, which would cover the whole minimap, needs to be disabled - this will allow users to still drag the minimap around the canvas.
 
-2. When a scaling factor is applied to the Picture entity, the entity scales correctly. But the red minimap frame does not scale to correctly indicate the portion of the image now being displayed by the canvas
+2. FIXED: When a scaling factor is applied to the Picture entity, the entity scales correctly. But the red minimap frame does not scale to correctly indicate the portion of the image now being displayed by the canvas
 
 Requirements to fix:
 - The red minimap frame should scale down as the Picture scales up, so that the portion of the image displayed in the canvas matches the portion of the image enclosed by the red minimap frame
@@ -567,42 +567,6 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     visibility: false,
   });
 
-  // scrawl.makeUpdater({
-
-  //   event: ['input', 'change'],
-  //   origin: '.scale-controls',
-
-  //   target: liveView,
-
-  //   useNativeListener: true,
-  //   preventDefault: true,
-
-  //   updates: {
-  //     ['image-scale']: ['scale', 'float'],
-  //   },
-  // });
-
-  // scrawl.addNativeListener(['input', 'change'], () => {
-
-  //   // Recalculate view size based on new scale
-  //   [viewWidth, viewHeight] = calculateViewSize();
-
-  //   // Recenter view in IMAGE space
-  //   viewX = (assetWidth - viewWidth) / 2;
-  //   viewY = (assetHeight - viewHeight) / 2;
-
-  //   // (Optional safety clamp; should already be centered-valid)
-  //   viewX = clamp(viewX, 0, assetWidth - viewWidth);
-  //   viewY = clamp(viewY, 0, assetHeight - viewHeight);
-
-  //   // Apply to canvas + minimap
-  //   applyView();
-
-  //   // Also reset the nav controls to center so UI matches behavior
-  //   minimapNavX.value = '50';
-  //   minimapNavY.value = '50';
-
-  // }, '.scale-controls');
   scrawl.addNativeListener(['input', 'change'], (e) => {
 
     // Only respond to the scale input itself
