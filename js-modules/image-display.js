@@ -1,32 +1,3 @@
-/*
-TODO: we need to sort out the following issues:
-
-1. FIXED: When an image that is smaller than the current canvas dimensions is imported, the Picture entity displaying the image will appear stretched.
-
-Requirements to fix:
-- the Picture entity dimensions should equal the image dimensions, with the canvas background color displaying in areas not covered by the Picture
-- the red minimap frame, which would cover the whole minimap, needs to be disabled - this will allow users to still drag the minimap around the canvas.
-
-2. FIXED: When a scaling factor is applied to the Picture entity, the entity scales correctly. But the red minimap frame does not scale to correctly indicate the portion of the image now being displayed by the canvas
-
-Requirements to fix:
-- The red minimap frame should scale down as the Picture scales up, so that the portion of the image displayed in the canvas matches the portion of the image enclosed by the red minimap frame
-- When the user drags the red minimap frame to the edges of the minimap, the canvas should show the equivalent portion of the image in the Picture entity.
-
-3. Scaling currently goes from `1` (actual portion of image) to `4` (zoomed portion of the image). We need to also include scaling in the opposite direction, so that when the user scales down the Picture entity will display the entire image in the canvas.
-
-Requirements to fix:
-- Scaling down should not go to `0`; the minimum scale permitted for an image should be such that it emulates CSS `object-fit: contain` (or the SC equivalent `data-fit="contain"`)
-- For images whose dimensions are smaller than the canvas dimensions, the minimum scale should be set to `1`
-- When the Picture entity's scaled dimensions are <= their equivalent canvas dimension, the red minimap frame should not appear on the minimap.
-- When an image whose dimensions are smaller than the canvas dimensions is scaled up, the red minimap frame should appear in the minimap when one of the dimensions of the scaled Picture entity exceeds the equivalent canvas dimension.
-
-4. For all the above issues, the canvas must remain responsive. When the canvas dimensions change, calculations will need to be performed to:
-- Recalculate the minimum permitted scale, and rescale the Picture entity if its current scale falls below that minimum
-- The red minimap frame continues to reflect the canvas dimensions as well as the portion of the image being displayed in the canvas
-
-*/
-
 // ------------------------------------------------------------------------
 // Image display in the canvas
 // ------------------------------------------------------------------------
