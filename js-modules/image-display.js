@@ -77,7 +77,8 @@ const maxMinimapCoverage = 0.4;
 
 // liveView vars
 let assetWidth = 1,
-  assetHeight = 1;
+  assetHeight = 1,
+  currentScale = 1;;
 
 // Canonical view rectangle (IMAGE space)
 let viewX = 0,
@@ -217,21 +218,9 @@ const calculateLiveViewDestinationPixels = () => {
   return [destW, destH];
 };
 
-// const calculateViewSize = () => {
-
-//   const [canvasWidth, canvasHeight] = canvasHandle.get('dimensions');
-
-//   let vw = canvasWidth;
-//   let vh = canvasHeight;
-
-//   vw = Math.min(vw, assetWidth);
-//   vh = Math.min(vh, assetHeight);
-
-//   return [vw, vh];
-// };
 const calculateViewSize = () => {
 
-  const s = liveView?.get('scale') || 1;
+  const s = currentScale || 1;
   const [destW, destH] = calculateLiveViewDestinationPixels();
 
   // In IMAGE space: as scale increases, the visible portion decreases
@@ -578,22 +567,53 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     visibility: false,
   });
 
-  scrawl.makeUpdater({
+  // scrawl.makeUpdater({
 
-    event: ['input', 'change'],
-    origin: '.scale-controls',
+  //   event: ['input', 'change'],
+  //   origin: '.scale-controls',
 
-    target: liveView,
+  //   target: liveView,
 
-    useNativeListener: true,
-    preventDefault: true,
+  //   useNativeListener: true,
+  //   preventDefault: true,
 
-    updates: {
-      ['image-scale']: ['scale', 'float'],
-    },
-  });
+  //   updates: {
+  //     ['image-scale']: ['scale', 'float'],
+  //   },
+  // });
 
-  scrawl.addNativeListener(['input', 'change'], () => {
+  // scrawl.addNativeListener(['input', 'change'], () => {
+
+  //   // Recalculate view size based on new scale
+  //   [viewWidth, viewHeight] = calculateViewSize();
+
+  //   // Recenter view in IMAGE space
+  //   viewX = (assetWidth - viewWidth) / 2;
+  //   viewY = (assetHeight - viewHeight) / 2;
+
+  //   // (Optional safety clamp; should already be centered-valid)
+  //   viewX = clamp(viewX, 0, assetWidth - viewWidth);
+  //   viewY = clamp(viewY, 0, assetHeight - viewHeight);
+
+  //   // Apply to canvas + minimap
+  //   applyView();
+
+  //   // Also reset the nav controls to center so UI matches behavior
+  //   minimapNavX.value = '50';
+  //   minimapNavY.value = '50';
+
+  // }, '.scale-controls');
+  scrawl.addNativeListener(['input', 'change'], (e) => {
+
+    // Only respond to the scale input itself
+    const el = e?.target;
+    if (!el || el.id !== 'image-scale') return;
+
+    // Update canonical scale first (single source of truth)
+    currentScale = parseFloat(el.value) || 1;
+
+    // Apply to Picture entity immediately so canvas rendering matches our math
+    liveView.set({ scale: currentScale });
 
     // Recalculate view size based on new scale
     [viewWidth, viewHeight] = calculateViewSize();
@@ -602,14 +622,14 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     viewX = (assetWidth - viewWidth) / 2;
     viewY = (assetHeight - viewHeight) / 2;
 
-    // (Optional safety clamp; should already be centered-valid)
+    // Clamp
     viewX = clamp(viewX, 0, assetWidth - viewWidth);
     viewY = clamp(viewY, 0, assetHeight - viewHeight);
 
     // Apply to canvas + minimap
     applyView();
 
-    // Also reset the nav controls to center so UI matches behavior
+    // Reset the nav controls to center so UI matches behavior
     minimapNavX.value = '50';
     minimapNavY.value = '50';
 
