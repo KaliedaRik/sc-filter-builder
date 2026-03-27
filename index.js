@@ -2,8 +2,10 @@
 // Scrawl-canvas boilerplate
 // ------------------------------------------------------------------------
 import * as scrawl from './js-libraries/scrawl.js';
+
 const mainCanvas = scrawl.findCanvas('main-canvas');
-const name = (n) => `${mainCanvas.name}-${n}`;
+const builderStack = scrawl.findStack('filter-builder-stack');
+const builderCanvas = scrawl.findCanvas('filter-builder-canvas');
 
 
 // ------------------------------------------------------------------------
@@ -82,14 +84,103 @@ displayDefaultScreen(false);
 // ------------------------------------------------------------------------
 scrawl.makeRender({
 
-  name: name('render'),
+  name: 'builder-stack-render',
+  target: builderStack,
+});
+
+scrawl.makeRender({
+
+  name: 'builder-canvas-render',
+  target: builderCanvas,
+});
+
+scrawl.makeRender({
+
+  name: 'main-canvas-render',
   target: mainCanvas,
   commence: checkLiveView,
 });
 
 
 // ------------------------------------------------------------------------
-// Development
+// Development 
+// - temporary artefacts used while developing functionality
+// - affects both this repo and required changes in Scrawl-canvas repo
 // ------------------------------------------------------------------------
 
+scrawl.makeLabel({
+
+  name: 'temp-label',
+  group: builderCanvas.get('baseGroup'),
+  text: 'Filter builder area',
+  start: ['center', 'center'],
+  handle: ['center', 'center'],
+  fontString: '2rem Arial, sans-serif',
+})
+
+const el = scrawl.findElement('my-test-element');
+
+el.set({
+  start: ['center', 10],
+  handle: ['center', 0],
+  width: '40%',
+  height: 'auto',
+  css: {
+    border: '1px dotted black',
+    backgroundColor: 'rgb(255 255 0 / 0.5)',
+    padding: '0.5rem 1rem',
+  },
+});
+
+scrawl.makeWheel({
+
+  name: 'temp-wheel-1',
+  group: builderCanvas.get('baseGroup'),
+  radius: 10,
+  fillStyle: 'red',
+  handle: ['center', 'center'],
+  pivot: 'my-test-element',
+  lockTo: 'pivot',
+
+}).clone({
+
+  name: 'temp-wheel-2',
+  fillStyle: 'green',
+  pivotCorner: 'topLeft',
+  offsetY: 10,
+
+}).clone({
+
+  name: 'temp-wheel-3',
+  fillStyle: 'blue',
+  pivotCorner: 'topRight',
+
+}).clone({
+
+  name: 'temp-wheel-4',
+  fillStyle: 'yellow',
+  pivotCorner: 'bottomRight',
+  offsetY: -10,
+
+}).clone({
+
+  name: 'temp-wheel-5',
+  fillStyle: 'lightgreen',
+  pivotCorner: 'bottomLeft',
+});
+
+const stackDragGroup = scrawl.makeGroup({ name: 'stack-drag-group' });
+stackDragGroup.addArtefacts('my-test-element');
+
+scrawl.makeDragZone({
+  zone: builderStack,
+  collisionGroup: stackDragGroup,
+  endOn: ['up', 'leave'],
+  preventTouchDefaultWhenDragging: true,
+  processingOrder: 2,
+});
+
 console.log(scrawl.library);
+
+import { getFilterSchemas } from './js-modules/filter-schemas.js';
+console.log(getFilterSchemas());

@@ -1,3 +1,4 @@
+
 // ------------------------------------------------------------------------
 // Image display in the canvas
 // ------------------------------------------------------------------------
@@ -450,7 +451,7 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
 
   name = (n) => `${canvas.name}-${n}`;
 
-
+console.log(dom);
   // DOM handles
   minimapShowHide = dom['minimap-show-hide'];
   minimapCenter = dom['minimap-center'];
@@ -585,6 +586,10 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     handle: ['center', 'center'],
     dimensions: [minimapWidth, minimapHeight],
     method: 'none',
+    shadowOffsetX: 3,
+    shadowOffsetY: 3,
+    shadowBlur: 2,
+    shadowColor: 'rgb(0 0 0)',
   });
 
   minimapCell = canvas.buildCell({
@@ -594,7 +599,7 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     handle: ['center', 'center'],
     pivot: name('minimap-pivot'),
     lockTo: 'pivot',
-    backgroundColor: 'white',
+    backgroundColor: 'rgb(255 255 255)',
     compileOrder: 1,
   });
 
@@ -604,9 +609,10 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     group: name('minimap-cell'),
     dimensions: ['100%', '100%'],
     copyDimensions: ['100%', '100%'],
-    lineWidth: 4,
+    strokeStyle: 'rgb(255 255 255)',
+    lineWidth: 2,
     method: 'fillThenDraw',
-    globalAlpha: 0.5,
+    globalAlpha: 0.8,
   });
 
   // Event listeners
@@ -640,8 +646,8 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     preventDefault: true,
 
     updates: {
-      minimapX: ['startX', '%'],
-      minimapY: ['startY', '%'],
+      ['minimap-horizontal']: ['startX', '%'],
+      ['minimap-vertical']: ['startY', '%'],
     },
   });
 
@@ -681,8 +687,12 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     start: ['center', 'center'],
     handle: ['center', 'center'],
     dimensions: [50, 50],
-    strokeStyle: 'red',
+    strokeStyle: 'rgb(255 100 100)',
     lineWidth: 2,
+    shadowColor: 'rgb(0 0 0)',
+    shadowOffsetX: 2,
+    shadowOffsetY: 2,
+    shadowBlur: 0,
     method: 'draw',
   });
 

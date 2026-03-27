@@ -15,7 +15,7 @@ export const initSplitter = (scrawl = null, dom = null) => {
 
   const docEl = document.documentElement;
 
-  let canvasRatio = parseFloat(getComputedStyle(docEl).getPropertyValue('--canvas-height')) / 100;
+  let imageWorkRatio = parseFloat(getComputedStyle(docEl).getPropertyValue('--image-work-height')) / 100;
 
   scrawl.addNativeListener('pointerdown', () => {
 
@@ -25,8 +25,8 @@ export const initSplitter = (scrawl = null, dom = null) => {
     const computed = getComputedStyle(docEl);
 
     dragConfig = {
-      minCanvasRatio: parseFloat(computed.getPropertyValue('--minimum-canvas-ratio')),
-      minBuilderRatio: parseFloat(computed.getPropertyValue('--minimum-builder-ratio')),
+      minImageWorkRatio: parseFloat(computed.getPropertyValue('--minimum-image-work-ratio')),
+      minFilterWorkRatio: parseFloat(computed.getPropertyValue('--minimum-filter-work-ratio')),
       splitterHeight: parseFloat(computed.getPropertyValue('--splitter-height')),
     };
 
@@ -44,26 +44,26 @@ export const initSplitter = (scrawl = null, dom = null) => {
     if (!draggingSplitterBar) return;
 
     const vh = window.innerHeight,
-      minCanvas = vh * dragConfig.minCanvasRatio,
-      minBuilder = vh * dragConfig.minBuilderRatio,
-      maxCanvas = vh - minBuilder - dragConfig.splitterHeight;
+      minImageWork = vh * dragConfig.minImageWorkRatio,
+      minFilterWork = vh * dragConfig.minFilterWorkRatio,
+      maxImageWork = vh - minFilterWork - dragConfig.splitterHeight;
 
-    let canvasHeight = e.clientY;
+    let imageWorkHeight = e.clientY;
 
-    if (canvasHeight < minCanvas) canvasHeight = minCanvas;
-    if (canvasHeight > maxCanvas) canvasHeight = maxCanvas;
+    if (imageWorkHeight < minImageWork) imageWorkHeight = minImageWork;
+    if (imageWorkHeight > maxImageWork) imageWorkHeight = maxImageWork;
 
-    canvasRatio = canvasHeight / vh;
-    docEl.style.setProperty('--canvas-height', `${canvasHeight}px`);
+    imageWorkRatio = imageWorkHeight / vh;
+    docEl.style.setProperty('--image-work-height', `${imageWorkHeight}px`);
 
   }, window);
 
   scrawl.addNativeListener('resize', () => {
 
     const vh = window.innerHeight,
-      newCanvasHeight = vh * canvasRatio;
+      newImageWorkHeight = vh * imageWorkRatio;
 
-    docEl.style.setProperty('--canvas-height', `${newCanvasHeight}px`);
+    docEl.style.setProperty('--image-work-height', `${newImageWorkHeight}px`);
 
   }, window);
 

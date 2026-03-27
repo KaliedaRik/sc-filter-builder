@@ -14,96 +14,96 @@
 
   <main>
 
-    <!-- App controls bar on left hand side -->
-    <div id="controls-panel">
-
-      <h1>SC Filter Builder</h1>
-
-      <!-- Instructions -->
-      <button type="button" id="instructions-modal-button">Instructions</button>
-
-      <!-- Image import -->
-      <details id='image-details-panel'>
-        <summary>Image management</summary>
-        <div>
-
-          <p class="advice-text">Add an image by dragging it onto the browser window. Multiple images can be imported for batch processing by a filter.</p>
-
-          <p>
-            <label id="image-import-button" for="image-import">Browse for image files</label>
-            <input type="file" id="image-import" name="image-import" accept="image/png, image/jpeg, image/jpg, image/webp" multiple>
-          </p>
-
-          <h3>Current image batch</h3>
-
-          <button type="button" id="image-batch-modal-button">Remove images from batch</button>          
-          <div id="image-imports-hold"></div>
-        </div>
-      </details>
-
-      <!-- Minimap + scaling -->
-      <details id='minimap-panel'>
-        <summary>Minimap + scale</summary>
-        <div>
-
-          <h3>Positioning</h3>
-
-          <p class="advice-text">Drag the minimap to reveal what’s behind it. Or use the position controls below.</p>
-
-          <div class="minimap-parameters">
-
-            <label for="minimap-horizontal">Horizontal</label>
-            <input type="range" class="minimap-controls" id="minimap-horizontal" name="minimap-horizontal" min="-25" max="125" value="50">
-
-            <label for="minimap-vertical">Vertical</label>
-            <input type="range" class="minimap-controls" id="minimap-vertical" name="minimap-vertical" min="-25" max="125" value="50">
-
-            <button type="button" id="minimap-show-hide">Hide minimap</button>
-            <button type="button" id="minimap-center">Bring to center</button>
-
-          </div>
-
-          <hr />
-
-          <h3>Navigation</h3>
-
-          <p class="advice-text">Drag  the red frame to move around the image. Or use the navigation controls below.</p>
-
-          <div class="minimap-parameters">
-
-            <label for="navigation-horizontal">Horizontal</label>
-            <input type="range" class="navigation-controls" id="navigation-horizontal" name="navigation-horizontal" min="0" max="100" value="50">
-
-            <label for="navigation-vertical">Vertical</label>
-            <input type="range" class="navigation-controls" id="navigation-vertical" name="navigation-vertical" min="0" max="100" value="50">
-
-          </div>
-
-          <p class="advice-text">If the red frame gets stuck, click the "Bring to center" button below.</p>
-
-          <button type="button" id="navigation-center">Bring to center</button>
-
-          <hr />
-
-          <h3>Scaling</h3>
-
-          <div class="minimap-parameters">
-
-            <label for="image-scale">Scale factor</label>
-            <input type="range" class="scale-controls" id="image-scale" name="image-scale" min="1" max="4" value="1" step="0.05">
-
-          </div>
-
-        </div>
-      </details>
-
-      <!-- Downloads -->
-      <button type="button" id="downloads-modal-button">Downloads</button>
-
-    </div>
-
-    <div id="app-panel">
+    <div id="image-work">
       
+      <!-- App controls bar on left hand side -->
+      <div id="image-controls-panel">
+
+        <h1>SC Filter Builder</h1>
+
+        <!-- Instructions -->
+        <button type="button" id="instructions-modal-button">Instructions</button>
+
+        <!-- Image import -->
+        <details id='image-details-panel'>
+          <summary>Image management</summary>
+          <div>
+
+            <p class="advice-text">Add an image by dragging it onto the browser window. Multiple images can be imported for batch processing by a filter.</p>
+
+            <p>
+              <label id="image-import-button" for="image-import">Browse for image files</label>
+              <input type="file" id="image-import" name="image-import" accept="image/png, image/jpeg, image/jpg, image/webp" multiple>
+            </p>
+
+            <h3>Current image batch</h3>
+
+            <button type="button" id="image-batch-modal-button">Remove images from batch</button>          
+            <div id="image-imports-hold"></div>
+          </div>
+        </details>
+
+        <!-- Minimap + scaling -->
+        <details id='minimap-panel'>
+          <summary>Minimap + scale</summary>
+          <div>
+
+            <h3>Positioning</h3>
+
+            <p class="advice-text">Drag the minimap to reveal what’s behind it. Or use the position controls below.</p>
+
+            <div class="minimap-parameters">
+
+              <label for="minimap-horizontal">Horizontal</label>
+              <input type="range" class="minimap-controls" id="minimap-horizontal" name="minimap-horizontal" min="-25" max="125" value="50">
+
+              <label for="minimap-vertical">Vertical</label>
+              <input type="range" class="minimap-controls" id="minimap-vertical" name="minimap-vertical" min="-25" max="125" value="50">
+
+              <button type="button" id="minimap-show-hide">Hide minimap</button>
+              <button type="button" id="minimap-center">Bring to center</button>
+
+            </div>
+
+            <hr />
+
+            <h3>Navigation</h3>
+
+            <p class="advice-text">Drag  the red frame to move around the image. Or use the navigation controls below.</p>
+
+            <div class="minimap-parameters">
+
+              <label for="navigation-horizontal">Horizontal</label>
+              <input type="range" class="navigation-controls" id="navigation-horizontal" name="navigation-horizontal" min="0" max="100" value="50">
+
+              <label for="navigation-vertical">Vertical</label>
+              <input type="range" class="navigation-controls" id="navigation-vertical" name="navigation-vertical" min="0" max="100" value="50">
+
+            </div>
+
+            <p class="advice-text">If the red frame gets stuck, click the "Bring to center" button below.</p>
+
+            <button type="button" id="navigation-center">Bring to center</button>
+
+            <hr />
+
+            <h3>Scaling</h3>
+
+            <div class="minimap-parameters">
+
+              <label for="image-scale">Scale factor</label>
+              <input type="range" class="scale-controls" id="image-scale" name="image-scale" min="1" max="4" value="1" step="0.05">
+
+            </div>
+
+          </div>
+        </details>
+
+        <!-- Downloads -->
+        <button type="button" id="downloads-modal-button">Downloads</button>
+
+      </div>
+
       <!-- Canvas app -->
       <div id="main-canvas-container">
         <canvas 
@@ -112,24 +112,51 @@
           data-is-responsive="true"
           data-base-background-color="lightgreen"
           data-label="Scrawl-canvas picture editor canvas."
-          data-description="Build and apply filters to image batches using your browser. This is a proof-of-concept project."
-        >
-          <div class="assets" aria-hidden="true">
-            <p>This is where we put any images the tool needs</p>
-          </div>      
-        </canvas>
+          data-description=""
+        ></canvas>
       </div>
 
-      <!-- splitter bar -->
-      <div id="splitter"></div>
+    </div>
 
+    <!-- splitter bar -->
+    <div id="splitter"></div>
+
+    <div id="filter-work">
+
+      <!-- Filter controls area -->
+      <div id="filter-controls-panel">
+        
+        <p>New panel, where filter-related buttons and the dynamic action editor form will appear</p>
+        
+        <p>New panel, where filter-related buttons and the dynamic action editor form will appear</p>
+        
+        <p>New panel, where filter-related buttons and the dynamic action editor form will appear</p>
+        
+        <p>New panel, where filter-related buttons and the dynamic action editor form will appear</p>
+        
+        <p>New panel, where filter-related buttons and the dynamic action editor form will appear</p>
+      </div>
+      
       <!-- Filter building area -->
       <div id="filter-builder-area">
-        <p>This is where the filter building work will happen</p>
 
-        <p>Interesting idea: I'm thinking that while for accessibility all filter controls and forms must be in HTML, this isn't a great concern as we can use a Scrawl-canvas stack for the filter editor - this allows us to position and drag/drop HTML elements within an SC-controlled div element. If we also include a second canvas in the stack, that can solve the issue of drawing connectors between filter boxes as we build up the chained filter</p>
+        <div 
+          id="filter-builder-stack"
+          data-scrawl-stack
+          data-is-responsive="true"
+        >
+          <canvas 
+            id="filter-builder-canvas" 
+            data-scrawl-canvas 
+            data-is-responsive="true"
+            data-base-background-color="rgb(220 220 220)"
+            data-label="Scrawl-canvas filter builder canvas."
+            data-description=""
+          ></canvas>
 
-        <p>The filter-builder-area div needs minimum and maximum heights. We will also need to allow it to have horizontal and vertical things for when text (or the SC stack) goes beyond max dimensions.</p>
+          <p id="my-test-element">Filter stack element is here - let's see if it adjusts its width</p>
+        </div>
+
       </div>
 
     </div>
@@ -185,7 +212,7 @@
 
     <h3>Step-by-step guide</h3>
     <div class="how-to-grid">
-      <img src="assets/instructions-01.png" alt="Screenshot - initial page load" />
+      <img src="assets/image/instructions-01.png" alt="Screenshot - initial page load" />
       <div>Initial page load. Most of the control buttons are kept in the accordion on the left hand side. Additional control buttons across the top will open dialog modals. The controls across the bottom of the screen are currently disabled. The recording area is in white, fitted into the responsive canvas.</div>
     </div>
 
