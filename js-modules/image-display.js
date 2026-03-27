@@ -71,14 +71,18 @@ let minimapWidth = 200,
   minimapNavX = null,
   minimapNavY = null,
   minimapNavCenter = null,
-  minimapFrameDragZone = null;
+  minimapFrameDragZone = null,
+  scaleInput = null;
 
 const maxMinimapCoverage = 0.4;
 
 // liveView vars
 let assetWidth = 1,
   assetHeight = 1,
-  currentScale = 1;;
+  currentScale = 1,
+  minScale = 1;
+
+const maxScale = 4;
 
 // Canonical view rectangle (IMAGE space)
 let viewX = 0,
@@ -218,6 +222,58 @@ const calculateLiveViewDestinationPixels = () => {
   return [destW, destH];
 };
 
+const calculateMinScale = () => {
+
+  const [canvasWidth, canvasHeight] = canvasHandle.get('dimensions');
+
+  // If the asset already fits inside the canvas at scale=1, don't allow scaling down below 1
+  if (assetWidth <= canvasWidth && assetHeight <= canvasHeight) return 1;
+
+  // Otherwise emulate CSS object-fit: contain
+  const contain = Math.min(canvasWidth / assetWidth, canvasHeight / assetHeight);
+
+  // Guard against weird values
+  return (Number.isFinite(contain) && contain > 0) ? contain : 1;
+};
+
+const syncScaleConstraints = () => {
+
+  minScale = calculateMinScale();
+
+  // Update the UI control constraints
+  if (scaleInput) {
+    scaleInput.min = `${minScale}`;
+    scaleInput.max = `${maxScale}`;
+
+    // Optional: give smoother control when minScale is fractional
+    // scaleInput.step = '0.01';
+  }
+
+  // Clamp scale up to minScale if needed (UX option 2)
+  if (currentScale < minScale) {
+    currentScale = minScale;
+
+    // keep UI in sync
+    if (scaleInput) scaleInput.value = `${currentScale}`;
+
+    // keep Picture in sync
+    liveView.set({ scale: currentScale });
+  }
+
+  // Recompute view size from (possibly updated) currentScale
+  [viewWidth, viewHeight] = calculateViewSize();
+
+  // Recenter view in IMAGE space
+  viewX = (assetWidth - viewWidth) / 2;
+  viewY = (assetHeight - viewHeight) / 2;
+
+  // Clamp for safety
+  viewX = clamp(viewX, 0, assetWidth - viewWidth);
+  viewY = clamp(viewY, 0, assetHeight - viewHeight);
+
+  applyView();
+};
+
 const calculateViewSize = () => {
 
   const s = currentScale || 1;
@@ -252,7 +308,7 @@ const applyView = () => {
   });
 
   // Minimap frame should only show when the view is cropping the image
-  const shouldShowFrame = (viewWidth < assetWidth) || (viewHeight < assetHeight);
+  const shouldShowFrame = currentScale > minScale;
 
   minimapFrame.set({
     visibility: shouldShowFrame,
@@ -337,7 +393,8 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
   // - set liveView destination dimensions to the asset dimension for that axis.
   applyLiveViewDimensions();
 
-  centerView();
+  // Keep currentScale if valid, otherwise clamp up to minScale; then recenter + apply
+  syncScaleConstraints();
 
   // Large asset
   createImageBitmap(file)
@@ -417,18 +474,20 @@ const checkLiveView = () => {
 
       applyLiveViewDimensions();
 
-      // Recalculate view size
-      [viewWidth, viewHeight] = calculateViewSize();
+      syncScaleConstraints();
 
-      // Restore center
-      viewX = centerX - viewWidth / 2;
-      viewY = centerY - viewHeight / 2;
+      // // Recalculate view size
+      // [viewWidth, viewHeight] = calculateViewSize();
 
-      // Clamp
-      viewX = clamp(viewX, 0, assetWidth - viewWidth);
-      viewY = clamp(viewY, 0, assetHeight - viewHeight);
+      // // Restore center
+      // viewX = centerX - viewWidth / 2;
+      // viewY = centerY - viewHeight / 2;
 
-      applyView();
+      // // Clamp
+      // viewX = clamp(viewX, 0, assetWidth - viewWidth);
+      // viewY = clamp(viewY, 0, assetHeight - viewHeight);
+
+      // applyView();
     }
 
     minimapCell.updateHere();
@@ -488,6 +547,7 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
   minimapNavX = dom['navigation-horizontal'];
   minimapNavY = dom['navigation-vertical'];
   minimapNavCenter = dom['navigation-center'];
+  scaleInput = dom['image-scale'];
 
 
   // Create the default screen checkerboard background
@@ -579,23 +639,25 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     // Apply to Picture entity immediately so canvas rendering matches our math
     liveView.set({ scale: currentScale });
 
-    // Recalculate view size based on new scale
-    [viewWidth, viewHeight] = calculateViewSize();
+    syncScaleConstraints();
 
-    // Recenter view in IMAGE space
-    viewX = (assetWidth - viewWidth) / 2;
-    viewY = (assetHeight - viewHeight) / 2;
+    // // Recalculate view size based on new scale
+    // [viewWidth, viewHeight] = calculateViewSize();
 
-    // Clamp
-    viewX = clamp(viewX, 0, assetWidth - viewWidth);
-    viewY = clamp(viewY, 0, assetHeight - viewHeight);
+    // // Recenter view in IMAGE space
+    // viewX = (assetWidth - viewWidth) / 2;
+    // viewY = (assetHeight - viewHeight) / 2;
 
-    // Apply to canvas + minimap
-    applyView();
+    // // Clamp
+    // viewX = clamp(viewX, 0, assetWidth - viewWidth);
+    // viewY = clamp(viewY, 0, assetHeight - viewHeight);
 
-    // Reset the nav controls to center so UI matches behavior
-    minimapNavX.value = '50';
-    minimapNavY.value = '50';
+    // // Apply to canvas + minimap
+    // applyView();
+
+    // // Reset the nav controls to center so UI matches behavior
+    // minimapNavX.value = '50';
+    // minimapNavY.value = '50';
 
   }, '.scale-controls');
 
