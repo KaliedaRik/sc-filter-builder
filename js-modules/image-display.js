@@ -152,6 +152,25 @@ const centerView = () => {
 };
 
 // Apply view -> canvas + minimap
+// const applyView = () => {
+
+//   // Canvas
+//   liveView.set({
+//     copyStart: [viewX, viewY],
+//     copyDimensions: [viewWidth, viewHeight],
+//   });
+
+//   // Minimap frame
+//   minimapFrameWidth = viewWidth * minimapScale;
+//   minimapFrameHeight = viewHeight * minimapScale;
+
+//   minimapFrame.set({
+//     dimensions: [minimapFrameWidth, minimapFrameHeight],
+//     startX: (viewX + viewWidth / 2) * minimapScale,
+//     startY: (viewY + viewHeight / 2) * minimapScale,
+//   });
+// };
+// Apply view -> canvas + minimap
 const applyView = () => {
 
   // Canvas
@@ -160,7 +179,17 @@ const applyView = () => {
     copyDimensions: [viewWidth, viewHeight],
   });
 
-  // Minimap frame
+  // Minimap frame should only show when the view is cropping the image
+  const shouldShowFrame = (viewWidth < assetWidth) || (viewHeight < assetHeight);
+
+  minimapFrame.set({
+    visibility: shouldShowFrame,
+  });
+
+  // If hidden, don't update frame geometry
+  if (!shouldShowFrame) return;
+
+  // Minimap frame geometry
   minimapFrameWidth = viewWidth * minimapScale;
   minimapFrameHeight = viewHeight * minimapScale;
 
@@ -170,7 +199,6 @@ const applyView = () => {
     startY: (viewY + viewHeight / 2) * minimapScale,
   });
 };
-
 
 // Export function to display an image
 let assetCounter = 0;
@@ -658,6 +686,9 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
   });
 
   scrawl.addNativeListener(['input', 'change'], () => {
+
+    // If the frame is hidden, navigation controls should do nothing
+    if (!minimapFrame.get('visibility')) return;
 
     const nx = parseFloat(minimapNavX.value) / 100;
     const ny = parseFloat(minimapNavY.value) / 100;
