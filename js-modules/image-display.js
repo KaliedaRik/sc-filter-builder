@@ -206,13 +206,39 @@ const applyLiveViewDimensions = () => {
   });
 };
 
-const calculateViewSize = () => {
+// Numeric (pixel) destination dimensions for the liveView Picture on the canvas
+const calculateLiveViewDestinationPixels = () => {
 
   const [canvasWidth, canvasHeight] = canvasHandle.get('dimensions');
 
-  let vw = canvasWidth;
-  let vh = canvasHeight;
+  const destW = (assetWidth < canvasWidth) ? assetWidth : canvasWidth;
+  const destH = (assetHeight < canvasHeight) ? assetHeight : canvasHeight;
 
+  return [destW, destH];
+};
+
+// const calculateViewSize = () => {
+
+//   const [canvasWidth, canvasHeight] = canvasHandle.get('dimensions');
+
+//   let vw = canvasWidth;
+//   let vh = canvasHeight;
+
+//   vw = Math.min(vw, assetWidth);
+//   vh = Math.min(vh, assetHeight);
+
+//   return [vw, vh];
+// };
+const calculateViewSize = () => {
+
+  const s = liveView?.get('scale') || 1;
+  const [destW, destH] = calculateLiveViewDestinationPixels();
+
+  // In IMAGE space: as scale increases, the visible portion decreases
+  let vw = destW / s;
+  let vh = destH / s;
+
+  // Guardrails
   vw = Math.min(vw, assetWidth);
   vh = Math.min(vh, assetHeight);
 
@@ -567,6 +593,27 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     },
   });
 
+  scrawl.addNativeListener(['input', 'change'], () => {
+
+    // Recalculate view size based on new scale
+    [viewWidth, viewHeight] = calculateViewSize();
+
+    // Recenter view in IMAGE space
+    viewX = (assetWidth - viewWidth) / 2;
+    viewY = (assetHeight - viewHeight) / 2;
+
+    // (Optional safety clamp; should already be centered-valid)
+    viewX = clamp(viewX, 0, assetWidth - viewWidth);
+    viewY = clamp(viewY, 0, assetHeight - viewHeight);
+
+    // Apply to canvas + minimap
+    applyView();
+
+    // Also reset the nav controls to center so UI matches behavior
+    minimapNavX.value = '50';
+    minimapNavY.value = '50';
+
+  }, '.scale-controls');
 
   // Create the infrastructure for the minimap
   scrawl.makeGroup({
