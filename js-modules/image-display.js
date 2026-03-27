@@ -641,24 +641,6 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
 
     syncScaleConstraints();
 
-    // // Recalculate view size based on new scale
-    // [viewWidth, viewHeight] = calculateViewSize();
-
-    // // Recenter view in IMAGE space
-    // viewX = (assetWidth - viewWidth) / 2;
-    // viewY = (assetHeight - viewHeight) / 2;
-
-    // // Clamp
-    // viewX = clamp(viewX, 0, assetWidth - viewWidth);
-    // viewY = clamp(viewY, 0, assetHeight - viewHeight);
-
-    // // Apply to canvas + minimap
-    // applyView();
-
-    // // Reset the nav controls to center so UI matches behavior
-    // minimapNavX.value = '50';
-    // minimapNavY.value = '50';
-
   }, '.scale-controls');
 
   // Create the infrastructure for the minimap
