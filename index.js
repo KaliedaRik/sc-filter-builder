@@ -2,10 +2,10 @@
 // Scrawl-canvas boilerplate
 // ------------------------------------------------------------------------
 import * as scrawl from './js-libraries/scrawl.js';
-const mainCanvas = scrawl.findCanvas('main-canvas');
 
+const mainCanvas = scrawl.findCanvas('main-canvas');
 const builderStack = scrawl.findStack('filter-builder-stack');
-const builderCanvas = scrawl.findCanvas('builder-canvas');
+const builderCanvas = scrawl.findCanvas('filter-builder-canvas');
 
 
 // ------------------------------------------------------------------------
@@ -114,6 +114,20 @@ scrawl.makeLabel({
   handle: ['center', 'center'],
   fontString: '2rem Arial, sans-serif',
 })
+
+const el = scrawl.findElement('my-test-element');
+
+el.set({
+  start: ['center', 10],
+  handle: ['center', 0],
+  width: '40%',
+  height: 'auto',
+  css: {
+    border: '1px dotted black',
+    backgroundColor: 'yellow',
+    padding: '0.5rem 1rem',
+  },
+});
 
 console.log(scrawl.library);
 
