@@ -119,4 +119,3 @@ console.log(scrawl.library);
 
 import { getFilterSchemas } from './js-modules/filter-schemas.js';
 console.log(getFilterSchemas());
-

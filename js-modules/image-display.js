@@ -1,3 +1,4 @@
+
 // ------------------------------------------------------------------------
 // Image display in the canvas
 // ------------------------------------------------------------------------
@@ -41,13 +42,15 @@ let minimapWidth = 200,
   minimapY = null,
   minimapNavX = null,
   minimapNavY = null,
-  minimapNavCenter = null;
+  minimapNavCenter = null,
+  minimapFrameDragZone = null;
 
 const maxMinimapCoverage = 0.4;
 
 // liveView vars
 let assetWidth = 1,
-  assetHeight = 1;
+  assetHeight = 1,
+  currentScale = 1;
 
 // Canonical view rectangle (IMAGE space)
 let viewX = 0,
@@ -75,16 +78,128 @@ const recalculateDimensions = () => {
 };
 
 
+// Minimap frame drag functionality
+const exitMinimapFrameDrag = () => {
+
+  const [x, y] = minimapFrame.get('position');
+
+  const centerX = x / minimapScale;
+  const centerY = y / minimapScale;
+
+  viewX = centerX - viewWidth / 2;
+  viewY = centerY - viewHeight / 2;
+
+  viewX = clamp(viewX, 0, assetWidth - viewWidth);
+  viewY = clamp(viewY, 0, assetHeight - viewHeight);
+
+  applyView();
+
+  const [w, h] = minimapCell.get('dimensions');
+  const [fx, fy] = minimapFrame.get('position');
+
+  minimapNavX.value = `${parseFloat((fx / w) * 100)}`;
+  minimapNavY.value = `${parseFloat((fy / h) * 100)}`;
+};
+
+const checkMinimapFrameDrag = () => {
+
+  const [x, y] = minimapFrame.get('position');
+
+  const [mw, mh] = minimapCell.get('dimensions');
+  const halfW = minimapFrameWidth / 2;
+  const halfH = minimapFrameHeight / 2;
+
+  const inside =
+    x - halfW >= 0 &&
+    y - halfH >= 0 &&
+    x + halfW <= mw &&
+    y + halfH <= mh;
+
+  if (inside) {
+
+    const centerX = x / minimapScale;
+    const centerY = y / minimapScale;
+
+    viewX = centerX - viewWidth / 2;
+    viewY = centerY - viewHeight / 2;
+
+    viewX = clamp(viewX, 0, assetWidth - viewWidth);
+    viewY = clamp(viewY, 0, assetHeight - viewHeight);
+
+    applyView();
+
+    minimapNavX.value = `${parseFloat((x / mw) * 100)}`;
+    minimapNavY.value = `${parseFloat((y / mh) * 100)}`;
+  }
+  else minimapFrameDragZone('exit');
+};
+
+const createMinimapFrameDragZone = () => {
+
+  if (!minimapFrameDragZone) {
+
+    minimapFrameDragZone = scrawlHandle.makeDragZone({
+
+      zone: canvasHandle,
+      collisionGroup: name('minimap-frame-group'),
+      coordinateSource: minimapCell,
+      endOn: ['up', 'leave'],
+      updateWhileMoving: checkMinimapFrameDrag,
+      updateOnPrematureExit: exitMinimapFrameDrag,
+      preventTouchDefaultWhenDragging: true,
+      exposeCurrentArtefact: true,
+      processingOrder: 0,
+    });
+  }
+};
+
+
 // Calculate view size based on canvas aspect ratio
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
-const calculateViewSize = () => {
+// Calculate liveView (destination) dimensions in CANVAS space
+// - Prevent stretching when the asset is smaller than the canvas in either dimension
+const calculateLiveViewDimensions = () => {
 
   const [canvasWidth, canvasHeight] = canvasHandle.get('dimensions');
 
-  let vw = canvasWidth;
-  let vh = canvasHeight;
+  const destW = (assetWidth < canvasWidth) ? assetWidth : '100%';
+  const destH = (assetHeight < canvasHeight) ? assetHeight : '100%';
 
+  return [destW, destH];
+};
+
+const applyLiveViewDimensions = () => {
+
+  const [destW, destH] = calculateLiveViewDimensions();
+
+  // Keep the Picture centered (start/handle already set to center in init)
+  liveView.set({
+    dimensions: [destW, destH],
+  });
+};
+
+// Numeric (pixel) destination dimensions for the liveView Picture on the canvas
+const calculateLiveViewDestinationPixels = () => {
+
+  const [canvasWidth, canvasHeight] = canvasHandle.get('dimensions');
+
+  const destW = (assetWidth < canvasWidth) ? assetWidth : canvasWidth;
+  const destH = (assetHeight < canvasHeight) ? assetHeight : canvasHeight;
+
+  return [destW, destH];
+};
+
+const calculateViewSize = () => {
+
+  const s = currentScale || 1;
+  const [destW, destH] = calculateLiveViewDestinationPixels();
+
+  // In IMAGE space: as scale increases, the visible portion decreases
+  let vw = destW / s;
+  let vh = destH / s;
+
+  // Guardrails
   vw = Math.min(vw, assetWidth);
   vh = Math.min(vh, assetHeight);
 
@@ -100,7 +215,6 @@ const centerView = () => {
   viewY = (assetHeight - viewHeight) / 2;
 };
 
-// Apply view -> canvas + minimap
 const applyView = () => {
 
   // Canvas
@@ -109,7 +223,25 @@ const applyView = () => {
     copyDimensions: [viewWidth, viewHeight],
   });
 
-  // Minimap frame
+  // Minimap frame should only show when the view is cropping the image
+  const shouldShowFrame = (viewWidth < assetWidth) || (viewHeight < assetHeight);
+
+  minimapFrame.set({
+    visibility: shouldShowFrame,
+  });
+
+  // If hidden, don't update frame geometry
+  if (!shouldShowFrame) {
+
+    if (minimapFrameDragZone) {
+
+      minimapFrameDragZone(true);
+      minimapFrameDragZone = null;
+    }
+    return;
+  }
+
+  // Minimap frame geometry
   minimapFrameWidth = viewWidth * minimapScale;
   minimapFrameHeight = viewHeight * minimapScale;
 
@@ -118,8 +250,9 @@ const applyView = () => {
     startX: (viewX + viewWidth / 2) * minimapScale,
     startY: (viewY + viewHeight / 2) * minimapScale,
   });
-};
 
+  if (!minimapFrameDragZone) createMinimapFrameDragZone();
+};
 
 // Export function to display an image
 let assetCounter = 0;
@@ -171,6 +304,10 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
 
   assetWidth = width;
   assetHeight = height;
+
+  // Fix stretching: if asset is smaller than canvas in either axis,
+  // - set liveView destination dimensions to the asset dimension for that axis.
+  applyLiveViewDimensions();
 
   centerView();
 
@@ -249,6 +386,8 @@ const checkLiveView = () => {
 
       currentDisplayWidth = w;
       currentDisplayHeight = h;
+
+      applyLiveViewDimensions();
 
       // Recalculate view size
       [viewWidth, viewHeight] = calculateViewSize();
@@ -400,22 +539,37 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     visibility: false,
   });
 
-  // TODO: extend scale so that the entire image can be shown in the liveView - but fit: contain (no scaling down to 0 - this is to allow the user to see the effect of filters on the whole image. We will need to point out that filters are being applied to liveView, not the image itself, so filters that include spatial details (tiles, swirl, zoomBlur, etc) may lie to people when viewing only part of the image)
-  scrawl.makeUpdater({
+  scrawl.addNativeListener(['input', 'change'], (e) => {
 
-    event: ['input', 'change'],
-    origin: '.scale-controls',
+    // Only respond to the scale input itself
+    const el = e?.target;
+    if (!el || el.id !== 'image-scale') return;
 
-    target: liveView,
+    // Update canonical scale first (single source of truth)
+    currentScale = parseFloat(el.value) || 1;
 
-    useNativeListener: true,
-    preventDefault: true,
+    // Apply to Picture entity immediately so canvas rendering matches our math
+    liveView.set({ scale: currentScale });
 
-    updates: {
-      ['image-scale']: ['scale', 'float'],
-    },
-  });
+    // Recalculate view size based on new scale
+    [viewWidth, viewHeight] = calculateViewSize();
 
+    // Recenter view in IMAGE space
+    viewX = (assetWidth - viewWidth) / 2;
+    viewY = (assetHeight - viewHeight) / 2;
+
+    // Clamp
+    viewX = clamp(viewX, 0, assetWidth - viewWidth);
+    viewY = clamp(viewY, 0, assetHeight - viewHeight);
+
+    // Apply to canvas + minimap
+    applyView();
+
+    // Reset the nav controls to center so UI matches behavior
+    minimapNavX.value = '50';
+    minimapNavY.value = '50';
+
+  }, '.scale-controls');
 
   // Create the infrastructure for the minimap
   scrawl.makeGroup({
@@ -533,75 +687,12 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     method: 'draw',
   });
 
-  const exitMinimapFrameDrag = () => {
-
-    const [x, y] = minimapFrame.get('position');
-
-    const centerX = x / minimapScale;
-    const centerY = y / minimapScale;
-
-    viewX = centerX - viewWidth / 2;
-    viewY = centerY - viewHeight / 2;
-
-    viewX = clamp(viewX, 0, assetWidth - viewWidth);
-    viewY = clamp(viewY, 0, assetHeight - viewHeight);
-
-    applyView();
-
-    const [w, h] = minimapCell.get('dimensions');
-    const [fx, fy] = minimapFrame.get('position');
-
-    minimapNavX.value = `${parseFloat((fx / w) * 100)}`;
-    minimapNavY.value = `${parseFloat((fy / h) * 100)}`;
-  };
-
-  const checkMinimapFrameDrag = () => {
-
-    const [x, y] = minimapFrame.get('position');
-
-    const [mw, mh] = minimapCell.get('dimensions');
-    const halfW = minimapFrameWidth / 2;
-    const halfH = minimapFrameHeight / 2;
-
-    const inside =
-      x - halfW >= 0 &&
-      y - halfH >= 0 &&
-      x + halfW <= mw &&
-      y + halfH <= mh;
-
-    if (inside) {
-
-      const centerX = x / minimapScale;
-      const centerY = y / minimapScale;
-
-      viewX = centerX - viewWidth / 2;
-      viewY = centerY - viewHeight / 2;
-
-      viewX = clamp(viewX, 0, assetWidth - viewWidth);
-      viewY = clamp(viewY, 0, assetHeight - viewHeight);
-
-      applyView();
-
-      minimapNavX.value = `${parseFloat((x / mw) * 100)}`;
-      minimapNavY.value = `${parseFloat((y / mh) * 100)}`;
-    }
-    else minimapFrameDragZone('exit');
-  };
-
-  const minimapFrameDragZone = scrawl.makeDragZone({
-
-    zone: canvas,
-    collisionGroup: name('minimap-frame-group'),
-    coordinateSource: minimapCell,
-    endOn: ['up', 'leave'],
-    updateWhileMoving: checkMinimapFrameDrag,
-    updateOnPrematureExit: exitMinimapFrameDrag,
-    preventTouchDefaultWhenDragging: true,
-    exposeCurrentArtefact: true,
-    processingOrder: 0,
-  });
+  createMinimapFrameDragZone();
 
   scrawl.addNativeListener(['input', 'change'], () => {
+
+    // If the frame is hidden, navigation controls should do nothing
+    if (!minimapFrame.get('visibility')) return;
 
     const nx = parseFloat(minimapNavX.value) / 100;
     const ny = parseFloat(minimapNavY.value) / 100;
