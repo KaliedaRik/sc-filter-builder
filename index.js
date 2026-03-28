@@ -15,6 +15,7 @@ import { initSplitter } from './js-modules/dom-layout-ui.js';
 import { initModalManagement } from './js-modules/modal-management.js';
 import { initImageImport } from './js-modules/image-import.js';
 import { initImageDisplay } from './js-modules/image-display.js';
+import { initFilterBuilder } from './js-modules/filter-builder.js';
 
 
 // ------------------------------------------------------------------------
@@ -49,6 +50,13 @@ const dom = scrawl.initializeDomInputs([
   ['by-id', 'downloads-modal'],
   ['button', 'process-and-download-action', 'Process and download images'],
 
+  // Capture handles for the change-filter modal
+  ['button', 'change-filter-modal-button', 'Change filter'],
+  ['button', 'change-filter-modal-close', 'Close'],
+  ['by-id', 'change-filter-modal'],
+  ['by-id', 'change-filter-warning-message'],
+  ['button', 'load-filter-action', 'Import filter packet'],
+
   // Capture handles to the minimap HTML elements
   ['input', 'minimap-horizontal', '50'],
   ['input', 'minimap-vertical', '50'],
@@ -73,6 +81,8 @@ const {
   liveView,
   checkLiveView,
 } = initImageDisplay(scrawl, dom, mainCanvas);
+
+initFilterBuilder(scrawl, dom, builderCanvas, liveView);
 
 
 // Show the default canvas display
@@ -181,6 +191,3 @@ scrawl.makeDragZone({
 });
 
 console.log(scrawl.library);
-
-import { getFilterSchemas } from './js-modules/filter-schemas.js';
-console.log(getFilterSchemas());

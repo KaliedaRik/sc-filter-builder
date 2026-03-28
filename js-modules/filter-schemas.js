@@ -3679,7 +3679,7 @@ F.presentation = [{
     inputs: ['opacity'],
 }];
 
-export const getDefinedFilterSchema = (name) => {
+export const getActionSchema = (name) => {
 
   if (filterSchemas[name]) return structuredClone(filterSchemas[name]);
   return null;

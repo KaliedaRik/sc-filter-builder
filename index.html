@@ -16,7 +16,7 @@
 
     <div id="image-work">
       
-      <!-- App controls bar on left hand side -->
+      <!-- Top-left image controls panel -->
       <div id="image-controls-panel">
 
         <h1>SC Filter Builder</h1>
@@ -123,10 +123,15 @@
 
     <div id="filter-work">
 
-      <!-- Filter controls area -->
+      <!-- Bottom-left filter controls panel -->
       <div id="filter-controls-panel">
         
-        <p>New panel, where filter-related buttons and the dynamic action editor form will appear</p>
+        <!-- Change filter -->
+        <button type="button" id="change-filter-modal-button">Change filter</button>
+
+        <!-- Current filter details -->
+        <h2 id="current-filter-name">[current filter name goes here]</h2>
+
       </div>
       
       <!-- Filter building area -->
@@ -180,6 +185,27 @@
     <p>A placeholder modal where downloading a batch of processed images can be set up and triggered</p>
 
     <button type="button" id="process-and-download-action">Process and download images</button>
+
+  </dialog>
+
+  <!-- Change filter modal -->
+  <dialog id='change-filter-modal' closedby="any">
+
+    <button type="button" id="change-filter-modal-close" autofocus class="close">Close</button>
+
+    <h2>Change filter</h2>
+
+    <div id="change-filter-warning-message" class="warn">[Warning message goes here]</div>
+
+    <hr />
+
+    <button type="button" id="load-filter-action">Import filter packet</button>
+
+    <hr />
+
+    <h3>Use starter filter</h3>
+    
+    <p>[This is where the selection of starter filters will display, as buttons.]</p>
 
   </dialog>
 
