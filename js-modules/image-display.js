@@ -451,7 +451,6 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
 
   name = (n) => `${canvas.name}-${n}`;
 
-console.log(dom);
   // DOM handles
   minimapShowHide = dom['minimap-show-hide'];
   minimapCenter = dom['minimap-center'];
@@ -534,8 +533,9 @@ console.log(dom);
 
     // We'll be building and applying the filter dynamically
     filters: [],
+    memoizeFilterOutput: true,
 
-    ImageSmoothingEnabled: false,
+    imageSmoothingEnabled: false,
     visibility: false,
   });
 
