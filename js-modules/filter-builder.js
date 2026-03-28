@@ -14,6 +14,7 @@ let picture = null;
 let currentFilter = null,
   currentFilterActions = null,
   currentFilterInitialValues = null,
+  currentFilterTitleElement = null,
   canvasHandle = null;
 
 const requestStarterFilter = (e) => {
@@ -37,14 +38,22 @@ const requestStarterFilter = (e) => {
 
 const loadStarterFilter = (starter) => {
 
-  console.log('User wants to change filter to', starter);
+  const newFilter = canvasHandle.actionPacket(starter),
+    newFilterActions = [...newFilter.actions],
+    newFilterInitialValues = JSON.stringify(newFilterActions);
 
-  currentFilter = canvasHandle.actionPacket(starter);
-  currentFilterActions = [...currentFilter.actions];
-  currentFilterInitialValues = JSON.stringify(currentFilterActions);
+  if (currentFilterInitialValues !== newFilterInitialValues) {
 
-  picture.clearFilters();
-  picture.addFilters(currentFilter);
+    currentFilter = newFilter;
+    currentFilterActions = newFilterActions;
+    currentFilterInitialValues = newFilterInitialValues;
+
+    picture.clearFilters();
+    picture.addFilters(currentFilter);
+
+    currentFilterTitleElement.textContent = currentFilter.name;
+  }
+  else console.log('User tried to load in current filter');
 };
 
 export const initFilterBuilder = (scrawl = null, dom = null, canvas = null, liveView = null) => {
@@ -64,6 +73,11 @@ export const initFilterBuilder = (scrawl = null, dom = null, canvas = null, live
 
   picture.clearFilters();
   picture.addFilters(currentFilter);
+
+  currentFilterTitleElement = dom['current-filter-name'];
+console.log('currentFilterTitleElement', currentFilterTitleElement)
+
+  currentFilterTitleElement.textContent = currentFilter.name;
 
 
   // Build out the related modal, populating with starter-filter data

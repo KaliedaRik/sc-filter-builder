@@ -22,6 +22,9 @@
   --left-bar-controls-border: rgb(60 60 60 / 1);
   --control-button-panel-background: rgb(240 240 240 / 1);
 
+  --filter-bar-background: rgb(255 248 255 / 1);
+  --filter-bar-section-border: rgb(60 60 60 / 1);
+
   /* Right bar app constants - values without measurement units are ratios */
   --minimum-image-work-ratio: 0.3;
   --minimum-filter-work-ratio: 0.15;
@@ -356,6 +359,23 @@ main {
     border: 0;
     overflow: hidden;
     background-color: black;
+  }
+}
+
+#filter-controls-panel {
+  background-color: var(--filter-bar-background);
+
+  & > h2 {
+    font-size: 100%;
+    line-height: 1.5;
+    border: 1px solid var(--filter-bar-section-border);
+    padding: 0.3rem 0.5rem;
+    border-radius: 5px;
+
+    & span {
+      font-weight: normal;
+      font-style: italic;
+    }
   }
 }
 
