@@ -50,12 +50,13 @@ const dom = scrawl.initializeDomInputs([
   ['by-id', 'downloads-modal'],
   ['button', 'process-and-download-action', 'Process and download images'],
 
-  // Capture handles for the change-filter modal
+  // Capture handles for the change-filter functionality
   ['button', 'change-filter-modal-button', 'Change filter'],
   ['button', 'change-filter-modal-close', 'Close'],
   ['by-id', 'change-filter-modal'],
   ['by-id', 'change-filter-warning-message'],
   ['button', 'load-filter-action', 'Import filter packet'],
+  ['by-id', 'starters-grid'],
 
   // Capture handles to the minimap HTML elements
   ['input', 'minimap-horizontal', '50'],

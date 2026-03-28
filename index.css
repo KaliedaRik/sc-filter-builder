@@ -505,3 +505,52 @@ dialog {
   font-size: 90%;
   color: var(--advice-color);
 }
+
+#change-filter-modal {
+
+  width: 60vw;
+  max-width: 60rem;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  line-height: 1.5;
+
+  & h2 {
+    font-size: 130%;
+    padding-bottom: 0.1rem;
+    border-bottom: 1px solid var(--dialog-border);
+  } 
+
+  & h3 {
+    font-size: 115%;
+    padding-bottom: 0.1rem;
+    border-bottom: 1px dashed var(--dialog-border);
+  }
+
+  & #starters-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+    align-items: stretch;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    gap: 1rem;
+
+    & button {
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--dialog-button-border);
+      background-color: var(background);
+      min-width: calc(100px + 1rem);
+    }
+
+    & img {
+      width: 100%;
+      border-radius: 5px;
+    }
+
+    & p {
+      margin: 0.5rem 0 0;
+    }
+  }
+}
+
