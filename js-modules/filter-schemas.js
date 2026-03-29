@@ -1206,7 +1206,7 @@ const actionSchemas = {
   },
 
   ['grayscale']: {
-    label: 'Grayscale',
+    label: 'Desaturate',
     description: '',
     group: 'Color channel filter',
     action: 'grayscale',

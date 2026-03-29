@@ -36,7 +36,7 @@ const loadStarterFilter = (starter) => {
   if (packet) {
 
     const newFilter = canvasHandle.actionPacket(packet),
-      newFilterWrapper = wrap(newFilter, data.form),
+      newFilterWrapper = wrap(newFilter, data.formSchemaName),
       newFilterInitialValues = newFilterWrapper.toString();
 
     if (currentFilterInitialValues !== newFilterInitialValues) {
@@ -52,7 +52,6 @@ const loadStarterFilter = (starter) => {
     else newFilter.kill();
   }
 };
-
 
 
 // Init function
@@ -100,7 +99,7 @@ export const initFilterBuilder = (scrawl = null, dom = null, canvas = null, live
   const starter = starterFilters['SC-starter-filter_grayscale'],
     filter = canvas.actionPacket(starter.packet);
 
-  currentFilterWrapper = wrap(filter, starter.form);
+  currentFilterWrapper = wrap(filter, starter.formSchemaName);
   currentFilterInitialValues = currentFilterWrapper.toString();
 
   picture.clearFilters();

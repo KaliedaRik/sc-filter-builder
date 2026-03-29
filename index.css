@@ -379,6 +379,33 @@ main {
   }
 }
 
+.summary-identifier {
+  font-size: 80%;
+  font-weight: normal;
+}
+
+#filter-builder-area-hold {
+  display: none;
+}
+
+.graph-action-button {
+  border-radius: 5px;
+  border: 1px solid var(--filter-bar-section-border);
+  border-top-width: 5px;
+  padding: 0;
+
+  & h2 {
+    font-size: 150%;
+    margin: 0;
+    padding: 0;
+  }
+  & p {
+    margin: 0;
+    padding: 0;
+    font-size: 90%;
+  }
+}
+
 dialog {
   max-height: 80vh;
   max-width: 80vw;
