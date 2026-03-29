@@ -37,7 +37,7 @@ const closeModal = (fn = null) => {
 
   if (m) m.close();
 
-  if (fn) fn();
+  if (fn && typeof fn === 'function') fn();
 };
 
 

@@ -1288,6 +1288,7 @@ const setActionsArray = {
 
 // __pixelate__ - averages the colors in a block to produce a series of obscuring tiles. This is a simplified version of the `tiles` filter
     pixelate: function (f) {
+
         f.actions = [{
             action: PIXELATE,
             lineIn: (f.lineIn != null) ? f.lineIn : ZERO_STR,

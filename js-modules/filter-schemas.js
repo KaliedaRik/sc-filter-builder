@@ -39,6 +39,14 @@ const requiredControls = {
   },
 };
 
+const defaultPresentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
+
 /*
 __actionSchemas__ models the filter action objects which make up a Scrawl-canvas filter's actions array. Each filter is keyed by its filter-engine name (which often includes hyphens). Each attribute is a filter definition with the following attributes
 - `label` - filter's human-readable name
@@ -100,6 +108,7 @@ const actionSchemas = {
         description: 'If includeBlue is false, set the blue channel\'s value to 0',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['alpha-to-luminance']: {
@@ -111,6 +120,7 @@ const actionSchemas = {
     controls: {
       ...requiredControls,
     },
+    presentation: [...defaultPresentation],
   },
 
   ['area-alpha']: {
@@ -182,6 +192,7 @@ const actionSchemas = {
         description: 'Array of four alpha values between 0 and 255 for each quadrant, in the order [tile-tile, tile-gutter, gutter-tile, gutter-gutter]',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['average-channels']: {
@@ -229,6 +240,7 @@ const actionSchemas = {
         description: 'Include blue channel in the averaging calculation',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['blend']: {
@@ -271,6 +283,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['blur']: {
@@ -378,6 +391,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['channels-to-alpha']: {
@@ -407,6 +421,7 @@ const actionSchemas = {
         description: 'To exclude this channel from the averaging calculation, make this flag false',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['chroma']: {
@@ -451,6 +466,7 @@ const actionSchemas = {
         description: 'For blue channel values outside of a range value, but less than the feather value\'s distance, reduce the alpha value to form a feather effect',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['clamp-channels']: {
@@ -516,6 +532,7 @@ const actionSchemas = {
         description: 'Blue channel\'s contribution to the filter\'s upper bound',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['colors-to-alpha']: {
@@ -572,6 +589,7 @@ const actionSchemas = {
         description: 'Manipulate the sensitivity of the chroma key effect',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['compose']: {
@@ -614,6 +632,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['corrode']: {
@@ -692,6 +711,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['deconvolute']: {
@@ -778,6 +798,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['displace']: {
@@ -857,6 +878,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['emboss']: {
@@ -907,6 +929,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['flood']: {
@@ -960,6 +983,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['gaussian-blur']: {
@@ -1034,6 +1058,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['glitch']: {
@@ -1177,6 +1202,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['grayscale']: {
@@ -1188,6 +1214,7 @@ const actionSchemas = {
     controls: {
       ...requiredControls,
     },
+    presentation: [...defaultPresentation],
   },
 
   ['invert-channels']: {
@@ -1217,6 +1244,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['lock-channels-to-levels']: {
@@ -1252,6 +1280,7 @@ const actionSchemas = {
         description: 'An array of integer numbers, each between 0 and 255',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['luminance-to-alpha']: {
@@ -1286,6 +1315,7 @@ const actionSchemas = {
         description: 'Expects to receive a Scrawl-canvas LinearGradient object, or the name value of the object. We need to create a gradient builder mini-tool before we can use this filter in the main tool',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['matrix']: {
@@ -1375,6 +1405,7 @@ const actionSchemas = {
         description: 'An array of matrix weights, with length = width * height',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['modify-ok-channels']: {
@@ -1413,6 +1444,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['modulate-channels']: {
@@ -1466,6 +1498,7 @@ const actionSchemas = {
         description: 'When false, acts as a brightness filter; when true, acts as a saturation filter',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['modulate-ok-channels']: {
@@ -1504,7 +1537,9 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
+
   ['negative']: {
     label: 'Negative',
     description: 'Invert OKLab channel colors',
@@ -1514,6 +1549,7 @@ const actionSchemas = {
     controls: {
       ...requiredControls,
     },
+    presentation: [...defaultPresentation],
   },
 
   ['newsprint']: {
@@ -1534,6 +1570,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['offset']: {
@@ -1623,6 +1660,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['ok-perceptual-curves']: {
@@ -1645,6 +1683,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['pixelate']: {
@@ -1716,6 +1755,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['process-image']: {
@@ -1774,6 +1814,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['random-noise']: {
@@ -1861,6 +1902,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['reduce-palette']: {
@@ -1900,6 +1942,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['rotate-hue']: {
@@ -1920,6 +1963,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['set-channel-to-level']: {
@@ -1964,6 +2008,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['step-channels']: {
@@ -2009,6 +2054,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   // For the tool, we shall allow the user to define just one swirl per action
@@ -2043,6 +2089,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['threshold']: {
@@ -2192,6 +2239,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['tiles']: {
@@ -2331,6 +2379,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['tint-channels']: {
@@ -2423,6 +2472,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['unsharp']: {
@@ -2485,6 +2535,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['vary-channels-by-weights']: {
@@ -2508,6 +2559,7 @@ const actionSchemas = {
         description: 'Switch between weighting against a grayscaled image (default) and weighting on a per-channel basis',
       },
     },
+    presentation: [...defaultPresentation],
   },
 
   ['zoom-blur']: {
@@ -2646,6 +2698,7 @@ const actionSchemas = {
         description: '',
       },
     },
+    presentation: [...defaultPresentation],
   },
 };
 
@@ -2661,23 +2714,11 @@ let F;
 
 // alphaToChannels
 F = filterSchemas.alphaToChannels = structuredClone(actionSchemas['alpha-to-channels']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // alphaToLuminance
 F = filterSchemas.alphaToLuminance = structuredClone(actionSchemas['alpha-to-luminance']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // areaAlpha
 F = filterSchemas.areaAlpha = structuredClone(actionSchemas['area-alpha']);
@@ -2720,13 +2761,7 @@ F.label = 'Blue channel';
 F.description = '';
 F.controls.excludeRed.default = true;
 F.controls.excludeGreen.default = true;
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // blur
 F = filterSchemas.blur = structuredClone(actionSchemas['blur']);
@@ -2854,13 +2889,7 @@ F.presentation = [{
 
 // channelsToAlpha
 F = filterSchemas.channelsToAlpha = structuredClone(actionSchemas['channels-to-alpha']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // chroma
 F = filterSchemas.chroma = structuredClone(actionSchemas['chroma']);
@@ -2971,23 +3000,11 @@ F.presentation = [{
 
 // corrode
 F = filterSchemas.corrode = structuredClone(actionSchemas['corrode']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // curveWeights
 F = filterSchemas.curveWeights = structuredClone(actionSchemas['vary-channels-by-weights']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // cyan ('average-channels' variant)
 F = filterSchemas.cyan = structuredClone(actionSchemas['average-channels']);
@@ -2996,56 +3013,26 @@ F.description = '';
 F.controls.excludeRed.default = true;
 F.controls.includeGreen.default = true;
 F.controls.includeBlue.default = true;
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // deconvolute
 F = filterSchemas.deconvolute = structuredClone(actionSchemas['deconvolute']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // displace
 F = filterSchemas.displace = structuredClone(actionSchemas['displace']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // edgeDetect ('matrix' variant)
 F = filterSchemas.edgeDetect = structuredClone(actionSchemas['matrix']);
 F.label = 'Edge detect';
 F.description = '';
 F.controls.weights.default = [0, 1, 0, 1, -4, 1, 0, 1, 0];
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // emboss
 F = filterSchemas.emboss = structuredClone(actionSchemas['emboss']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // enhancedEmboss ('emboss' variant)
 // - This filter can have 1-3 action objects, thus cannot build in the normal way.
@@ -3077,13 +3064,7 @@ F.controls.smoothing = {
   label: 'Smoothing',
   description: 'Applied as part of the gaussian-blur action',
 };
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // flood
 F = filterSchemas.flood = structuredClone(actionSchemas['flood']);
@@ -3097,33 +3078,15 @@ F.controls.reference = {
   label: 'Reference color',
   description: 'Color string value of the flood color',
 };
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // gaussianBlur
 F = filterSchemas.gaussianBlur = structuredClone(actionSchemas['gaussian-blur']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // glitch
 F = filterSchemas.glitch = structuredClone(actionSchemas['glitch']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // gray ('average-channels' variant)
 F = filterSchemas.gray = structuredClone(actionSchemas['average-channels']);
@@ -3132,23 +3095,11 @@ F.description = '';
 F.controls.includeRed.default = true;
 F.controls.includeGreen.default = true;
 F.controls.includeBlue.default = true;
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // grayscale
 F = filterSchemas.grayscale = structuredClone(actionSchemas['grayscale']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // green ('average-channels' variant)
 F = filterSchemas.green = structuredClone(actionSchemas['average-channels']);
@@ -3156,13 +3107,7 @@ F.label = 'Green channel';
 F.description = '';
 F.controls.excludeRed.default = true;
 F.controls.excludeBlue.default = true;
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // image
 F = filterSchemas.image = structuredClone(actionSchemas['process-image']);
@@ -3172,33 +3117,15 @@ F.controls.import = {
   label: 'Select image to import',
   description: '',
 };
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // invert
 F = filterSchemas.invert = structuredClone(actionSchemas['invert-channels']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // luminanceToAlpha
 F = filterSchemas.luminanceToAlpha = structuredClone(actionSchemas['luminance-to-alpha']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // magenta ('average-channels' variant)
 F = filterSchemas.magenta = structuredClone(actionSchemas['average-channels']);
@@ -3207,112 +3134,52 @@ F.description = '';
 F.controls.includeRed.default = true;
 F.controls.excludeGreen.default = true;
 F.controls.includeBlue.default = true;
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // mapToGradient
 F = filterSchemas.mapToGradient = structuredClone(actionSchemas['map-to-gradient']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // matrix
 F = filterSchemas.matrix = structuredClone(actionSchemas['matrix']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // modifyOk
 F = filterSchemas.modifyOk = structuredClone(actionSchemas['modify-ok-channels']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // modulateOk
 F = filterSchemas.modulateOk = structuredClone(actionSchemas['modulate-ok-channels']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // negative
 F = filterSchemas.negative = structuredClone(actionSchemas['negative']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // newsprint
 F = filterSchemas.newsprint = structuredClone(actionSchemas['newsprint']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // notblue ('set-channel-to-level' variant)
 F = filterSchemas.notblue = structuredClone(actionSchemas['set-channel-to-level']);
 F.label = 'Remove blue channel';
 F.description = '';
 F.controls.includeBlue.default = true;
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // notgreen ('set-channel-to-level' variant)
 F = filterSchemas.notgreen = structuredClone(actionSchemas['set-channel-to-level']);
 F.label = 'Remove green channel';
 F.description = '';
 F.controls.includeGreen.default = true;
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // notred ('set-channel-to-level' variant)
 F = filterSchemas.notred = structuredClone(actionSchemas['set-channel-to-level']);
 F.label = 'Remove red channel';
 F.description = '';
 F.controls.includeRed.default = true;
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // offset
 F = filterSchemas.offset = structuredClone(actionSchemas['offset']);
@@ -3342,43 +3209,19 @@ F.controls.offsetY = {
   label: 'Vertical offset',
   description: '',
 };
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // okCurveWeights
 F = filterSchemas.okCurveWeights = structuredClone(actionSchemas['ok-perceptual-curves']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // pixelate
 F = filterSchemas.pixelate = structuredClone(actionSchemas['pixelate']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // randomNoise
 F = filterSchemas.randomNoise = structuredClone(actionSchemas['random-noise']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // red ('average-channels' variant)
 F = filterSchemas.red = structuredClone(actionSchemas['average-channels']);
@@ -3386,33 +3229,15 @@ F.label = 'Red channel';
 F.description = '';
 F.controls.excludeGreen.default = true;
 F.controls.excludeBlue.default = true;
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // reducePalette
 F = filterSchemas.reducePalette = structuredClone(actionSchemas['reduce-palette']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // rotateHue
 F = filterSchemas.rotateHue = structuredClone(actionSchemas['rotate-hue']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // saturation  ('modulate-channels' variant)
 F = filterSchemas.saturation = structuredClone(actionSchemas['modulate-channels']);
@@ -3456,36 +3281,18 @@ F.controls.greenInBlue.default = 0.534;
 F.controls.blueInRed.default = 0.189;
 F.controls.blueInGreen.default = 0.168;
 F.controls.blueInBlue.default = 0.131;
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // setChannelsToLevel
 F = filterSchemas.setChannelsToLevel = structuredClone(actionSchemas['set-channel-to-level']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // sharpen ('matrix' variant)
 F = filterSchemas.sharpen = structuredClone(actionSchemas['matrix']);
 F.label = 'Sharpen';
 F.description = '';
 F.controls.weights.default = [0, -1, 0, -1, 5, -1, 0, -1, 0];
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // swirl
 // For the tool, we shall allow the user to define just one swirl per action
@@ -3546,13 +3353,7 @@ F.controls.easing = {
   label: 'Easing',
   description: '',
 };
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // threshold
 F = filterSchemas.threshold = structuredClone(actionSchemas['threshold']);
@@ -3586,13 +3387,7 @@ F.controls.referenceColor = {
   label: 'Levels color reference',
   description: 'Color string value for the level reference color',
 };
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // tiles
 F = filterSchemas.tiles = structuredClone(actionSchemas['tiles']);
@@ -3636,13 +3431,7 @@ F.controls.blueColor = {
   label: 'Blue color',
   description: 'Color string value of the blue colors reference',
 };
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // unsharp
 F = filterSchemas.unsharp = structuredClone(actionSchemas['unsharp']);
@@ -3661,27 +3450,21 @@ F.description = '';
 F.controls.includeRed.default = true;
 F.controls.includeGreen.default = true;
 F.controls.excludeBlue.default = true;
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
 
 // zoomBlur
 F = filterSchemas.zoomBlur = structuredClone(actionSchemas['zoom-blur']);
-F.presentation = [{
-    header: 'Connections',
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    inputs: ['opacity'],
-}];
+F.presentation = [...defaultPresentation];
+
+export const getFilterSchema = (name) => {
+
+  if (filterSchemas[name]) return structuredClone(filterSchemas[name]);
+  return null;
+};
 
 export const getActionSchema = (name) => {
 
-  if (filterSchemas[name]) return structuredClone(filterSchemas[name]);
+  if (actionSchemas[name]) return structuredClone(actionSchemas[name]);
   return null;
 };
 

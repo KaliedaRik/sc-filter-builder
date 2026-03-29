@@ -16,6 +16,7 @@ import { initModalManagement } from './js-modules/modal-management.js';
 import { initImageImport } from './js-modules/image-import.js';
 import { initImageDisplay } from './js-modules/image-display.js';
 import { initFilterBuilder } from './js-modules/filter-builder.js';
+import { initFormBuilder } from './js-modules/form-builder.js';
 
 
 // ------------------------------------------------------------------------
@@ -85,6 +86,7 @@ const {
 } = initImageDisplay(scrawl, dom, mainCanvas);
 
 initFilterBuilder(scrawl, dom, builderCanvas, liveView);
+initFormBuilder(scrawl, dom);
 
 
 // Show the default canvas display

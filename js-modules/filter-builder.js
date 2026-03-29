@@ -3,16 +3,12 @@
 // ------------------------------------------------------------------------
 
 // Imports
-import { getActionSchema, getFilterSchemas } from './filter-schemas.js';
 import { starterFilters } from './starter-filters.js';
-
-console.log('Schemas', getFilterSchemas());
-console.log('Starters', starterFilters);
+import { wrap } from './form-builder.js';
 
 let picture = null;
 
-let currentFilter = null,
-  currentFilterActions = null,
+let currentFilterWrapper = null,
   currentFilterInitialValues = null,
   currentFilterTitleElement = null,
   canvasHandle = null;
@@ -21,41 +17,45 @@ const requestStarterFilter = (e) => {
 
   // Perform a pre-check
   // - If user has modified the current filter, give them an opportunity to save/download
-  if (currentFilterInitialValues !== JSON.stringify(currentFilterActions)) {
+  if (currentFilterInitialValues !== currentFilterWrapper.toString()) {
 
     console.log('Old filter has been modified. Give user a chance to save/download it');
   }
 
   // Find button element
-  let target = e.target;
+  const target = e.target.closest('button[data-packet]');
 
-  if (target) {
-
-    if (target.tagName !== 'BUTTON') target = target.parentElement;
-    if (target && target.dataset.packet) loadStarterFilter(target.dataset.packet);
-  }
+  if (target && target.dataset.packet) loadStarterFilter(target.dataset.packet);
 };
 
 const loadStarterFilter = (starter) => {
 
-  const newFilter = canvasHandle.actionPacket(starter),
-    newFilterActions = [...newFilter.actions],
-    newFilterInitialValues = JSON.stringify(newFilterActions);
+  const data = starterFilters[starter],
+    packet = data.packet;
 
-  if (currentFilterInitialValues !== newFilterInitialValues) {
+  if (packet) {
 
-    currentFilter = newFilter;
-    currentFilterActions = newFilterActions;
-    currentFilterInitialValues = newFilterInitialValues;
+    const newFilter = canvasHandle.actionPacket(packet),
+      newFilterWrapper = wrap(newFilter, data.form),
+      newFilterInitialValues = newFilterWrapper.toString();
 
-    picture.clearFilters();
-    picture.addFilters(currentFilter);
+    if (currentFilterInitialValues !== newFilterInitialValues) {
 
-    currentFilterTitleElement.textContent = currentFilter.name;
+      currentFilterWrapper.kill();
+      currentFilterWrapper = newFilterWrapper;
+      currentFilterInitialValues = newFilterInitialValues;
+
+      picture.addFilters(currentFilterWrapper.filter);
+
+      currentFilterTitleElement.textContent = data.readableName;
+    }
+    else newFilter.kill();
   }
-  else console.log('User tried to load in current filter');
 };
 
+
+
+// Init function
 export const initFilterBuilder = (scrawl = null, dom = null, canvas = null, liveView = null) => {
 
   if (!scrawl) throw new Error('Scrawl library not passed to initFilterBuilder function');
@@ -65,19 +65,6 @@ export const initFilterBuilder = (scrawl = null, dom = null, canvas = null, live
 
   picture = liveView;
   canvasHandle = canvas;
-
-  // We always start with a grayscale filter on page load
-  currentFilter = canvas.actionPacket(starterFilters.grayscale.packet);
-  currentFilterActions = [...currentFilter.actions];
-  currentFilterInitialValues = JSON.stringify(currentFilterActions);
-
-  picture.clearFilters();
-  picture.addFilters(currentFilter);
-
-  currentFilterTitleElement = dom['current-filter-name'];
-console.log('currentFilterTitleElement', currentFilterTitleElement)
-
-  currentFilterTitleElement.textContent = currentFilter.name;
 
 
   // Build out the related modal, populating with starter-filter data
@@ -90,8 +77,7 @@ console.log('currentFilterTitleElement', currentFilterTitleElement)
     const obj = starterFilters[key];
 
     const btn = document.createElement('button');
-    btn.setAttribute('data-packet', obj.packet);
-    btn.classList.add('starter-button');
+    btn.setAttribute('data-packet', key);
     btn.type = 'button';
 
     const img = document.createElement('img');
@@ -103,19 +89,25 @@ console.log('currentFilterTitleElement', currentFilterTitleElement)
     btn.appendChild(img);
     btn.appendChild(label);
     frag.appendChild(btn);
+
+    scrawl.addNativeListener('click', requestStarterFilter, btn);
   });
 
   starterGrid.replaceChildren(frag);
 
-  // DOM manipulation requires time to settle
-  setTimeout(() => {
 
-    scrawl.addNativeListener(
-      'click',
-      (e) => requestStarterFilter(e),
-      '.starter-button',
-    );
-  }, 200);
+  // We always start with a grayscale filter on page load
+  const starter = starterFilters['SC-starter-filter_grayscale'],
+    filter = canvas.actionPacket(starter.packet);
+
+  currentFilterWrapper = wrap(filter, starter.form);
+  currentFilterInitialValues = currentFilterWrapper.toString();
+
+  picture.clearFilters();
+  picture.addFilters(currentFilterWrapper.filter);
+
+  currentFilterTitleElement = dom['current-filter-name'];
+  currentFilterTitleElement.textContent = starter.readableName;
 
   return {};
 };
