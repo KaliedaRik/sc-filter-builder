@@ -66,6 +66,10 @@
   --range-pin-border-disabled: rgb(220 220 220 / 1);
 
   --advice-color: rgb(220 0 0 / 1);
+
+  /* Filter action button top border colors */
+  --group-color-channel-filters: rgb(160 0 0 / 1);
+  --group-convolution-filters: rgb(0 160 0 / 1);
 }
 
 *:focus {
@@ -403,6 +407,13 @@ main {
     margin: 0;
     padding: 0;
     font-size: 90%;
+  }
+
+  &.group-color-channel-filters {
+    border-top-color: var(--group-color-channel-filters);
+  }
+  &.group-convolution-filters {
+    border-top-color: var(--group-convolution-filters);
   }
 }
 

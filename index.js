@@ -73,8 +73,6 @@ const dom = scrawl.initializeDomInputs([
   ['input', 'image-scale', '1'],
 ]);
 
-console.log('dom', dom)
-
 
 // ------------------------------------------------------------------------
 // Start the page running
@@ -122,80 +120,6 @@ scrawl.makeRender({
 
 // ------------------------------------------------------------------------
 // Development 
-// - temporary artefacts used while developing functionality
-// - affects both this repo and required changes in Scrawl-canvas repo
 // ------------------------------------------------------------------------
 
-// scrawl.makeLabel({
-
-//   name: 'temp-label',
-//   group: builderCanvas.get('baseGroup'),
-//   text: 'Filter builder area',
-//   start: ['center', 'center'],
-//   handle: ['center', 'center'],
-//   fontString: '2rem Arial, sans-serif',
-// })
-
-// const el = scrawl.findElement('my-test-element');
-
-// el.set({
-//   start: ['center', 10],
-//   handle: ['center', 0],
-//   width: '40%',
-//   height: 'auto',
-//   css: {
-//     border: '1px dotted black',
-//     backgroundColor: 'rgb(255 255 0 / 0.5)',
-//     padding: '0.5rem 1rem',
-//   },
-// });
-
-// scrawl.makeWheel({
-
-//   name: 'temp-wheel-1',
-//   group: builderCanvas.get('baseGroup'),
-//   radius: 10,
-//   fillStyle: 'red',
-//   handle: ['center', 'center'],
-//   pivot: 'my-test-element',
-//   lockTo: 'pivot',
-
-// }).clone({
-
-//   name: 'temp-wheel-2',
-//   fillStyle: 'green',
-//   pivotCorner: 'topLeft',
-//   offsetY: 10,
-
-// }).clone({
-
-//   name: 'temp-wheel-3',
-//   fillStyle: 'blue',
-//   pivotCorner: 'topRight',
-
-// }).clone({
-
-//   name: 'temp-wheel-4',
-//   fillStyle: 'yellow',
-//   pivotCorner: 'bottomRight',
-//   offsetY: -10,
-
-// }).clone({
-
-//   name: 'temp-wheel-5',
-//   fillStyle: 'lightgreen',
-//   pivotCorner: 'bottomLeft',
-// });
-
-// const stackDragGroup = scrawl.makeGroup({ name: 'stack-drag-group' });
-// stackDragGroup.addArtefacts('my-test-element');
-
-// scrawl.makeDragZone({
-//   zone: builderStack,
-//   collisionGroup: stackDragGroup,
-//   endOn: ['up', 'leave'],
-//   preventTouchDefaultWhenDragging: true,
-//   processingOrder: 2,
-// });
-
-// console.log(scrawl.library);
+console.log(scrawl.library);

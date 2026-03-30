@@ -3456,9 +3456,11 @@ F.presentation = [...defaultPresentation];
 F = filterSchemas.zoomBlur = structuredClone(actionSchemas['zoom-blur']);
 F.presentation = [...defaultPresentation];
 
+
 export const getFilterSchema = (name) => {
 
   if (filterSchemas[name]) return structuredClone(filterSchemas[name]);
+  if (actionSchemas[name]) return structuredClone(actionSchemas[name]);
   return null;
 };
 

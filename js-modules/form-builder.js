@@ -89,6 +89,8 @@ F.kill = function () {
   return true;
 };
 
+const actionWrapperLibrary = {};
+
 
 // FilterActionWrapper object - constructor
 const FilterActionWrapper = function (items) {
@@ -98,14 +100,12 @@ const FilterActionWrapper = function (items) {
   this.action = items.action;
   this.formSchema = items.formSchema;
 
-  this.formKeys = [];
-  this.killFunctions = [];
+  this.killList = [];
+
+  actionWrapperLibrary[items.id] = this;
 
   this.formElement = generateFormHtml(this);
   this.buttonElement = generateButtonHtml(this);
-  this.observer = () => {};
-
-  this.killList = [];
 
   return this;
 };
@@ -121,6 +121,8 @@ A.kill = function () {
 
   this.formElement.remove();
   this.buttonElement.remove();
+
+  delete actionWrapperLibrary[this.id];
 };
 
 A.setters = {};
@@ -154,12 +156,20 @@ A.set = function (items) {
 };
 
 
+const actionGroupCSS = {
+  ['Color channel filter']: 'group-color-channel-filters',
+  ['Convolution filter']: 'group-convolution-filters',
+};
+
+
 // Generate the HTML for the filter action form
 const generateFormHtml = (actionWrapper) => {
 
-console.log('generateFormHtml actionWrapper', actionWrapper)
+  const id = `form_${actionWrapper.id}`;
+
   const details = document.createElement('details');
-  details.id = `form_${actionWrapper.id}`;
+  details.id = id;
+  details.setAttribute('data-action-wrapper', actionWrapper.id);
   details.setAttribute('open', '');
 
   const summary = document.createElement('summary');
@@ -174,8 +184,7 @@ console.log('generateFormHtml actionWrapper', actionWrapper)
   summarySpan2.textContent = `(${actionWrapper.id.substring(0, 8)})`;
   summary.appendChild(summarySpan2);
 
-  const controls = document.createElement('div');
-  controls.textContent = 'Filter controls will go here';
+  const controls = generateFormControls(id, actionWrapper.formSchema, actionWrapper.killList);
 
   details.appendChild(summary);
   details.appendChild(controls);
@@ -185,6 +194,24 @@ console.log('generateFormHtml actionWrapper', actionWrapper)
   return details;
 };
 
+const generateFormControls = (id, schema, killList) => {
+
+  // console.log('generateFormControls id:', id);
+  // console.log('generateFormControls schema:', schema);
+  // console.log('generateFormControls killList:', killList);
+
+  const controls = document.createElement('div');
+  controls.textContent = 'Filter controls will go wherever';
+
+  return controls;
+};
+
+const createEventsForFormControls = (actionWrapper) => {
+
+  console.log('ready to wire up form', actionWrapper);
+
+  console.log('library', actionWrapperLibrary);
+};
 
 // Generate the HTML for the builder area button for a filter action
 const generateButtonHtml = (actionWrapper) => {
@@ -192,6 +219,8 @@ const generateButtonHtml = (actionWrapper) => {
   const button = document.createElement('button');
   button.id = `button_${actionWrapper.id}`;
   button.classList.add('graph-action-button');
+  button.classList.add(actionGroupCSS[actionWrapper.formSchema.group]);
+  button.setAttribute('data-action-wrapper', actionWrapper.id);
 
   const title = document.createElement('h2');
   title.textContent = actionWrapper.formSchema.label;
@@ -203,24 +232,7 @@ const generateButtonHtml = (actionWrapper) => {
 
   filterBuilderAreaHold.appendChild(button);
 
-  setTimeout(() => {
-
-    stackHandle.addExistingDomElements(`#${button.id}`);
-
-    const el = scrawlHandle.findElement(button.id);
-
-    el.set({
-      start: ['center', 'center'],
-      handle: ['center', 'center'],
-      dimensions: [200, 80],
-    });
-
-    stackDragGroup.addArtefacts(el);
-
-    actionWrapper.killList.push(el)
-    actionWrapper.buttonElement = el.domElement;
-
-  }, 200);
+  return button;
 };
 
 
@@ -236,6 +248,8 @@ export const initFormBuilder = (scrawl = null, dom = null, stack = null, canvas 
   if (!stack) throw new Error('Stack not passed to initFormBuilder function');
   if (!canvas) throw new Error('Canvas not passed to initFormBuilder function');
 
+
+  // populate module-level variables
   scrawlHandle = scrawl;
   domHandle = dom;
   stackHandle = stack;
@@ -243,6 +257,7 @@ export const initFormBuilder = (scrawl = null, dom = null, stack = null, canvas 
 
   filterControlsPanel = dom['filter-controls-panel'];
   filterBuilderAreaHold = dom['filter-builder-area-hold'];
+
 
   // Make the stack elements draggable
   stackDragGroup = scrawl.makeGroup({ name: 'stack-drag-group' });
@@ -255,5 +270,76 @@ export const initFormBuilder = (scrawl = null, dom = null, stack = null, canvas 
     processingOrder: 2,
   });
 
+
+  // MutationObservers
+  const multiObserver = new MutationObserver(mutationList => {
+
+    for (const mutation of mutationList) {
+
+      if (mutation.type === 'childList' && mutation.addedNodes.length) {
+
+        // Should only be one node at a time in this setup - but just in case ...
+        const nodesToProcess = [...mutation.addedNodes];
+
+        nodesToProcess.forEach(node => {
+
+          const actionWrapperKey = node.dataset.actionWrapper,
+            actionWrapper = actionWrapperLibrary[actionWrapperKey];
+
+          if (actionWrapper) {
+
+            // Import filter action buttons into SC
+            // - direct children appended to #filter-builder-area-hold must be BUTTON.graph-action-button[data-action-wrapper]
+            if (mutation.target.id === 'filter-builder-area-hold' && node.tagName === 'BUTTON') {
+
+              // Only process the element once
+              if (!node.dataset.scAdopted) {
+
+                const id = node.id;
+
+                stackHandle.addExistingDomElements(`#${id}`);
+
+                const el = scrawlHandle.findElement(id);
+
+                el.set({
+                  start: ['center', 'center'],
+                  handle: ['center', 'center'],
+                  dimensions: [200, 80],
+                });
+
+                stackDragGroup.addArtefacts(el);
+
+                actionWrapper.killList.push(el)
+                actionWrapper.buttonElement = el.domElement;
+
+                node.dataset.scAdopted = '1';
+              }
+            }
+
+            // Wire up filter action forms after they get added to the DOM
+            // - direct children appended to #filter-controls-panel must be DETAILS[data-action-wrapper]
+            if (mutation.target.id === 'filter-controls-panel' && node.tagName === 'DETAILS') {
+
+              // Only process the element once
+              if (!node.dataset.formWired) {
+
+                createEventsForFormControls(actionWrapper);
+
+                node.dataset.formWired = '1';
+              }
+            }
+          }
+        });
+      }
+    }
+  });
+
+  multiObserver.observe(filterBuilderAreaHold, { childList: true });
+  multiObserver.observe(filterControlsPanel, { childList: true });
+
   return {};
 };
+
+
+// Development
+console.log(getFilterSchemas());
