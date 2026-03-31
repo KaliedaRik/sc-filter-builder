@@ -87,7 +87,7 @@ const {
   checkLiveView,
 } = initImageDisplay(scrawl, dom, mainCanvas);
 
-initFormBuilder(scrawl, dom, builderStack, builderCanvas);
+initFormBuilder(scrawl, dom, builderStack, builderCanvas, liveView);
 initFilterBuilder(scrawl, dom, builderCanvas, liveView);
 
 

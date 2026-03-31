@@ -4,21 +4,27 @@
 
 
 // Imports
+// ------------------------------------------------------------------------
 import { getFilterSchema, getActionSchema, getFilterSchemas } from './filter-schemas.js';
 import { generateUuid } from './utilities.js';
 
 
-// Handles
+// Module-scoped Handles and variables
+// ------------------------------------------------------------------------
 let scrawlHandle = null,
   domHandle = null,
   stackHandle = null,
   canvasHandle = null,
   filterControlsPanel = null,
   filterBuilderAreaHold = null,
-  stackDragGroup = null;
+  stackDragGroup = null,
+  currentFilter = null,
+  picture = null;
 
 
-// FilterWrapper object - constructor
+// FilterWrapper object
+// - We only care about the last created filter wrapper
+// ------------------------------------------------------------------------
 const FilterWrapper = function (filter, formSchemaName = '') {
 
   this.filter = filter;
@@ -28,13 +34,19 @@ const FilterWrapper = function (filter, formSchemaName = '') {
   this.redoArray = [];
   this.actions = [];
 
+  // Dirty flags
+  this.dirtySort = true;
+
   const actObjects = filter.actions;
 
   if (this.formSchemaName.length && actObjects.length === 1) {
 
+    const id = generateUuid();
+
     // Starter filters come with convenience method forms
     const wrapper = new FilterActionWrapper({
-      id: generateUuid(),
+      id,
+      formId: `form_${id}`,
       order: 0,
       action: actObjects[0],
       formSchema: getFilterSchema(this.formSchemaName),
@@ -47,8 +59,11 @@ const FilterWrapper = function (filter, formSchemaName = '') {
     // Other, more complex, filters - we show the action forms for each action
     actObjects.forEach((act, index) => {
 
+      const id = generateUuid();
+
       const wrapper = new FilterActionWrapper({
-        id: generateUuid(),
+        id,
+        formId: `form_${id}`,
         order: index,
         action: act,
         formSchema: getActionSchema(act.action),
@@ -58,6 +73,9 @@ const FilterWrapper = function (filter, formSchemaName = '') {
     });
   }
 
+  this.undoArray.push(this.toString());
+
+  currentFilter = this;
   return this;
 };
 
@@ -67,14 +85,42 @@ const F = FilterWrapper.prototype = Object.create(Object.prototype);
 
 F.toString = function () {
 
-  return this.actions.map(act => act.toString()).join(',');
+  return `[${this.actions.map(act => act.toString()).join(',')}]`;
 };
 
-F.update = function () {};
+// Undo-redo functionality
+let lastRecordedAction = 0;
+const recordedActionChoke = 200;
+
+F.update = function () {
+
+  const now = Date.now();
+
+  if (lastRecordedAction + recordedActionChoke < now) {
+
+    const undoArray = this.undoArray,
+      lastUpdate = (undoArray.length) ? undoArray[undoArray.length - 1] : '',
+      newUpdate = this.toString();
+
+    if (lastUpdate !== newUpdate) {
+
+      undoArray.push(newUpdate);
+      lastRecordedAction = now;
+    }
+  }
+};
 F.undo = function () {};
 F.redo = function () {};
 
-F.sort = function () {};
+F.sort = function () {
+
+  if (this.dirtySort) {
+
+    this.dirtySort = false;
+
+    // Perform sort
+  }
+};
 
 F.kill = function () {
 
@@ -89,18 +135,35 @@ F.kill = function () {
   return true;
 };
 
+F.updateFilter = function () {
+
+  this.sort();
+
+  const actions = this.actions.map(act => act.action);
+
+  this.filter.set({ actions });
+
+  picture.clearFilters();
+  picture.addFilters(this.filter.name);
+};
+
+
+// FilterActionWrapper object
+// ------------------------------------------------------------------------
 const actionWrapperLibrary = {};
 
-
-// FilterActionWrapper object - constructor
 const FilterActionWrapper = function (items) {
 
   this.id = items.id;
+  this.formId = items.formId;
   this.order = items.order;
   this.action = items.action;
   this.formSchema = items.formSchema;
 
+  // Keep track of everything we need to invoke during cleanup
   this.killList = [];
+
+  this.formCollection = {};
 
   actionWrapperLibrary[items.id] = this;
 
@@ -117,7 +180,11 @@ A.toString = function () {return JSON.stringify(this.action)};
 
 A.kill = function () {
 
-  this.killList.forEach(item => item.kill());
+  this.killList.forEach(item => {
+
+    if (item.kill != null) item.kill();
+    else if (typeof item === 'function') item();
+  });
 
   this.formElement.remove();
   this.buttonElement.remove();
@@ -125,8 +192,7 @@ A.kill = function () {
   delete actionWrapperLibrary[this.id];
 };
 
-A.setters = {};
-
+// Set function
 A.set = function (items) {
 
   let i, key, val, fn;
@@ -136,7 +202,8 @@ A.set = function (items) {
 
   if (keysLen) {
 
-    const setters = this.setters;
+    const setters = this.setters,
+      action = this.action;
 
     for (i = 0; i < keysLen; i++) {
 
@@ -148,24 +215,56 @@ A.set = function (items) {
         fn = setters[key];
 
         if (fn) fn.call(this, val);
-        else this[key] = val;
+        else action[key] = val;
       }
     }
   }
   return this;
 };
 
+// Bespoke setters for more complex action forms
+const S = A.setters = {};
 
+
+// CSS considerations
+// ------------------------------------------------------------------------
 const actionGroupCSS = {
   ['Color channel filter']: 'group-color-channel-filters',
   ['Convolution filter']: 'group-convolution-filters',
 };
 
 
+// Generate the HTML for the builder area button for a filter action
+// ------------------------------------------------------------------------
+const generateButtonHtml = (actionWrapper) => {
+
+  const button = document.createElement('button');
+  button.id = `button_${actionWrapper.id}`;
+  button.classList.add('graph-action-button');
+  button.classList.add(actionGroupCSS[actionWrapper.formSchema.group]);
+  button.setAttribute('data-action-wrapper', actionWrapper.id);
+
+  const title = document.createElement('h2');
+  title.textContent = actionWrapper.formSchema.label;
+  button.appendChild(title);
+
+  const buttonId = document.createElement('p');
+  buttonId.textContent = actionWrapper.id.substring(0, 8);
+  button.appendChild(buttonId);
+
+  // Further processing happens when the element is appended to its DOM parent
+  // - This happens in the MutationObserver function, created during module initialization
+  filterBuilderAreaHold.appendChild(button);
+
+  return button;
+};
+
+
 // Generate the HTML for the filter action form
+// ------------------------------------------------------------------------
 const generateFormHtml = (actionWrapper) => {
 
-  const id = `form_${actionWrapper.id}`;
+  const id = actionWrapper.formId;
 
   const details = document.createElement('details');
   details.id = id;
@@ -184,69 +283,226 @@ const generateFormHtml = (actionWrapper) => {
   summarySpan2.textContent = `(${actionWrapper.id.substring(0, 8)})`;
   summary.appendChild(summarySpan2);
 
-  const controls = generateFormControls(id, actionWrapper.formSchema, actionWrapper.killList);
+  const controls = generateFormControls(id, actionWrapper.formSchema, actionWrapper.formCollection);
 
   details.appendChild(summary);
   details.appendChild(controls);
 
+  // Further processing happens when the element is appended to its DOM parent
+  // - This happens in the MutationObserver function, created during module initialization
   filterControlsPanel.appendChild(details);
 
   return details;
 };
 
-const generateFormControls = (id, schema, killList) => {
-
-  // console.log('generateFormControls id:', id);
-  // console.log('generateFormControls schema:', schema);
-  // console.log('generateFormControls killList:', killList);
+const generateFormControls = (id, schema, formCollection) => {
 
   const controls = document.createElement('div');
-  controls.textContent = 'Filter controls will go wherever';
+  controls.classList.add('form-action-controls-panel');
+
+  schema.presentation.forEach(section => {
+
+    const res = generateFormSection(id, section, schema.controls, formCollection);
+
+    controls.appendChild(res);
+  });
 
   return controls;
 };
 
-const createEventsForFormControls = (actionWrapper) => {
+const generateFormSection = (id, section, controls, formCollection) => {
 
-  console.log('ready to wire up form', actionWrapper);
+  const sect = document.createElement('div');
+  sect.classList.add('form-action-section-panel');
 
-  console.log('library', actionWrapperLibrary);
+  const h3 = document.createElement('h3');
+  h3.textContent = section.header;
+  sect.appendChild(h3);
+
+  section.inputs.forEach(item => {
+
+    const row = createControl(id, controls[item], formCollection);
+    sect.appendChild(row);
+  });
+
+  return sect;
 };
 
-// Generate the HTML for the builder area button for a filter action
-const generateButtonHtml = (actionWrapper) => {
 
-  const button = document.createElement('button');
-  button.id = `button_${actionWrapper.id}`;
-  button.classList.add('graph-action-button');
-  button.classList.add(actionGroupCSS[actionWrapper.formSchema.group]);
-  button.setAttribute('data-action-wrapper', actionWrapper.id);
+// Form controls creation
+// ------------------------------------------------------------------------
+const createControl = (id, data, formCollection) => {
 
-  const title = document.createElement('h2');
-  title.textContent = actionWrapper.formSchema.label;
-  button.appendChild(title);
+  switch (data.controlType) {
 
-  const buttonId = document.createElement('p');
-  buttonId.textContent = actionWrapper.id.substring(0, 8);
-  button.appendChild(buttonId);
+    case 'line-text': return createControl_lineText(id, data, formCollection);
+    case 'number': return createControl_number(id, data, formCollection);
+    default:
+      const el = document.createElement('div');
+      el.textContent = `No function for ${id} - ${data.label}`;
+      return el;
+  }
+};
 
-  filterBuilderAreaHold.appendChild(button);
+const getListenId = (id) => `${id}_listen`;
 
-  return button;
+const createControl_lineText = (id, data, formCollection) => {
+
+  const localId = `${id}_${data.key}`,
+    listenId = getListenId(id);
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-linetext');
+  el.dataset.localId = localId;
+
+  const label = document.createElement('label');
+  label.textContent = data.label;
+  label.setAttribute('for', localId);
+  el.appendChild(label);
+
+  const input = document.createElement('input');
+  input.id = localId;
+  input.name = localId;
+  input.type = 'text';
+  input.value = data.default;
+  input.classList.add(listenId);
+  el.appendChild(input);
+
+  formCollection[localId] = [data.key, 'raw'];
+
+  return el;
+};
+
+const createControl_number = (id, data, formCollection) => {
+
+  const localId = `${id}_${data.key}`,
+    listenId = getListenId(id);
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-number');
+  el.dataset.localId = localId;
+
+  const row1 = document.createElement('div');
+  row1.classList.add('action-control-inputs-for-number-row-1');
+
+  const label = document.createElement('label');
+  label.classList.add('action-control-visible-label');
+  label.textContent = data.label;
+  label.setAttribute('for', `${localId}_number`);
+  row1.appendChild(label);
+
+  const localId_number = `${localId}_number`;
+
+  const numberInput = document.createElement('input');
+  numberInput.id = localId_number;
+  numberInput.name = localId_number;
+  numberInput.type = 'number';
+  numberInput.value = data.default;
+  numberInput.min = data.minValue;
+  numberInput.max = data.maxValue;
+  numberInput.step = data.step;
+  numberInput.classList.add(listenId);
+  row1.appendChild(numberInput);
+
+  formCollection[localId_number] = [data.key, 'float'];
+
+  const row2 = document.createElement('div');
+  row2.classList.add('action-control-inputs-for-number-row-2');
+
+  const hiddenLabel = document.createElement('label');
+  hiddenLabel.classList.add('action-control-hidden-label');
+  hiddenLabel.textContent = `${data.label} for range input`;
+  hiddenLabel.setAttribute('for', `${localId}_range`);
+  row2.appendChild(hiddenLabel);
+
+  const localId_range = `${localId}_range`;
+
+  const rangeInput = document.createElement('input');
+  rangeInput.id = localId_range;
+  rangeInput.name = localId_range;
+  rangeInput.type = 'range';
+  rangeInput.value = data.default;
+  rangeInput.min = data.minValue;
+  rangeInput.max = data.maxValue;
+  rangeInput.step = data.step;
+  rangeInput.classList.add(listenId);
+  row2.appendChild(rangeInput);
+
+  formCollection[localId_range] = [data.key, 'float'];
+
+  el.appendChild(row1);
+  el.appendChild(row2);
+
+  return el;
+};
+
+const createEventsForFormControls = (actionWrapper) => {
+
+  const { formId, formElement, formCollection, formSchema, killList } = actionWrapper;
+  const { controls } = formSchema;
+
+  Object.values(controls).forEach(item => {
+
+    switch (item.controlType) {
+
+      case 'number': {
+
+        const numberEl = formElement.querySelector(`#${formId}_${item.key}_number`),
+          rangeEl = formElement.querySelector(`#${formId}_${item.key}_range`);
+
+        const numberToRange = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+          if (e?.target?.value != null) rangeEl.value = e.target.value;
+        }, numberEl);
+
+        const rangeToNumber = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+          if (e?.target?.value != null) numberEl.value = e.target.value;
+        }, rangeEl);
+
+        killList.push(numberToRange, rangeToNumber);
+        break;
+      };
+    }
+  });
+
+  const listenClass = `.${getListenId(formId)}`;
+
+  const updater = scrawlHandle.makeUpdater({
+
+    event: ['input', 'change'],
+    origin: listenClass,
+
+    target: actionWrapper,
+
+    useNativeListener: true,
+    preventDefault: true,
+
+    updates: formCollection,
+
+    callback: () => {
+
+      currentFilter.updateFilter();
+      currentFilter.update();
+    }
+  });
+
+  killList.push(updater);
 };
 
 
 // Exported wrapper function
+// ------------------------------------------------------------------------
 export const wrap = (filter, form) => new FilterWrapper(filter, form);
 
 
 // Export for initialization 
-export const initFormBuilder = (scrawl = null, dom = null, stack = null, canvas = null) => {
+// ------------------------------------------------------------------------
+export const initFormBuilder = (scrawl = null, dom = null, stack = null, canvas = null, liveView = null) => {
 
   if (!scrawl) throw new Error('Scrawl library not passed to initFormBuilder function');
   if (!dom) throw new Error('DOM mappings not passed to initFormBuilder function');
   if (!stack) throw new Error('Stack not passed to initFormBuilder function');
   if (!canvas) throw new Error('Canvas not passed to initFormBuilder function');
+  if (!liveView) throw new Error('Picture entity "liveView" not passed to initFormBuilder function');
 
 
   // populate module-level variables
@@ -254,6 +510,7 @@ export const initFormBuilder = (scrawl = null, dom = null, stack = null, canvas 
   domHandle = dom;
   stackHandle = stack;
   canvasHandle = canvas;
+  picture = liveView;
 
   filterControlsPanel = dom['filter-controls-panel'];
   filterBuilderAreaHold = dom['filter-builder-area-hold'];
@@ -337,9 +594,12 @@ export const initFormBuilder = (scrawl = null, dom = null, stack = null, canvas 
   multiObserver.observe(filterBuilderAreaHold, { childList: true });
   multiObserver.observe(filterControlsPanel, { childList: true });
 
+
+  // Return object
   return {};
 };
 
 
 // Development
+// ------------------------------------------------------------------------
 console.log(getFilterSchemas());

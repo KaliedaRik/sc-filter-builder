@@ -18,18 +18,21 @@ Note that every filter created or imported needs to have a name unique to the cu
 const requiredControls = {
   lineIn: {
     controlType: 'line-text',
-    default: '',
+    key: 'lineIn',
+    default: 'work',
     label: 'Line in',
     description: 'ID string of chained filter input',
   },
   lineOut: {
     controlType: 'line-text',
-    default: '',
+    key: 'lineOut',
+    default: 'work',
     label: 'Line out',
     description: 'ID string of chained filter output',
   },
   opacity: {
     controlType: 'number',
+    key: 'opacity',
     default: 1,
     minValue: 0,
     maxValue: 1,
@@ -74,36 +77,42 @@ const actionSchemas = {
       includeRed: {
         controlType: 'boolean',
         default: true,
+        key: 'includeRed',
         label: 'Include red channel',
         description: 'Copy the alpha channel value to the red channel',
       },
       includeGreen: {
         controlType: 'boolean',
         default: true,
+        key: 'includeGreen',
         label: 'Include green channel',
         description: 'Copy the alpha channel value to the green channel',
       },
       includeBlue: {
         controlType: 'boolean',
         default: true,
+        key: 'includeBlue',
         label: 'Include blue channel',
         description: 'Copy the alpha channel value to the blue channel',
       },
       excludeRed: {
         controlType: 'boolean',
         default: true,
+        key: 'excludeRed',
         label: 'Exclude red channel',
         description: 'If includeRed is false, set the red channel\'s value to 0',
       },
       excludeGreen: {
         controlType: 'boolean',
         default: true,
+        key: 'excludeGreen',
         label: 'Exclude green channel',
         description: 'If includeGreen is false, set the green channel\'s value to 0',
       },
       excludeBlue: {
         controlType: 'boolean',
         default: true,
+        key: 'excludeBlue',
         label: 'Exclude blue channel',
         description: 'If includeBlue is false, set the blue channel\'s value to 0',
       },
@@ -134,6 +143,7 @@ const actionSchemas = {
       tileWidth: {
         controlType: 'number',
         default: 1,
+        key: 'tileWidth',
         minValue: 0,
         maxValue: 200,
         step: 1,
@@ -143,6 +153,7 @@ const actionSchemas = {
       tileHeight: {
         controlType: 'number',
         default: 1,
+        key: 'tileHeight',
         minValue: 0,
         maxValue: 200,
         step: 1,
@@ -152,6 +163,7 @@ const actionSchemas = {
       offsetX: {
         controlType: 'number',
         default: 0,
+        key: 'offsetX',
         minValue: 0,
         maxValue: 200,
         step: 1,
@@ -161,6 +173,7 @@ const actionSchemas = {
       offsetY: {
         controlType: 'number',
         default: 0,
+        key: 'offsetY',
         minValue: 0,
         maxValue: 200,
         step: 1,
@@ -170,6 +183,7 @@ const actionSchemas = {
       gutterWidth: {
         controlType: 'number',
         default: 1,
+        key: 'gutterWidth',
         minValue: 0,
         maxValue: 200,
         step: 1,
@@ -179,6 +193,7 @@ const actionSchemas = {
       gutterHeight: {
         controlType: 'number',
         default: 1,
+        key: 'gutterHeight',
         minValue: 0,
         maxValue: 200,
         step: 1,
@@ -188,6 +203,7 @@ const actionSchemas = {
       areaAlphaLevels: {
         controlType: 'bespoke-area-alpha',
         default: [255, 0, 0, 0],
+        key: 'areaAlphaLevels',
         label: 'Tile quadrant alpha levels',
         description: 'Array of four alpha values between 0 and 255 for each quadrant, in the order [tile-tile, tile-gutter, gutter-tile, gutter-gutter]',
       },
@@ -206,36 +222,42 @@ const actionSchemas = {
       excludeRed: {
         controlType: 'boolean',
         default: false,
+        key: 'excludeRed',
         label: 'Exclude red channel',
         description: 'Set red channel value to zero',
       },
       excludeGreen: {
         controlType: 'boolean',
         default: false,
+        key: 'excludeGreen',
         label: 'Exclude green channel',
         description: 'Set green channel value to zero',
       },
       excludeBlue: {
         controlType: 'boolean',
         default: false,
+        key: 'excludeBlue',
         label: 'Exclude blue channel',
         description: 'Set blue channel value to zero',
       },
       includeRed: {
         controlType: 'boolean',
         default: false,
+        key: 'includeRed',
         label: 'Include red channel',
         description: 'Include red channel in the averaging calculation',
       },
       includeGreen: {
         controlType: 'boolean',
         default: false,
+        key: 'includeGreen',
         label: 'Include green channel',
         description: 'Include green channel in the averaging calculation',
       },
       includeBlue: {
         controlType: 'boolean',
         default: false,
+        key: 'includeBlue',
         label: 'Include blue channel',
         description: 'Include blue channel in the averaging calculation',
       },
@@ -254,12 +276,14 @@ const actionSchemas = {
       lineMix: {
         controlType: 'line-text',
         default: '',
+        key: 'lineMix',
         label: 'Line mix',
         description: '',
       },
       offsetX: {
         controlType: 'number',
         default: 0,
+        key: 'offsetX',
         minValue: -500,
         maxValue: 500,
         step: 1,
@@ -269,6 +293,7 @@ const actionSchemas = {
       offsetY: {
         controlType: 'number',
         default: 0,
+        key: 'offsetY',
         minValue: -500,
         maxValue: 500,
         step: 1,
@@ -278,6 +303,7 @@ const actionSchemas = {
       blend: {
         controlType: 'select',
         default: 'normal',
+        key: 'blend',
         options: ['normal', 'color-burn', 'color-dodge', 'darken', 'difference', 'exclusion', 'hard-light', 'lighten', 'lighter', 'multiply', 'overlay', 'screen', 'soft-light', 'color', 'hue', 'luminosity', 'saturation', 'hue-match', 'chroma-match'],
         label: 'Blend effect',
         description: '',
@@ -297,42 +323,49 @@ const actionSchemas = {
       includeRed: {
         controlType: 'boolean',
         default: true,
+        key: 'includeRed',
         label: 'Include red channel',
         description: '',
       },
       includeGreen: {
         controlType: 'boolean',
         default: true,
+        key: 'includeGreen',
         label: 'Include green channel',
         description: '',
       },
       includeBlue: {
         controlType: 'boolean',
         default: true,
+        key: 'includeBlue',
         label: 'Include blue channel',
         description: '',
       },
       includeAlpha: {
         controlType: 'boolean',
         default: false,
+        key: 'includeAlpha',
         label: 'Include alpha channel',
         description: '',
       },
       excludeTransparentPixels: {
         controlType: 'boolean',
         default: false,
+        key: 'excludeTransparentPixels',
         label: 'Exclude transparent pixels',
         description: '',
       },
       processHorizontal: {
         controlType: 'boolean',
         default: true,
+        key: 'processHorizontal',
         label: 'Process horizontal',
         description: '',
       },
       radiusHorizontal: {
         controlType: 'number',
         default: 1,
+        key: 'radiusHorizontal',
         minValue: 0,
         maxValue: 60,
         step: 1,
@@ -342,6 +375,7 @@ const actionSchemas = {
       stepHorizontal: {
         controlType: 'number',
         default: 1,
+        key: 'stepHorizontal',
         minValue: 0,
         maxValue: 20,
         step: 1,
@@ -351,6 +385,7 @@ const actionSchemas = {
       passesHorizontal: {
         controlType: 'number',
         default: 1,
+        key: 'passesHorizontal',
         minValue: 0,
         maxValue: 10,
         step: 1,
@@ -360,12 +395,14 @@ const actionSchemas = {
       processVertical: {
         controlType: 'boolean',
         default: true,
+        key: 'processVertical',
         label: 'Process vertical',
         description: '',
       },
       radiusVertical: {
         controlType: 'number',
         default: 1,
+        key: 'radiusVertical',
         minValue: 0,
         maxValue: 60,
         step: 1,
@@ -375,6 +412,7 @@ const actionSchemas = {
       stepVertical: {
         controlType: 'number',
         default: 1,
+        key: 'stepVertical',
         minValue: 0,
         maxValue: 20,
         step: 1,
@@ -384,6 +422,7 @@ const actionSchemas = {
       passesVertical: {
         controlType: 'number',
         default: 1,
+        key: 'passesVertical',
         minValue: 0,
         maxValue: 10,
         step: 1,
@@ -405,18 +444,21 @@ const actionSchemas = {
       includeRed: {
         controlType: 'boolean',
         default: true,
+        key: 'includeRed',
         label: 'Include red channel',
         description: 'To exclude this channel from the averaging calculation, make this flag false',
       },
       includeGreen: {
         controlType: 'boolean',
         default: true,
+        key: 'includeGreen',
         label: 'Include green channel',
         description: 'To exclude this channel from the averaging calculation, make this flag false',
       },
       includeBlue: {
         controlType: 'boolean',
         default: true,
+        key: 'includeBlue',
         label: 'Include blue channel',
         description: 'To exclude this channel from the averaging calculation, make this flag false',
       },
@@ -435,12 +477,14 @@ const actionSchemas = {
       ranges: {
         controlType: 'bespoke-chroma-ranges',
         default: [],
+        key: 'ranges',
         label: 'Color ranges for removal',
         description: 'An array of arrays, each member array comprised of 6 integer numbers between 0 and 255 representing [lowRed, lowGreen, lowBlue, highRed, highGreen, highBlue]',
       },
       featherRed: {
         controlType: 'number',
         default: 0,
+        key: 'featherRed',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -450,6 +494,7 @@ const actionSchemas = {
       featherGreen: {
         controlType: 'number',
         default: 0,
+        key: 'featherGreen',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -459,6 +504,7 @@ const actionSchemas = {
       featherBlue: {
         controlType: 'number',
         default: 0,
+        key: 'featherBlue',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -480,6 +526,7 @@ const actionSchemas = {
       lowRed: {
         controlType: 'number',
         default: 0,
+        key: 'lowRed',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -489,6 +536,7 @@ const actionSchemas = {
       lowGreen: {
         controlType: 'number',
         default: 0,
+        key: 'lowGreen',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -498,6 +546,7 @@ const actionSchemas = {
       lowBlue: {
         controlType: 'number',
         default: 0,
+        key: 'lowBlue',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -507,6 +556,7 @@ const actionSchemas = {
       highRed: {
         controlType: 'number',
         default: 255,
+        key: 'highRed',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -516,6 +566,7 @@ const actionSchemas = {
       highGreen: {
         controlType: 'number',
         default: 255,
+        key: 'highGreen',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -525,6 +576,7 @@ const actionSchemas = {
       highBlue: {
         controlType: 'number',
         default: 255,
+        key: 'highBlue',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -546,6 +598,7 @@ const actionSchemas = {
       red: {
         controlType: 'number',
         default: 0,
+        key: 'red',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -555,6 +608,7 @@ const actionSchemas = {
       green: {
         controlType: 'number',
         default: 255,
+        key: 'green',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -564,6 +618,7 @@ const actionSchemas = {
       blue: {
         controlType: 'number',
         default: 0,
+        key: 'blue',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -573,6 +628,7 @@ const actionSchemas = {
       transparentAt: {
         controlType: 'number',
         default: 0,
+        key: 'transparentAt',
         minValue: 0,
         maxValue: 1,
         step: 0.01,
@@ -582,6 +638,7 @@ const actionSchemas = {
       opaqueAt: {
         controlType: 'number',
         default: 1,
+        key: 'opaqueAt',
         minValue: 0,
         maxValue: 1,
         step: 0.01,
@@ -603,12 +660,14 @@ const actionSchemas = {
       lineMix: {
         controlType: 'line-text',
         default: '',
+        key: 'lineMix',
         label: 'Line mix',
         description: '',
       },
       offsetX: {
         controlType: 'number',
         default: 0,
+        key: 'offsetX',
         minValue: -500,
         maxValue: 500,
         step: 1,
@@ -618,6 +677,7 @@ const actionSchemas = {
       offsetY: {
         controlType: 'number',
         default: 0,
+        key: 'offsetY',
         minValue: -500,
         maxValue: 500,
         step: 1,
@@ -627,6 +687,7 @@ const actionSchemas = {
       compose: {
         controlType: 'select',
         default: 'source-over',
+        key: 'compose',
         options: ['source-over', 'source-in', 'source-out', 'source-atop', 'source-only', 'destination-over', 'destination-in', 'destination-out', 'destination-atop', 'destination-only', 'xor', 'clear'],
         label: 'Composition effect',
         description: '',
@@ -646,6 +707,7 @@ const actionSchemas = {
       width: {
         controlType: 'number',
         default: 3,
+        key: 'width',
         minValue: 0,
         maxValue: 10,
         step: 1,
@@ -655,6 +717,7 @@ const actionSchemas = {
       height: {
         controlType: 'number',
         default: 3,
+        key: 'height',
         minValue: 0,
         maxValue: 10,
         step: 1,
@@ -664,6 +727,7 @@ const actionSchemas = {
       offsetX: {
         controlType: 'number',
         default: 1,
+        key: 'offsetX',
         minValue: 0,
         maxValue: 10,
         step: 1,
@@ -673,6 +737,7 @@ const actionSchemas = {
       offsetY: {
         controlType: 'number',
         default: 1,
+        key: 'offsetY',
         minValue: 0,
         maxValue: 10,
         step: 1,
@@ -682,30 +747,35 @@ const actionSchemas = {
       includeRed: {
         controlType: 'boolean',
         default: false,
+        key: 'includeRed',
         label: 'Include red channel',
         description: '',
       },
       includeGreen: {
         controlType: 'boolean',
         default: false,
+        key: 'includeGreen',
         label: 'Include green channel',
         description: '',
       },
       includeBlue: {
         controlType: 'boolean',
         default: false,
+        key: 'includeBlue',
         label: 'Include blue channel',
         description: '',
       },
       includeAlpha: {
         controlType: 'boolean',
         default: true,
+        key: 'includeAlpha',
         label: 'Include alpha channel',
         description: '',
       },
       operation: {
         controlType: 'select',
         default: 'mean',
+        key: 'operation',
         options: ['mean', 'lowest', 'highest'],
         label: 'Operation',
         description: '',
@@ -725,6 +795,7 @@ const actionSchemas = {
       strength: {
         controlType: 'number',
         default: 0.85,
+        key: 'strength',
         minValue: 0,
         maxValue: 2,
         step: 0.01,
@@ -734,6 +805,7 @@ const actionSchemas = {
       radius: {
         controlType: 'number',
         default: 1.25,
+        key: 'radius',
         minValue: 0,
         maxValue: 10,
         step: 0.05,
@@ -743,6 +815,7 @@ const actionSchemas = {
       level: {
         controlType: 'number',
         default: 0.015,
+        key: 'level',
         minValue: 0,
         maxValue: 0.05,
         step: 0.001,
@@ -752,6 +825,7 @@ const actionSchemas = {
       smoothing: {
         controlType: 'number',
         default: 0.015,
+        key: 'smoothing',
         minValue: 0,
         maxValue: 0.05,
         step: 0.001,
@@ -761,6 +835,7 @@ const actionSchemas = {
       clamp: {
         controlType: 'number',
         default: 0.08,
+        key: 'clamp',
         minValue: 0,
         maxValue: 0.2,
         step: 0.01,
@@ -770,6 +845,7 @@ const actionSchemas = {
       passes: {
         controlType: 'number',
         default: 8,
+        key: 'passes',
         minValue: 0,
         maxValue: 20,
         step: 1,
@@ -779,18 +855,21 @@ const actionSchemas = {
       deriveMaskFromImage: {
         controlType: 'boolean',
         default: true,
+        key: 'deriveMaskFromImage',
         label: 'Derive mask from image',
         description: '',
       },
       multiscale: {
         controlType: 'boolean',
         default: true,
+        key: 'multiscale',
         label: 'Multiscale',
         description: '',
       },
       multiscaleFinalPasses: {
         controlType: 'number',
         default: 2,
+        key: 'multiscaleFinalPasses',
         minValue: 0,
         maxValue: 4,
         step: 1,
@@ -812,12 +891,14 @@ const actionSchemas = {
       lineMix: {
         controlType: 'line-text',
         default: '',
+        key: 'lineMix',
         label: 'Line mix',
         description: '',
       },
       channelX: {
         controlType: 'select',
         default: 'red',
+        key: 'channelX',
         options: ['red', 'green', 'blue', 'alpha'],
         label: 'X channel',
         description: '',
@@ -825,6 +906,7 @@ const actionSchemas = {
       channelY: {
         controlType: 'select',
         default: 'green',
+        key: 'channelY',
         options: ['red', 'green', 'blue', 'alpha'],
         label: 'Y channel',
         description: '',
@@ -832,6 +914,7 @@ const actionSchemas = {
       offsetX: {
         controlType: 'number',
         default: 0,
+        key: 'offsetX',
         minValue: -200,
         maxValue: 200,
         step: 1,
@@ -841,6 +924,7 @@ const actionSchemas = {
       offsetY: {
         controlType: 'number',
         default: 0,
+        key: 'offsetY',
         minValue: -200,
         maxValue: 200,
         step: 1,
@@ -850,6 +934,7 @@ const actionSchemas = {
       scaleX: {
         controlType: 'number',
         default: 0,
+        key: 'scaleX',
         minValue: 0,
         maxValue: 100,
         step: 1,
@@ -859,6 +944,7 @@ const actionSchemas = {
       scaleY: {
         controlType: 'number',
         default: 0,
+        key: 'scaleY',
         minValue: 0,
         maxValue: 100,
         step: 1,
@@ -868,12 +954,14 @@ const actionSchemas = {
       transparentEdges: {
         controlType: 'boolean',
         default: false,
+        key: 'transparentEdges',
         label: 'Transparent edges',
         description: '',
       },
       useInputAsMask: {
         controlType: 'boolean',
         default: false,
+        key: 'useInputAsMask',
         label: 'Use input as mask',
         description: '',
       },
@@ -892,6 +980,7 @@ const actionSchemas = {
       angle: {
         controlType: 'number',
         default: 0,
+        key: 'angle',
         minValue: 0,
         maxValue: 360,
         step: 0.1,
@@ -901,6 +990,7 @@ const actionSchemas = {
       strength: {
         controlType: 'number',
         default: 3,
+        key: 'strength',
         minValue: 0,
         maxValue: 10,
         step: 0.1,
@@ -910,6 +1000,7 @@ const actionSchemas = {
       tolerance: {
         controlType: 'number',
         default: 1,
+        key: 'tolerance',
         minValue: 0,
         maxValue: 50,
         step: 1,
@@ -919,12 +1010,14 @@ const actionSchemas = {
       keepOnlyChangedAreas: {
         controlType: 'boolean',
         default: false,
+        key: 'keepOnlyChangedAreas',
         label: 'Keep only changed areas',
         description: '',
       },
       postProcessResults: {
         controlType: 'boolean',
         default: true,
+        key: 'postProcessResults',
         label: 'Post-process results',
         description: '',
       },
@@ -943,6 +1036,7 @@ const actionSchemas = {
       red: {
         controlType: 'number',
         default: 0,
+        key: 'red',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -952,6 +1046,7 @@ const actionSchemas = {
       green: {
         controlType: 'number',
         default: 0,
+        key: 'green',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -961,6 +1056,7 @@ const actionSchemas = {
       blue: {
         controlType: 'number',
         default: 0,
+        key: 'blue',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -970,6 +1066,7 @@ const actionSchemas = {
       alpha: {
         controlType: 'number',
         default: 255,
+        key: 'alpha',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -979,6 +1076,7 @@ const actionSchemas = {
       excludeAlpha: {
         controlType: 'boolean',
         default: true,
+        key: 'excludeAlpha',
         label: 'Exclude transparent pixels',
         description: '',
       },
@@ -997,42 +1095,49 @@ const actionSchemas = {
       includeRed: {
         controlType: 'boolean',
         default: true,
+        key: 'includeRed',
         label: 'Include red channel',
         description: '',
       },
       includeGreen: {
         controlType: 'boolean',
         default: true,
+        key: 'includeGreen',
         label: 'Include green channel',
         description: '',
       },
       includeBlue: {
         controlType: 'boolean',
         default: true,
+        key: 'includeBlue',
         label: 'Include blue channel',
         description: '',
       },
       includeAlpha: {
         controlType: 'boolean',
         default: true,
+        key: 'includeAlpha',
         label: 'Include alpha channel',
         description: '',
       },
       excludeTransparentPixels: {
         controlType: 'boolean',
         default: false,
+        key: 'excludeTransparentPixels',
         label: 'Exclude transparent pixels',
         description: '',
       },
       premultiply: {
         controlType: 'boolean',
         default: false,
+        key: 'premultiply',
         label: 'Premultiply',
         description: '',
       },
       radiusHorizontal: {
         controlType: 'number',
         default: 1,
+        key: 'radiusHorizontal',
         minValue: 0,
         maxValue: 200,
         step: 0.5,
@@ -1042,6 +1147,7 @@ const actionSchemas = {
       radiusVertical: {
         controlType: 'number',
         default: 1,
+        key: 'radiusVertical',
         minValue: 0,
         maxValue: 200,
         step: 0.5,
@@ -1051,6 +1157,7 @@ const actionSchemas = {
       angle: {
         controlType: 'number',
         default: 1,
+        key: 'angle',
         minValue: 0,
         maxValue: 360,
         step: 0.5,
@@ -1072,18 +1179,21 @@ const actionSchemas = {
       useMixedChannel: {
         controlType: 'boolean',
         default: true,
+        key: 'useMixedChannel',
         label: 'Use mixed channel',
         description: 'When true, all channels use the same offset levels',
       },
       seed: {
         controlType: 'text',
         default: 'default-seed',
+        key: 'seed',
         label: 'Random engine seed',
         description: '',
       },
       step: {
         controlType: 'number',
         default: 1,
+        key: 'step',
         minValue: 1,
         maxValue: 50,
         step: 1,
@@ -1093,6 +1203,7 @@ const actionSchemas = {
       offsetMin: {
         controlType: 'number',
         default: 0,
+        key: 'offsetMin',
         minValue: -100,
         maxValue: 100,
         step: 1,
@@ -1102,6 +1213,7 @@ const actionSchemas = {
       offsetMax: {
         controlType: 'number',
         default: 0,
+        key: 'offsetMax',
         minValue: -100,
         maxValue: 100,
         step: 1,
@@ -1111,6 +1223,7 @@ const actionSchemas = {
       offsetRedMin: {
         controlType: 'number',
         default: 0,
+        key: 'offsetRedMin',
         minValue: -100,
         maxValue: 100,
         step: 1,
@@ -1120,6 +1233,7 @@ const actionSchemas = {
       offsetRedMax: {
         controlType: 'number',
         default: 0,
+        key: 'offsetRedMax',
         minValue: -100,
         maxValue: 100,
         step: 1,
@@ -1129,6 +1243,7 @@ const actionSchemas = {
       offsetGreenMin: {
         controlType: 'number',
         default: 0,
+        key: 'offsetGreenMin',
         minValue: -100,
         maxValue: 100,
         step: 1,
@@ -1138,6 +1253,7 @@ const actionSchemas = {
       offsetGreenMax: {
         controlType: 'number',
         default: 0,
+        key: 'offsetGreenMax',
         minValue: -100,
         maxValue: 100,
         step: 1,
@@ -1147,6 +1263,7 @@ const actionSchemas = {
       offsetBlueMin: {
         controlType: 'number',
         default: 0,
+        key: 'offsetBlueMin',
         minValue: -100,
         maxValue: 100,
         step: 1,
@@ -1156,6 +1273,7 @@ const actionSchemas = {
       offsetBlueMax: {
         controlType: 'number',
         default: 0,
+        key: 'offsetBlueMax',
         minValue: -100,
         maxValue: 100,
         step: 1,
@@ -1165,6 +1283,7 @@ const actionSchemas = {
       offsetAlphaMin: {
         controlType: 'number',
         default: 0,
+        key: 'offsetAlphaMin',
         minValue: -100,
         maxValue: 100,
         step: 1,
@@ -1174,6 +1293,7 @@ const actionSchemas = {
       offsetAlphaMax: {
         controlType: 'number',
         default: 0,
+        key: 'offsetAlphaMax',
         minValue: -100,
         maxValue: 100,
         step: 1,
@@ -1183,18 +1303,21 @@ const actionSchemas = {
       transparentEdges: {
         controlType: 'boolean',
         default: false,
+        key: 'transparentEdges',
         label: 'Transparent edges',
         description: '',
       },
       useInputAsMask: {
         controlType: 'boolean',
         default: false,
+        key: 'useInputAsMask',
         label: 'Use input as mask',
         description: '',
       },
       level: {
         controlType: 'number',
         default: 0,
+        key: 'level',
         minValue: 0,
         maxValue: 1,
         step: 0.01,
@@ -1228,18 +1351,21 @@ const actionSchemas = {
       includeRed: {
         controlType: 'boolean',
         default: true,
+        key: 'includeRed',
         label: 'Include red channel',
         description: '',
       },
       includeGreen: {
         controlType: 'boolean',
         default: true,
+        key: 'includeGreen',
         label: 'Include green channel',
         description: '',
       },
       includeBlue: {
         controlType: 'boolean',
         default: true,
+        key: 'includeBlue',
         label: 'Include blue channel',
         description: '',
       },
@@ -1258,24 +1384,28 @@ const actionSchemas = {
       red: {
         controlType: 'bespoke-lock-channels-to-levels',
         default: [0],
+        key: 'red',
         label: 'Red channel pins',
         description: 'An array of integer numbers, each between 0 and 255',
       },
       green: {
         controlType: 'bespoke-lock-channels-to-levels',
         default: [0],
+        key: 'green',
         label: 'Green channel pins',
         description: 'An array of integer numbers, each between 0 and 255',
       },
       blue: {
         controlType: 'bespoke-lock-channels-to-levels',
         default: [0],
+        key: 'blue',
         label: 'Blue channel pins',
         description: 'An array of integer numbers, each between 0 and 255',
       },
       alpha: {
         controlType: 'bespoke-lock-channels-to-levels',
         default: [255],
+        key: 'alpha',
         label: 'Alpha channel pins',
         description: 'An array of integer numbers, each between 0 and 255',
       },
@@ -1305,12 +1435,14 @@ const actionSchemas = {
       useNaturalGrayscale: {
         controlType: 'boolean',
         default: false,
+        key: 'useNaturalGrayscale',
         label: 'Use natural grayscale',
         description: 'When set to true, uses a grayscaled image rather than a simple gray image as the base for the filter\'s work',
       },
       gradient: {
         controlType: 'bespoke-map-to-gradient',
         default: null,
+        key: 'gradient',
         label: 'Gradient',
         description: 'Expects to receive a Scrawl-canvas LinearGradient object, or the name value of the object. We need to create a gradient builder mini-tool before we can use this filter in the main tool',
       },
@@ -1329,30 +1461,35 @@ const actionSchemas = {
       includeRed: {
         controlType: 'boolean',
         default: true,
+        key: 'includeRed',
         label: 'Include red channel',
         description: '',
       },
       includeGreen: {
         controlType: 'boolean',
         default: true,
+        key: 'includeGreen',
         label: 'Include green channel',
         description: '',
       },
       includeBlue: {
         controlType: 'boolean',
         default: true,
+        key: 'includeBlue',
         label: 'Include blue channel',
         description: '',
       },
       includeAlpha: {
         controlType: 'boolean',
         default: false,
+        key: 'includeAlpha',
         label: 'Include alpha channel',
         description: '',
       },
       width: {
         controlType: 'number',
         default: 3,
+        key: 'width',
         minValue: 1,
         maxValue: 20,
         step: 1,
@@ -1362,6 +1499,7 @@ const actionSchemas = {
       height: {
         controlType: 'number',
         default: 3,
+        key: 'height',
         minValue: 1,
         maxValue: 20,
         step: 1,
@@ -1371,18 +1509,21 @@ const actionSchemas = {
       premultiply: {
         controlType: 'boolean',
         default: false,
+        key: 'premultiply',
         label: 'Premultiply',
         description: '',
       },
       useInputAsMask: {
         controlType: 'boolean',
         default: false,
+        key: 'useInputAsMask',
         label: 'Use input as mask',
         description: '',
       },
       offsetX: {
         controlType: 'number',
         default: 1,
+        key: 'offsetX',
         minValue: 0,
         maxValue: 19,
         step: 1,
@@ -1392,6 +1533,7 @@ const actionSchemas = {
       offsetY: {
         controlType: 'number',
         default: 1,
+        key: 'offsetY',
         minValue: 0,
         maxValue: 19,
         step: 1,
@@ -1401,6 +1543,7 @@ const actionSchemas = {
       weights: {
         controlType: 'bespoke-matrix-weights',
         default: [0, 0, 0, 0, 1, 0, 0, 0, 0],
+        key: 'weights',
         label: 'Matrix weights',
         description: 'An array of matrix weights, with length = width * height',
       },
@@ -1419,6 +1562,7 @@ const actionSchemas = {
       channelL: {
         controlType: 'number',
         default: 0,
+        key: 'channelL',
         minValue: -1,
         maxValue: 1,
         step: 0.01,
@@ -1428,6 +1572,7 @@ const actionSchemas = {
       channelA: {
         controlType: 'number',
         default: 0,
+        key: 'channelA',
         minValue: -0.4,
         maxValue: 0.4,
         step: 0.005,
@@ -1437,6 +1582,7 @@ const actionSchemas = {
       channelB: {
         controlType: 'number',
         default: 0,
+        key: 'channelB',
         minValue: -0.4,
         maxValue: 0.4,
         step: 0.005,
@@ -1458,6 +1604,7 @@ const actionSchemas = {
       red: {
         controlType: 'number',
         default: 1,
+        key: 'red',
         minValue: 0,
         maxValue: 3,
         step: 0.01,
@@ -1467,6 +1614,7 @@ const actionSchemas = {
       green: {
         controlType: 'number',
         default: 1,
+        key: 'green',
         minValue: 0,
         maxValue: 3,
         step: 0.01,
@@ -1476,6 +1624,7 @@ const actionSchemas = {
       blue: {
         controlType: 'number',
         default: 1,
+        key: 'blue',
         minValue: 0,
         maxValue: 3,
         step: 0.01,
@@ -1485,6 +1634,7 @@ const actionSchemas = {
       alpha: {
         controlType: 'number',
         default: 1,
+        key: 'alpha',
         minValue: 0,
         maxValue: 3,
         step: 0.01,
@@ -1494,6 +1644,7 @@ const actionSchemas = {
       saturation: {
         controlType: 'boolean',
         default: false,
+        key: 'saturation',
         label: 'Use gray as base',
         description: 'When false, acts as a brightness filter; when true, acts as a saturation filter',
       },
@@ -1512,6 +1663,7 @@ const actionSchemas = {
       channelL: {
         controlType: 'number',
         default: 1,
+        key: 'channelL',
         minValue: 0,
         maxValue: 3,
         step: 0.01,
@@ -1521,6 +1673,7 @@ const actionSchemas = {
       channelA: {
         controlType: 'number',
         default: 1,
+        key: 'channelA',
         minValue: 0,
         maxValue: 3,
         step: 0.01,
@@ -1530,6 +1683,7 @@ const actionSchemas = {
       channelB: {
         controlType: 'number',
         default: 1,
+        key: 'channelB',
         minValue: 0,
         maxValue: 3,
         step: 0.01,
@@ -1563,6 +1717,7 @@ const actionSchemas = {
       width: {
         controlType: 'number',
         default: 1,
+        key: 'width',
         minValue: 1,
         maxValue: 20,
         step: 1,
@@ -1584,6 +1739,7 @@ const actionSchemas = {
       offsetRedX: {
         controlType: 'number',
         default: 0,
+        key: 'offsetRedX',
         minValue: -500,
         maxValue: 500,
         step: 1,
@@ -1593,6 +1749,7 @@ const actionSchemas = {
       offsetRedY: {
         controlType: 'number',
         default: 0,
+        key: 'offsetRedY',
         minValue: -500,
         maxValue: 500,
         step: 1,
@@ -1602,6 +1759,7 @@ const actionSchemas = {
       offsetGreenX: {
         controlType: 'number',
         default: 0,
+        key: 'offsetGreenX',
         minValue: -500,
         maxValue: 500,
         step: 1,
@@ -1611,6 +1769,7 @@ const actionSchemas = {
       offsetGreenY: {
         controlType: 'number',
         default: 0,
+        key: 'offsetGreenY',
         minValue: -500,
         maxValue: 500,
         step: 1,
@@ -1620,6 +1779,7 @@ const actionSchemas = {
       offsetBlueX: {
         controlType: 'number',
         default: 0,
+        key: 'offsetBlueX',
         minValue: -500,
         maxValue: 500,
         step: 1,
@@ -1629,6 +1789,7 @@ const actionSchemas = {
       offsetBlueY: {
         controlType: 'number',
         default: 0,
+        key: 'offsetBlueY',
         minValue: -500,
         maxValue: 500,
         step: 1,
@@ -1638,6 +1799,7 @@ const actionSchemas = {
       offsetAlphaX: {
         controlType: 'number',
         default: 0,
+        key: 'offsetAlphaX',
         minValue: -500,
         maxValue: 500,
         step: 1,
@@ -1647,6 +1809,7 @@ const actionSchemas = {
       offsetAlphaY: {
         controlType: 'number',
         default: 0,
+        key: 'offsetAlphaY',
         minValue: -500,
         maxValue: 500,
         step: 1,
@@ -1656,6 +1819,7 @@ const actionSchemas = {
       useInputAsMask: {
         controlType: 'boolean',
         default: false,
+        key: 'useInputAsMask',
         label: 'Use input as mask',
         description: '',
       },
@@ -1679,6 +1843,7 @@ const actionSchemas = {
           aChannel: [],
           bChannel: [],
         },
+        key: 'weights',
         label: 'Curve weights',
         description: '',
       },
@@ -1697,6 +1862,7 @@ const actionSchemas = {
       tileWidth: {
         controlType: 'number',
         default: 1,
+        key: 'tileWidth',
         minValue: 1,
         maxValue: 200,
         step: 1,
@@ -1706,6 +1872,7 @@ const actionSchemas = {
       tileHeight: {
         controlType: 'number',
         default: 1,
+        key: 'tileHeight',
         minValue: 1,
         maxValue: 200,
         step: 1,
@@ -1715,6 +1882,7 @@ const actionSchemas = {
       offsetX: {
         controlType: 'number',
         default: 0,
+        key: 'offsetX',
         minValue: 0,
         maxValue: 200,
         step: 1,
@@ -1724,6 +1892,7 @@ const actionSchemas = {
       offsetY: {
         controlType: 'number',
         default: 0,
+        key: 'offsetY',
         minValue: 0,
         maxValue: 200,
         step: 1,
@@ -1733,24 +1902,28 @@ const actionSchemas = {
       includeRed: {
         controlType: 'boolean',
         default: true,
+        key: 'includeRed',
         label: 'Include red channel',
         description: '',
       },
       includeGreen: {
         controlType: 'boolean',
         default: true,
+        key: 'includeGreen',
         label: 'Include green channel',
         description: '',
       },
       includeBlue: {
         controlType: 'boolean',
         default: true,
+        key: 'includeBlue',
         label: 'Include blue channel',
         description: '',
       },
       includeAlpha: {
         controlType: 'boolean',
         default: false,
+        key: 'includeAlpha',
         label: 'Include alpha channel',
         description: '',
       },
@@ -1768,18 +1941,21 @@ const actionSchemas = {
       lineOut: {
         controlType: 'line-text',
         default: '',
+        key: 'lineOut',
         label: 'Line out',
         description: 'ID string of asset',
       },
       identifier: {
         controlType: 'text',
         default: '',
+        key: 'identifier',
         label: 'Asset identifier',
         description: 'Acts as the `lineIn` alternative for the action',
       },
       copyWidth: {
         controlType: 'number',
         default: 1,
+        key: 'copyWidth',
         minValue: 1,
         maxValue: 4092,
         step: 1,
@@ -1789,6 +1965,7 @@ const actionSchemas = {
       copyHeight: {
         controlType: 'number',
         default: 1,
+        key: 'copyHeight',
         minValue: 1,
         maxValue: 4092,
         step: 1,
@@ -1798,6 +1975,7 @@ const actionSchemas = {
       copyX: {
         controlType: 'number',
         default: 0,
+        key: 'copyX',
         minValue: 0,
         maxValue: 4091,
         step: 1,
@@ -1807,6 +1985,7 @@ const actionSchemas = {
       copyY: {
         controlType: 'number',
         default: 0,
+        key: 'copyY',
         minValue: 0,
         maxValue: 4091,
         step: 1,
@@ -1828,6 +2007,7 @@ const actionSchemas = {
       width: {
         controlType: 'number',
         default: 1,
+        key: 'width',
         minValue: -200,
         maxValue: 200,
         step: 1,
@@ -1837,6 +2017,7 @@ const actionSchemas = {
       height: {
         controlType: 'number',
         default: 1,
+        key: 'height',
         minValue: -200,
         maxValue: 200,
         step: 1,
@@ -1846,12 +2027,14 @@ const actionSchemas = {
       seed: {
         controlType: 'text',
         default: 'default-random-seed',
+        key: 'seed',
         label: 'Random seed string',
         description: '',
       },
       noiseType: {
         controlType: 'select',
         default: 'random',
+        key: 'noiseType',
         options: ['random', 'ordered', 'bluenoise'],
         label: 'Noise type',
         description: '',
@@ -1859,6 +2042,7 @@ const actionSchemas = {
       level: {
         controlType: 'number',
         default: 0.5,
+        key: 'level',
         minValue: 0,
         maxValue: 1,
         step: 0.01,
@@ -1868,36 +2052,42 @@ const actionSchemas = {
       noWrap: {
         controlType: 'boolean',
         default: false,
+        key: 'noWrap',
         label: 'No wrap',
         description: '',
       },
       includeRed: {
         controlType: 'boolean',
         default: true,
+        key: 'includeRed',
         label: 'Include red channel',
         description: '',
       },
       includeGreen: {
         controlType: 'boolean',
         default: true,
+        key: 'includeGreen',
         label: 'Include green channel',
         description: '',
       },
       includeBlue: {
         controlType: 'boolean',
         default: true,
+        key: 'includeBlue',
         label: 'Include blue channel',
         description: '',
       },
       includeAlpha: {
         controlType: 'boolean',
         default: true,
+        key: 'includeAlpha',
         label: 'Include alpha channel',
         description: '',
       },
       excludeTransparentPixels: {
         controlType: 'boolean',
         default: true,
+        key: 'excludeTransparentPixels',
         label: 'Exclude transparent pixels',
         description: '',
       },
@@ -1916,12 +2106,14 @@ const actionSchemas = {
       seed: {
         controlType: 'text',
         default: 'default-random-seed',
+        key: 'seed',
         label: 'Random seed string',
         description: '',
       },
       minimumColorDistance: {
         controlType: 'number',
         default: 1000,
+        key: 'minimumColorDistance',
         minValue: 10,
         maxValue: 5000,
         step: 10,
@@ -1931,12 +2123,14 @@ const actionSchemas = {
       palette: {
         controlType: 'bespoke-reduce-palette',
         default: 'black-white',
+        key: 'palette',
         label: 'Palette',
         description: 'Use string for: monochrome or defined palettes. Use number for: commonest colors palette',
       },
       noiseType: {
         controlType: 'select',
         default: 'random',
+        key: 'noiseType',
         options: ['random', 'ordered', 'bluenoise'],
         label: 'Noise type',
         description: '',
@@ -1956,6 +2150,7 @@ const actionSchemas = {
       angle: {
         controlType: 'number',
         default: 0,
+        key: 'angle',
         minValue: 0,
         maxValue: 360,
         step: 0.1,
@@ -1977,30 +2172,35 @@ const actionSchemas = {
       includeRed: {
         controlType: 'boolean',
         default: false,
+        key: 'includeRed',
         label: 'Include red channel',
         description: '',
       },
       includeGreen: {
         controlType: 'boolean',
         default: false,
+        key: 'includeGreen',
         label: 'Include green channel',
         description: '',
       },
       includeBlue: {
         controlType: 'boolean',
         default: false,
+        key: 'includeBlue',
         label: 'Include blue channel',
         description: '',
       },
       includeAlpha: {
         controlType: 'boolean',
         default: false,
+        key: 'includeAlpha',
         label: 'Include alpha channel',
         description: '',
       },
       level: {
         controlType: 'number',
         default: 0,
+        key: 'level',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -2022,6 +2222,7 @@ const actionSchemas = {
       red: {
         controlType: 'number',
         default: 1,
+        key: 'red',
         minValue: 1,
         maxValue: 255,
         step: 1,
@@ -2031,6 +2232,7 @@ const actionSchemas = {
       green: {
         controlType: 'number',
         default: 1,
+        key: 'green',
         minValue: 1,
         maxValue: 255,
         step: 1,
@@ -2040,6 +2242,7 @@ const actionSchemas = {
       blue: {
         controlType: 'number',
         default: 1,
+        key: 'blue',
         minValue: 1,
         maxValue: 255,
         step: 1,
@@ -2049,6 +2252,7 @@ const actionSchemas = {
       clamp: {
         controlType: 'select',
         default: 'down',
+        key: 'clamp',
         options: ['down', 'round', 'up'],
         label: 'Clamp results',
         description: '',
@@ -2073,18 +2277,21 @@ const actionSchemas = {
       swirls: {
         controlType: 'bespoke-swirl',
         default: [],
+        key: 'swirls',
         label: 'Swirls array',
         description: '',
       },
       transparentEdges: {
         controlType: 'boolean',
         default: false,
+        key: 'transparentEdges',
         label: 'Transparent edges',
         description: '',
       },
       useInputAsMask: {
         controlType: 'boolean',
         default: false,
+        key: 'useInputAsMask',
         label: 'Use input as mask',
         description: '',
       },
@@ -2103,6 +2310,7 @@ const actionSchemas = {
       lowRed: {
         controlType: 'number',
         default: 0,
+        key: 'lowRed',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -2112,6 +2320,7 @@ const actionSchemas = {
       lowGreen: {
         controlType: 'number',
         default: 0,
+        key: 'lowGreen',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -2121,6 +2330,7 @@ const actionSchemas = {
       lowBlue: {
         controlType: 'number',
         default: 0,
+        key: 'lowBlue',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -2130,6 +2340,7 @@ const actionSchemas = {
       lowAlpha: {
         controlType: 'number',
         default: 1,
+        key: 'lowAlpha',
         minValue: 0,
         maxValue: 1,
         step: 0.005,
@@ -2139,6 +2350,7 @@ const actionSchemas = {
       highRed: {
         controlType: 'number',
         default: 255,
+        key: 'highRed',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -2148,6 +2360,7 @@ const actionSchemas = {
       highGreen: {
         controlType: 'number',
         default: 255,
+        key: 'highGreen',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -2157,6 +2370,7 @@ const actionSchemas = {
       highBlue: {
         controlType: 'number',
         default: 255,
+        key: 'highBlue',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -2166,6 +2380,7 @@ const actionSchemas = {
       highAlpha: {
         controlType: 'number',
         default: 1,
+        key: 'highAlpha',
         minValue: 0,
         maxValue: 1,
         step: 0.005,
@@ -2175,6 +2390,7 @@ const actionSchemas = {
       red: {
         controlType: 'number',
         default: 128,
+        key: 'red',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -2184,6 +2400,7 @@ const actionSchemas = {
       green: {
         controlType: 'number',
         default: 128,
+        key: 'green',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -2193,6 +2410,7 @@ const actionSchemas = {
       blue: {
         controlType: 'number',
         default: 128,
+        key: 'blue',
         minValue: 0,
         maxValue: 255,
         step: 1,
@@ -2202,6 +2420,7 @@ const actionSchemas = {
       alpha: {
         controlType: 'number',
         default: 1,
+        key: 'alpha',
         minValue: 0,
         maxValue: 1,
         step: 0.005,
@@ -2211,30 +2430,35 @@ const actionSchemas = {
       includeRed: {
         controlType: 'boolean',
         default: true,
+        key: 'includeRed',
         label: 'Include red channel',
         description: '',
       },
       includeGreen: {
         controlType: 'boolean',
         default: true,
+        key: 'includeGreen',
         label: 'Include green channel',
         description: '',
       },
       includeBlue: {
         controlType: 'boolean',
         default: true,
+        key: 'includeBlue',
         label: 'Include blue channel',
         description: '',
       },
       includeAlpha: {
         controlType: 'boolean',
         default: false,
+        key: 'includeAlpha',
         label: 'Include alpha channel',
         description: '',
       },
       useMixedChannel: {
         controlType: 'boolean',
         default: true,
+        key: 'useMixedChannel',
         label: 'Use mixed channels',
         description: '',
       },
@@ -2253,6 +2477,7 @@ const actionSchemas = {
       mode: {
         controlType: 'select',
         default: 'rect',
+        key: 'mode',
         options: ['rect', 'hex', 'random'],
         label: 'Tile mode',
         description: '',
@@ -2261,6 +2486,7 @@ const actionSchemas = {
       originX: {
         controlType: 'number',
         default: 0,
+        key: 'originX',
         minValue: 0,
         maxValue: 600,
         step: 1,
@@ -2270,6 +2496,7 @@ const actionSchemas = {
       originY: {
         controlType: 'number',
         default: 0,
+        key: 'originY',
         minValue: 0,
         maxValue: 600,
         step: 1,
@@ -2279,6 +2506,7 @@ const actionSchemas = {
       rectWidth: {
         controlType: 'number',
         default: 10,
+        key: 'rectWidth',
         minValue: 1,
         maxValue: 100,
         step: 1,
@@ -2288,6 +2516,7 @@ const actionSchemas = {
       rectHeight: {
         controlType: 'number',
         default: 10,
+        key: 'rectHeight',
         minValue: 1,
         maxValue: 100,
         step: 1,
@@ -2297,6 +2526,7 @@ const actionSchemas = {
       hexRadius: {
         controlType: 'number',
         default: 5,
+        key: 'hexRadius',
         minValue: 1,
         maxValue: 50,
         step: 1,
@@ -2306,6 +2536,7 @@ const actionSchemas = {
       randomCount: {
         controlType: 'number',
         default: 100,
+        key: 'randomCount',
         minValue: 10,
         maxValue: 5000,
         step: 10,
@@ -2315,12 +2546,14 @@ const actionSchemas = {
       pointsData: {
         controlType: 'bespoke-tiles-points-data',
         default: [],
+        key: 'pointsData',
         label: 'Points data',
         description: 'An array of arrays whose members consist of integer [x, y] coordinate pairs',
       },
       angle: {
         controlType: 'number',
         default: 0,
+        key: 'angle',
         minValue: 0,
         maxValue: 360,
         step: 0.1,
@@ -2330,6 +2563,7 @@ const actionSchemas = {
       spiralStrength: {
         controlType: 'number',
         default: 0,
+        key: 'spiralStrength',
         minValue: -0.005,
         maxValue: 0.005,
         step: 0.00005,
@@ -2339,42 +2573,49 @@ const actionSchemas = {
       seed: {
         controlType: 'text',
         default: 'default-random-seed',
+        key: 'seed',
         label: 'Random seed string',
         description: '',
       },
       includeRed: {
         controlType: 'boolean',
         default: true,
+        key: 'includeRed',
         label: 'Include red channel',
         description: '',
       },
       includeGreen: {
         controlType: 'boolean',
         default: true,
+        key: 'includeGreen',
         label: 'Include green channel',
         description: '',
       },
       includeBlue: {
         controlType: 'boolean',
         default: true,
+        key: 'includeBlue',
         label: 'Include blue channel',
         description: '',
       },
       includeAlpha: {
         controlType: 'boolean',
         default: false,
+        key: 'includeAlpha',
         label: 'Include alpha channel',
         description: '',
       },
       premultiply: {
         controlType: 'boolean',
         default: false,
+        key: 'premultiply',
         label: 'Premultiply',
         description: '',
       },
       useInputAsMask: {
         controlType: 'boolean',
         default: false,
+        key: 'useInputAsMask',
         label: 'Use input as mask',
         description: '',
       },
@@ -2393,6 +2634,7 @@ const actionSchemas = {
       redInRed: {
         controlType: 'number',
         default: 1,
+        key: 'redInRed',
         minValue: 0,
         maxValue: 1,
         step: 0.001,
@@ -2402,6 +2644,7 @@ const actionSchemas = {
       redInGreen: {
         controlType: 'number',
         default: 0,
+        key: 'redInGreen',
         minValue: 0,
         maxValue: 1,
         step: 0.001,
@@ -2411,6 +2654,7 @@ const actionSchemas = {
       redInBlue: {
         controlType: 'number',
         default: 0,
+        key: 'redInBlue',
         minValue: 0,
         maxValue: 1,
         step: 0.001,
@@ -2420,6 +2664,7 @@ const actionSchemas = {
       greenInRed: {
         controlType: 'number',
         default: 0,
+        key: 'greenInRed',
         minValue: 0,
         maxValue: 1,
         step: 0.001,
@@ -2429,6 +2674,7 @@ const actionSchemas = {
       greenInGreen: {
         controlType: 'number',
         default: 1,
+        key: 'greenInGreen',
         minValue: 0,
         maxValue: 1,
         step: 0.001,
@@ -2438,6 +2684,7 @@ const actionSchemas = {
       greenInBlue: {
         controlType: 'number',
         default: 0,
+        key: 'greenInBlue',
         minValue: 0,
         maxValue: 1,
         step: 0.001,
@@ -2447,6 +2694,7 @@ const actionSchemas = {
       blueInRed: {
         controlType: 'number',
         default: 0,
+        key: 'blueInRed',
         minValue: 0,
         maxValue: 1,
         step: 0.001,
@@ -2456,6 +2704,7 @@ const actionSchemas = {
       blueInGreen: {
         controlType: 'number',
         default: 0,
+        key: 'blueInGreen',
         minValue: 0,
         maxValue: 1,
         step: 0.001,
@@ -2465,6 +2714,7 @@ const actionSchemas = {
       blueInBlue: {
         controlType: 'number',
         default: 1,
+        key: 'blueInBlue',
         minValue: 0,
         maxValue: 1,
         step: 0.001,
@@ -2486,6 +2736,7 @@ const actionSchemas = {
       strength: {
         controlType: 'number',
         default: 0.8,
+        key: 'strength',
         minValue: 0,
         maxValue: 2,
         step: 0.01,
@@ -2495,6 +2746,7 @@ const actionSchemas = {
       radius: {
         controlType: 'number',
         default: 2,
+        key: 'radius',
         minValue: 0,
         maxValue: 10,
         step: 0.1,
@@ -2504,6 +2756,7 @@ const actionSchemas = {
       level: {
         controlType: 'number',
         default: 0.015,
+        key: 'level',
         minValue: 0,
         maxValue: 0.05,
         step: 0.001,
@@ -2513,6 +2766,7 @@ const actionSchemas = {
       smoothing: {
         controlType: 'number',
         default: 0.015,
+        key: 'smoothing',
         minValue: 0,
         maxValue: 0.05,
         step: 0.001,
@@ -2522,6 +2776,7 @@ const actionSchemas = {
       clamp: {
         controlType: 'number',
         default: 0.08,
+        key: 'clamp',
         minValue: 0,
         maxValue: 0.2,
         step: 0.001,
@@ -2531,6 +2786,7 @@ const actionSchemas = {
       useEdgeMask: {
         controlType: 'boolean',
         default: true,
+        key: 'useEdgeMask',
         label: 'Use edge mask',
         description: '',
       },
@@ -2549,12 +2805,14 @@ const actionSchemas = {
       weights: {
         controlType: 'bespoke-vary-channel-by-weights',
         default: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        key: 'weights',
         label: 'Weights',
         description: 'An array of 1024 integers (256 * 4) where each four-integer group represents the deviation from the expected value for [red-channel, green-channel, blue-channel, combined-channels], with the reference being channel values [0, 0, 0, 0, 1, 1, 1, 1, ...etc]',
       },
       useMixedChannel: {
         controlType: 'boolean',
         default: true,
+        key: 'useMixedChannel',
         label: 'Use mixed channel',
         description: 'Switch between weighting against a grayscaled image (default) and weighting on a per-channel basis',
       },
@@ -2573,36 +2831,42 @@ const actionSchemas = {
       includeRed: {
         controlType: 'boolean',
         default: true,
+        key: 'includeRed',
         label: 'Include red channel',
         description: '',
       },
       includeGreen: {
         controlType: 'boolean',
         default: true,
+        key: 'includeGreen',
         label: 'Include green channel',
         description: '',
       },
       includeBlue: {
         controlType: 'boolean',
         default: true,
+        key: 'includeBlue',
         label: 'Include blue channel',
         description: '',
       },
       includeAlpha: {
         controlType: 'boolean',
         default: true,
+        key: 'includeAlpha',
         label: 'Include alpha channel',
         description: '',
       },
       excludeTransparentPixels: {
         controlType: 'boolean',
         default: true,
+        key: 'excludeTransparentPixels',
         label: 'Exclude transparent pixels',
         description: '',
       },
       startX: {
         controlType: 'percentage-number',
         default: 50,
+        key: 'startX',
         minValue: 0,
         maxValue: 100,
         step: 0.1,
@@ -2612,6 +2876,7 @@ const actionSchemas = {
       startY: {
         controlType: 'percentage-number',
         default: 50,
+        key: 'startY',
         minValue: 0,
         maxValue: 100,
         step: 0.1,
@@ -2621,6 +2886,7 @@ const actionSchemas = {
       innerRadius: {
         controlType: 'percentage-number',
         default: 0,
+        key: 'innerRadius',
         minValue: 0,
         maxValue: 60,
         step: 0.1,
@@ -2630,6 +2896,7 @@ const actionSchemas = {
       outerRadius: {
         controlType: 'percentage-number',
         default: 0,
+        key: 'outerRadius',
         minValue: 0,
         maxValue: 60,
         step: 0.1,
@@ -2639,6 +2906,7 @@ const actionSchemas = {
       easing: {
         controlType: 'select',
         default: 'linear',
+        key: 'easing',
         options: ['linear', 'easeOut', 'easeOutIn', 'easeInOut', 'easeIn'],
         label: 'Easing',
         description: '',
@@ -2646,18 +2914,21 @@ const actionSchemas = {
       premultiply: {
         controlType: 'boolean',
         default: false,
+        key: 'premultiply',
         label: 'Premultiply',
         description: '',
       },
       multiscale: {
         controlType: 'boolean',
         default: true,
+        key: 'multiscale',
         label: 'Multiscale',
         description: '',
       },
       strength: {
         controlType: 'number',
         default: 0.35,
+        key: 'strength',
         minValue: 0,
         maxValue: 1,
         step: 0.001,
@@ -2667,6 +2938,7 @@ const actionSchemas = {
       angle: {
         controlType: 'number',
         default: 0,
+        key: 'angle',
         minValue: -15,
         maxValue: 15,
         step: 0.01,
@@ -2676,12 +2948,14 @@ const actionSchemas = {
       seed: {
         controlType: 'text',
         default: 'default-random-seed',
+        key: 'seed',
         label: 'Random seed string',
         description: '',
       },
       samples: {
         controlType: 'number',
         default: 14,
+        key: 'samples',
         minValue: 0,
         maxValue: 32,
         step: 0.01,
@@ -2691,6 +2965,7 @@ const actionSchemas = {
       variation: {
         controlType: 'number',
         default: 0,
+        key: 'variation',
         minValue: 0,
         maxValue: 1,
         step: 0.01,
@@ -2772,6 +3047,7 @@ F.controls.radius = {
   alternativeAction: 'set-alternatives-to-this',
   sync: 'down-only',
   default: 1,
+  key: 'radius',
   label: 'Radius',
   description: '',
 };
@@ -2782,6 +3058,7 @@ F.controls.step = {
   alternativeAction: 'set-alternatives-to-this',
   sync: 'down-only',
   default: 1,
+  key: 'step',
   label: 'Step',
   description: '',
 };
@@ -2792,6 +3069,7 @@ F.controls.passes = {
   alternativeAction: 'set-alternatives-to-this',
   sync: 'down-only',
   default: 1,
+  key: 'passes',
   label: 'Passes',
   description: ''
 };
@@ -2829,6 +3107,7 @@ F.controls.level = {
   alternativeAction: 'set-alternatives-to-this',
   sync: 'down-only',
   default: 1,
+  key: 'level',
   minValue: 0,
   maxValue: 3,
   step: 0.01,
@@ -2900,6 +3179,7 @@ F.controls.feather = {
   alternativeAction: 'set-alternatives-to-this',
   sync: 'down-only',
   default: 0,
+  key: 'feather',
   minValue: 0,
   maxValue: 255,
   step: 1,
@@ -2929,6 +3209,7 @@ F.controls.reference = {
   alternativeAction: 'set-color-channels-to-this',
   sync: 'down-and-up',
   default: 'rgb(0 255 0)',
+  key: 'reference',
   label: 'Reference color',
   description: 'Color string value of the reference color',
 };
@@ -2955,6 +3236,7 @@ F.controls.lowColor = {
   alternativeAction: 'set-color-channels-to-this',
   sync: 'down-and-up',
   default: 'rgb(0 0 0)',
+  key: 'lowColor',
   label: 'Low color reference',
   description: 'Color string value of the lower bound color',
 };
@@ -2965,6 +3247,7 @@ F.controls.highColor = {
   alternativeAction: 'set-color-channels-to-this',
   sync: 'down-and-up',
   default: 'rgb(255 255 255)',
+  key: 'highColor',
   label: 'High color reference',
   description: 'Color string value of the upper bound color',
 };
@@ -3043,12 +3326,14 @@ F.description = '';
 F.controls.useNaturalGrayscale = {
   controlType: 'boolean',
   default: false,
+  key: 'useNaturalGrayscale',
   label: 'Use natural grayscale',
   description: 'When true, starts the action sequence by converting input to grayscale; when false, will use the simpler average-channels approach to strip away color',
 };
 F.controls.clamp = {
   controlType: 'number',
   default: 0,
+  key: 'clamp',
   minValue: 0,
   maxValue: 100,
   step: 0.01,
@@ -3058,6 +3343,7 @@ F.controls.clamp = {
 F.controls.smoothing = {
   controlType: 'number',
   default: 0,
+  key: 'smoothing',
   minValue: 0,
   maxValue: 12,
   step: 1,
@@ -3075,6 +3361,7 @@ F.controls.reference = {
   alternativeAction: 'set-color-channels-to-this',
   sync: 'down-and-up',
   default: 'rgb(0 0 0 / 255)',
+  key: 'reference',
   label: 'Reference color',
   description: 'Color string value of the flood color',
 };
@@ -3114,6 +3401,7 @@ F = filterSchemas.image = structuredClone(actionSchemas['process-image']);
 F.controls.import = {
   controlType: 'bespoke-file-loader',
   default: '',
+  key: 'import',
   label: 'Select image to import',
   description: '',
 };
@@ -3190,6 +3478,7 @@ F.controls.offsetX = {
   alternativeAction: 'set-alternatives-to-this',
   sync: 'down-only',
   default: 0,
+  key: 'offsetX',
   minValue: -500,
   maxValue: 500,
   step: 1,
@@ -3203,6 +3492,7 @@ F.controls.offsetY = {
   alternativeAction: 'set-alternatives-to-this',
   sync: 'down-only',
   default: 0,
+  key: 'offsetY',
   minValue: -500,
   maxValue: 500,
   step: 1,
@@ -3251,6 +3541,7 @@ F.controls.level = {
   alternativeAction: 'set-alternatives-to-this',
   sync: 'down-only',
   default: 1,
+  key: 'level',
   minValue: 0,
   maxValue: 3,
   step: 0.01,
@@ -3304,6 +3595,7 @@ F = filterSchemas.swirl = structuredClone(actionSchemas['swirl']);
 F.controls.startX = {
   controlType: 'percentage-number',
   default: '50',
+  key: 'startX',
   minValue: '-20',
   maxValue: '120',
   step: 0.001,
@@ -3313,6 +3605,7 @@ F.controls.startX = {
 F.controls.startY = {
   controlType: 'percentage-number',
   default: '50',
+  key: 'startY',
   minValue: '-20',
   maxValue: '120',
   step: 1,
@@ -3322,6 +3615,7 @@ F.controls.startY = {
 F.controls.innerRadius = {
   controlType: 'percentage-number',
   default: '0',
+  key: 'innerRadius',
   minValue: '0',
   maxValue: '120',
   step: 1,
@@ -3331,6 +3625,7 @@ F.controls.innerRadius = {
 F.controls.outerRadius = {
   controlType: 'percentage-number',
   default: '30',
+  key: 'outerRadius',
   minValue: '0',
   maxValue: '120',
   step: 1,
@@ -3340,6 +3635,7 @@ F.controls.outerRadius = {
 F.controls.angle = {
   controlType: 'number',
   default: 0,
+  key: 'angle',
   minValue: 0,
   maxValue: 360,
   step: 0.1,
@@ -3349,6 +3645,7 @@ F.controls.angle = {
 F.controls.easing = {
   controlType: 'select',
   default: 'linear',
+  key: 'easing',
   options: ['linear', 'easeOut', 'easeOutIn', 'easeInOut', 'easeIn'],
   label: 'Easing',
   description: '',
@@ -3364,6 +3661,7 @@ F.controls.lowColor = {
   alternativeAction: 'set-color-channels-to-this',
   sync: 'down-and-up',
   default: 'rgb(0 0 0 / 1)',
+  key: 'lowColor',
   label: 'Low color reference',
   description: 'Color string value for the low color',
 };
@@ -3374,6 +3672,7 @@ F.controls.highColor = {
   alternativeAction: 'set-color-channels-to-this',
   sync: 'down-and-up',
   default: 'rgb(255 255 255 / 1)',
+  key: 'highColor',
   label: 'High color reference',
   description: 'Color string value for the high color',
 };
@@ -3384,6 +3683,7 @@ F.controls.referenceColor = {
   alternativeAction: 'set-color-channels-to-this',
   sync: 'down-and-up',
   default: 'rgb(128 128 128 / 1)',
+  key: 'referenceColor',
   label: 'Levels color reference',
   description: 'Color string value for the level reference color',
 };
@@ -3408,6 +3708,7 @@ F.controls.redColor = {
   alternativeAction: 'set-color-channels-to-this',
   sync: 'down-and-up',
   default: 'rgb(255 0 0)',
+  key: 'redColor',
   label: 'Red color',
   description: 'Color string value of the red colors reference',
 };
@@ -3418,6 +3719,7 @@ F.controls.greenColor = {
   alternativeAction: 'set-color-channels-to-this',
   sync: 'down-and-up',
   default: 'rgb(0 255 0)',
+  key: 'greenColor',
   label: 'Green color',
   description: 'Color string value of the green colors reference',
 };
@@ -3428,6 +3730,7 @@ F.controls.blueColor = {
   alternativeAction: 'set-color-channels-to-this',
   sync: 'down-and-up',
   default: 'rgb(0 0 255)',
+  key: 'blueColor',
   label: 'Blue color',
   description: 'Color string value of the blue colors reference',
 };

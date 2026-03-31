@@ -383,9 +383,48 @@ main {
   }
 }
 
+.summary-title {
+  font-size: 1.1rem;
+}
+
 .summary-identifier {
-  font-size: 80%;
+  font-size: 0.8rem;
   font-weight: normal;
+}
+
+.form-action-controls-panel {
+  margin-bottom: 0.5rem;
+
+  & .form-action-section-panel {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+
+    /* filter-schema.js - controlType: 'line-text' */
+    & .action-control-inputs-for-linetext {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.2rem;
+    }
+
+    /* filter-schema.js - controlType: 'number' */
+    & .action-control-inputs-for-number {
+
+      & .action-control-inputs-for-number-row-1 {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.2rem;
+      }
+
+      & .action-control-inputs-for-number-row-2 {
+        margin-top: 0.2rem;
+
+        & label {
+          position: absolute;
+          left: -1000px;
+        }
+      }
+    }
+  }
 }
 
 #filter-builder-area-hold {
