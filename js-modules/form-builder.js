@@ -345,6 +345,7 @@ const createControl = (id, action, data, formCollection) => {
 
     case 'line-text': return createControl_lineText(id, action, data, formCollection);
     case 'number': return createControl_number(id, action, data, formCollection);
+    case 'boolean': return createControl_boolean(id, action, data, formCollection);
     default:
       const el = document.createElement('div');
       el.textContent = `No function for ${id} - ${data.label}`;
@@ -389,6 +390,49 @@ const createControl_lineText = (id, action, data, formCollection) => {
   el.appendChild(input);
 
   formCollection[localId] = [data.key, 'raw'];
+
+  return el;
+};
+
+const createControl_boolean = (id, action, data, formCollection) => {
+
+  const localId = `${id}_${data.key}`,
+    listenId = getListenId(id);
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-boolean');
+  el.dataset.localId = localId;
+
+  const label = document.createElement('label');
+  label.textContent = data.label;
+  label.setAttribute('for', localId);
+  el.appendChild(label);
+
+  const input = document.createElement('select');
+  input.id = localId;
+  input.name = localId;
+  input.classList.add(listenId);
+
+  const isFalse = document.createElement('option');
+  isFalse.value = '0';
+  isFalse.textContent = 'False';
+
+  const isTrue = document.createElement('option');
+  isTrue.value = '1';
+  isTrue.textContent = 'True';
+
+  input.appendChild(isFalse);
+  input.appendChild(isTrue);
+
+  let val = getFilterAttributeValue(action, data.key);
+  val = (val != null) ? val : data.default;
+  val = (val) ? '1' : '0';
+
+  input.options.selectedIndex = val;
+
+  el.appendChild(input);
+
+  formCollection[localId] = [data.key, 'boolean'];
 
   return el;
 };

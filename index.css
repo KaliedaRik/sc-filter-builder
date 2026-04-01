@@ -401,28 +401,54 @@ main {
 
     /* filter-schema.js - controlType: 'line-text' */
     & .action-control-inputs-for-linetext {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 0.2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-column-gap: 2px;
+      justify-content: start;
+
+      margin: 0.5rem 0 0;
+      border: 1px dotted black;
+      padding: 0.5rem;
+      border-radius: 5px;
+
+      & input {
+        width: calc(100% - 0.5rem);
+      }
     }
 
     /* filter-schema.js - controlType: 'number' */
     & .action-control-inputs-for-number {
+      margin: 0.5rem 0 0;
+      border: 1px dotted black;
+      padding: 0.5rem;
+      border-radius: 5px;
 
       & .action-control-inputs-for-number-row-1 {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 0.2rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-column-gap: 2px;
+        justify-content: start;
       }
 
       & .action-control-inputs-for-number-row-2 {
-        margin-top: 0.2rem;
 
         & label {
           position: absolute;
           left: -1000px;
         }
       }
+    }
+
+    & .action-control-inputs-for-boolean {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-column-gap: 2px;
+      justify-content: start;
+
+      margin: 0.5rem 0 0;
+      border: 1px dotted black;
+      padding: 0.5rem;
+      border-radius: 5px;
     }
   }
 }
