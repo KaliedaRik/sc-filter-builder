@@ -57,6 +57,14 @@ const view = {
   currentScale: 1,
 };
 
+
+const displayFilterFlag = {
+  flag: true,
+  // reset: () => displayFilterFlag.flag = false,
+  // get: () => displayFilterFlag.flag,
+};
+
+
 const getImageDisplayViews = () => {
   return {...view};
 };
@@ -248,6 +256,8 @@ const applyView = () => {
   });
 
   if (!minimapFrameDragZone) createMinimapFrameDragZone();
+
+  displayFilterFlag.flag = true;
 };
 
 // Export function to display an image
@@ -747,5 +757,6 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
     displayDefaultScreen,
     checkLiveView,
     getImageDisplayViews,
+    displayFilterFlag,
   };
 };

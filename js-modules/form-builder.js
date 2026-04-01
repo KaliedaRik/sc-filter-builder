@@ -19,6 +19,9 @@ let scrawlHandle = null,
   getView = null;
 
 
+const getCurrentWrappedFilter = () => currentFilter;
+
+
 // FilterWrapper object
 // - We only care about the last created filter wrapper
 // ------------------------------------------------------------------------
@@ -147,11 +150,49 @@ F.updateDisplayFilter = function () {
 
   this.updateFilter();
 
-  const actions = this.filter.get('actions');
+  const actions = structuredClone(this.filter.get('actions'));
 
   // We need to manipulate the actions because some are scale and position sensitive
   // - This is why we separate the working and display filters 
+  const view = getView();
+
+  actions.forEach(act => {
+
+    switch (act.action) {
+
+      case 'pixelate': correctDisplayFilterAction_pixelate(act, view);
+    }
+  });
+
   displayFilter.set({ actions });
+};
+
+
+// updateDisplayFilter correction functions
+const correctDisplayFilterAction_pixelate = (action, view) => {
+
+/*
+const view = {
+  x: 0,
+  y: 0,
+  width: 1,
+  height: 1,
+  assetWidth: 1,
+  assetHeight: 1,
+  currentScale: 1,
+};
+*/
+  const { x, y, currentScale } = view;
+
+  const updatedWidth = action.tileWidth * currentScale,
+    updatedHeight = action.tileHeight * currentScale,
+    remainingX = (action.offsetX + (x % action.tileWidth)) * currentScale,
+    remainingY = (action.offsetY + (y % action.tileHeight)) * currentScale;
+
+  action.tileWidth = updatedWidth;
+  action.tileHeight = updatedHeight;
+  action.offsetX = remainingX;
+  action.offsetY = remainingY;
 };
 
 
@@ -662,7 +703,9 @@ export const initFormBuilder = (scrawl = null, dom = null, stack = null, canvas 
 
 
   // Return object
-  return {};
+  return {
+    getCurrentWrappedFilter,
+  };
 };
 
 

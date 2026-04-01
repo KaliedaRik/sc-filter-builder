@@ -85,9 +85,13 @@ const {
   displayDefaultScreen,
   checkLiveView,
   getImageDisplayViews,
+  displayFilterFlag,
 } = initImageDisplay(scrawl, dom, mainCanvas);
 
-initFormBuilder(scrawl, dom, builderStack, builderCanvas, getImageDisplayViews);
+const {
+  getCurrentWrappedFilter,
+} = initFormBuilder(scrawl, dom, builderStack, builderCanvas, getImageDisplayViews);
+
 initFilterBuilder(scrawl, dom, builderCanvas);
 
 
@@ -110,11 +114,24 @@ scrawl.makeRender({
   target: builderCanvas,
 });
 
+const commenceFunction = () => {
+
+  checkLiveView();
+
+  if (displayFilterFlag.flag) {
+
+    displayFilterFlag.flag = false;
+
+    const filter = getCurrentWrappedFilter();
+    filter.updateDisplayFilter();
+  }
+};
+
 scrawl.makeRender({
 
   name: 'main-canvas-render',
   target: mainCanvas,
-  commence: checkLiveView,
+  commence: commenceFunction,
 });
 
 

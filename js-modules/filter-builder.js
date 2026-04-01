@@ -6,8 +6,6 @@
 import { starterFilters } from './starter-filters.js';
 import { wrap } from './form-builder.js';
 
-// let picture = null;
-
 let currentFilterWrapper = null,
   currentFilterInitialValues = null,
   currentFilterTitleElement = null,
@@ -45,7 +43,6 @@ const loadStarterFilter = (starter) => {
       currentFilterWrapper = newFilterWrapper;
       currentFilterInitialValues = newFilterInitialValues;
 
-      // picture.addFilters(currentFilterWrapper.filter);
       currentFilterWrapper.updateDisplayFilter();
 
       currentFilterTitleElement.textContent = data.readableName;
@@ -63,7 +60,6 @@ export const initFilterBuilder = (scrawl = null, dom = null, canvas = null) => {
   if (!canvas) throw new Error('Canvas not passed to initFilterBuilder function');
 
   canvasHandle = canvas;
-  // picture = scrawl.findEntity('live-view');
 
   // Build out the related modal, populating with starter-filter data
   const starterKeys = Object.keys(starterFilters),
@@ -101,8 +97,6 @@ export const initFilterBuilder = (scrawl = null, dom = null, canvas = null) => {
   currentFilterWrapper = wrap(filter, starter.formSchemaName);
   currentFilterInitialValues = currentFilterWrapper.toString();
 
-  // picture.clearFilters();
-  // picture.addFilters(currentFilterWrapper.filter);
   currentFilterWrapper.updateDisplayFilter();
 
 
