@@ -6,7 +6,7 @@
 import { starterFilters } from './starter-filters.js';
 import { wrap } from './form-builder.js';
 
-let picture = null;
+// let picture = null;
 
 let currentFilterWrapper = null,
   currentFilterInitialValues = null,
@@ -45,7 +45,8 @@ const loadStarterFilter = (starter) => {
       currentFilterWrapper = newFilterWrapper;
       currentFilterInitialValues = newFilterInitialValues;
 
-      picture.addFilters(currentFilterWrapper.filter);
+      // picture.addFilters(currentFilterWrapper.filter);
+      currentFilterWrapper.updateDisplayFilter();
 
       currentFilterTitleElement.textContent = data.readableName;
     }
@@ -55,16 +56,14 @@ const loadStarterFilter = (starter) => {
 
 
 // Init function
-export const initFilterBuilder = (scrawl = null, dom = null, canvas = null, liveView = null) => {
+export const initFilterBuilder = (scrawl = null, dom = null, canvas = null) => {
 
   if (!scrawl) throw new Error('Scrawl library not passed to initFilterBuilder function');
   if (!dom) throw new Error('DOM mappings not passed to initFilterBuilder function');
   if (!canvas) throw new Error('Canvas not passed to initFilterBuilder function');
-  if (!liveView) throw new Error('Picture entity "liveView" not passed to initFilterBuilder function');
 
-  picture = liveView;
   canvasHandle = canvas;
-
+  // picture = scrawl.findEntity('live-view');
 
   // Build out the related modal, populating with starter-filter data
   const starterKeys = Object.keys(starterFilters),
@@ -102,8 +101,10 @@ export const initFilterBuilder = (scrawl = null, dom = null, canvas = null, live
   currentFilterWrapper = wrap(filter, starter.formSchemaName);
   currentFilterInitialValues = currentFilterWrapper.toString();
 
-  picture.clearFilters();
-  picture.addFilters(currentFilterWrapper.filter);
+  // picture.clearFilters();
+  // picture.addFilters(currentFilterWrapper.filter);
+  currentFilterWrapper.updateDisplayFilter();
+
 
   currentFilterTitleElement = dom['current-filter-name'];
   currentFilterTitleElement.textContent = starter.readableName;

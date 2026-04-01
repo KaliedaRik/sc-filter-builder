@@ -83,12 +83,12 @@ initImageImport(scrawl, dom, mainCanvas);
 
 const {
   displayDefaultScreen,
-  liveView,
   checkLiveView,
+  getImageDisplayViews,
 } = initImageDisplay(scrawl, dom, mainCanvas);
 
-initFormBuilder(scrawl, dom, builderStack, builderCanvas, liveView);
-initFilterBuilder(scrawl, dom, builderCanvas, liveView);
+initFormBuilder(scrawl, dom, builderStack, builderCanvas, getImageDisplayViews);
+initFilterBuilder(scrawl, dom, builderCanvas);
 
 
 // Show the default canvas display

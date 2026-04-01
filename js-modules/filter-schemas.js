@@ -19,14 +19,14 @@ const requiredControls = {
   lineIn: {
     controlType: 'line-text',
     key: 'lineIn',
-    default: 'work',
+    default: '',
     label: 'Line in',
     description: 'ID string of chained filter input',
   },
   lineOut: {
     controlType: 'line-text',
     key: 'lineOut',
-    default: 'work',
+    default: '',
     label: 'Line out',
     description: 'ID string of chained filter output',
   },
@@ -3507,7 +3507,19 @@ F.presentation = [...defaultPresentation];
 
 // pixelate
 F = filterSchemas.pixelate = structuredClone(actionSchemas['pixelate']);
-F.presentation = [...defaultPresentation];
+F.presentation = [{
+    header: 'Connections',
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Channels',
+    inputs: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha'],
+  },{
+    header: 'Tiles',
+    inputs: ['tileWidth', 'tileHeight', 'offsetX', 'offsetY'],
+  },{
+    header: 'Impact',
+    inputs: ['opacity'],
+}];
 
 // randomNoise
 F = filterSchemas.randomNoise = structuredClone(actionSchemas['random-noise']);

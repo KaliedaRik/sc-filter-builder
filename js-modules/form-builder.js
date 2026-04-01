@@ -12,20 +12,20 @@ import { generateUuid } from './utilities.js';
 // Module-scoped Handles and variables
 // ------------------------------------------------------------------------
 let scrawlHandle = null,
-  domHandle = null,
-  stackHandle = null,
-  canvasHandle = null,
   filterControlsPanel = null,
   filterBuilderAreaHold = null,
-  stackDragGroup = null,
   currentFilter = null,
-  picture = null;
+  displayFilter = null,
+  getView = null;
 
 
 // FilterWrapper object
 // - We only care about the last created filter wrapper
 // ------------------------------------------------------------------------
 const FilterWrapper = function (filter, formSchemaName = '') {
+
+  // There can be only one filter (with one or more action objects)!
+  currentFilter = this;
 
   this.filter = filter;
   this.name = filter.name;
@@ -75,7 +75,6 @@ const FilterWrapper = function (filter, formSchemaName = '') {
 
   this.undoArray.push(this.toString());
 
-  currentFilter = this;
   return this;
 };
 
@@ -92,7 +91,7 @@ F.toString = function () {
 let lastRecordedAction = 0;
 const recordedActionChoke = 200;
 
-F.update = function () {
+F.updateHistory = function () {
 
   const now = Date.now();
 
@@ -142,9 +141,17 @@ F.updateFilter = function () {
   const actions = this.actions.map(act => act.action);
 
   this.filter.set({ actions });
+};
 
-  picture.clearFilters();
-  picture.addFilters(this.filter.name);
+F.updateDisplayFilter = function () {
+
+  this.updateFilter();
+
+  const actions = this.filter.get('actions');
+
+  // We need to manipulate the actions because some are scale and position sensitive
+  // - This is why we separate the working and display filters 
+  displayFilter.set({ actions });
 };
 
 
@@ -163,6 +170,7 @@ const FilterActionWrapper = function (items) {
   // Keep track of everything we need to invoke during cleanup
   this.killList = [];
 
+  // Used to build the SC updater
   this.formCollection = {};
 
   actionWrapperLibrary[items.id] = this;
@@ -302,7 +310,7 @@ const generateFormControls = (id, schema, formCollection) => {
 
   schema.presentation.forEach(section => {
 
-    const res = generateFormSection(id, section, schema.controls, formCollection);
+    const res = generateFormSection(id, schema.action, section, schema.controls, formCollection);
 
     controls.appendChild(res);
   });
@@ -310,7 +318,7 @@ const generateFormControls = (id, schema, formCollection) => {
   return controls;
 };
 
-const generateFormSection = (id, section, controls, formCollection) => {
+const generateFormSection = (id, action, section, controls, formCollection) => {
 
   const sect = document.createElement('div');
   sect.classList.add('form-action-section-panel');
@@ -321,7 +329,7 @@ const generateFormSection = (id, section, controls, formCollection) => {
 
   section.inputs.forEach(item => {
 
-    const row = createControl(id, controls[item], formCollection);
+    const row = createControl(id, action, controls[item], formCollection);
     sect.appendChild(row);
   });
 
@@ -331,12 +339,12 @@ const generateFormSection = (id, section, controls, formCollection) => {
 
 // Form controls creation
 // ------------------------------------------------------------------------
-const createControl = (id, data, formCollection) => {
+const createControl = (id, action, data, formCollection) => {
 
   switch (data.controlType) {
 
-    case 'line-text': return createControl_lineText(id, data, formCollection);
-    case 'number': return createControl_number(id, data, formCollection);
+    case 'line-text': return createControl_lineText(id, action, data, formCollection);
+    case 'number': return createControl_number(id, action, data, formCollection);
     default:
       const el = document.createElement('div');
       el.textContent = `No function for ${id} - ${data.label}`;
@@ -346,7 +354,17 @@ const createControl = (id, data, formCollection) => {
 
 const getListenId = (id) => `${id}_listen`;
 
-const createControl_lineText = (id, data, formCollection) => {
+
+// THIS NEEDS FIXING - can have more than one 'gaussianBlur' action in a set of actions!
+// - this solution only returns the first instance of multiple actions of same type
+const getFilterAttributeValue = (action, attribute) => {
+
+  const act = currentFilter.filter.actions.filter(f => f.action === action);
+
+  return act[0][attribute];
+};
+
+const createControl_lineText = (id, action, data, formCollection) => {
 
   const localId = `${id}_${data.key}`,
     listenId = getListenId(id);
@@ -360,11 +378,13 @@ const createControl_lineText = (id, data, formCollection) => {
   label.setAttribute('for', localId);
   el.appendChild(label);
 
+  const val = getFilterAttributeValue(action, data.key);
+
   const input = document.createElement('input');
   input.id = localId;
   input.name = localId;
   input.type = 'text';
-  input.value = data.default;
+  input.value = (val != null) ? val : data.default;
   input.classList.add(listenId);
   el.appendChild(input);
 
@@ -373,7 +393,7 @@ const createControl_lineText = (id, data, formCollection) => {
   return el;
 };
 
-const createControl_number = (id, data, formCollection) => {
+const createControl_number = (id, action, data, formCollection) => {
 
   const localId = `${id}_${data.key}`,
     listenId = getListenId(id);
@@ -393,11 +413,13 @@ const createControl_number = (id, data, formCollection) => {
 
   const localId_number = `${localId}_number`;
 
+  const val = getFilterAttributeValue(action, data.key);
+
   const numberInput = document.createElement('input');
   numberInput.id = localId_number;
   numberInput.name = localId_number;
   numberInput.type = 'number';
-  numberInput.value = data.default;
+  numberInput.value = (val != null) ? val : data.default;
   numberInput.min = data.minValue;
   numberInput.max = data.maxValue;
   numberInput.step = data.step;
@@ -421,7 +443,7 @@ const createControl_number = (id, data, formCollection) => {
   rangeInput.id = localId_range;
   rangeInput.name = localId_range;
   rangeInput.type = 'range';
-  rangeInput.value = data.default;
+  rangeInput.value = (val != null) ? val : data.default;
   rangeInput.min = data.minValue;
   rangeInput.max = data.maxValue;
   rangeInput.step = data.step;
@@ -470,18 +492,15 @@ const createEventsForFormControls = (actionWrapper) => {
 
     event: ['input', 'change'],
     origin: listenClass,
-
     target: actionWrapper,
-
     useNativeListener: true,
     preventDefault: true,
-
     updates: formCollection,
 
     callback: () => {
 
-      currentFilter.updateFilter();
-      currentFilter.update();
+      currentFilter.updateDisplayFilter();
+      currentFilter.updateHistory();
     }
   });
 
@@ -496,28 +515,35 @@ export const wrap = (filter, form) => new FilterWrapper(filter, form);
 
 // Export for initialization 
 // ------------------------------------------------------------------------
-export const initFormBuilder = (scrawl = null, dom = null, stack = null, canvas = null, liveView = null) => {
+export const initFormBuilder = (scrawl = null, dom = null, stack = null, canvas = null, getImageDisplayViews = null) => {
 
   if (!scrawl) throw new Error('Scrawl library not passed to initFormBuilder function');
   if (!dom) throw new Error('DOM mappings not passed to initFormBuilder function');
   if (!stack) throw new Error('Stack not passed to initFormBuilder function');
   if (!canvas) throw new Error('Canvas not passed to initFormBuilder function');
-  if (!liveView) throw new Error('Picture entity "liveView" not passed to initFormBuilder function');
+  if (!getImageDisplayViews) throw new Error('getImageDisplayViews function not passed to initFormBuilder function');
 
 
   // populate module-level variables
   scrawlHandle = scrawl;
-  domHandle = dom;
-  stackHandle = stack;
-  canvasHandle = canvas;
-  picture = liveView;
-
+  getView = getImageDisplayViews;
   filterControlsPanel = dom['filter-controls-panel'];
   filterBuilderAreaHold = dom['filter-builder-area-hold'];
 
 
+  // Create the display filter and add it to picture
+  const picture = scrawl.findEntity('live-view');
+
+  displayFilter = scrawl.makeFilter({
+    name: 'eternal-display-filter',
+    actions: [],
+  });
+
+  picture.addFilters(displayFilter);
+
+
   // Make the stack elements draggable
-  stackDragGroup = scrawl.makeGroup({ name: 'stack-drag-group' });
+  const stackDragGroup = scrawl.makeGroup({ name: 'stack-drag-group' });
 
   scrawl.makeDragZone({
     zone: stack,
@@ -546,17 +572,18 @@ export const initFormBuilder = (scrawl = null, dom = null, stack = null, canvas 
           if (actionWrapper) {
 
             // Import filter action buttons into SC
-            // - direct children appended to #filter-builder-area-hold must be BUTTON.graph-action-button[data-action-wrapper]
             if (mutation.target.id === 'filter-builder-area-hold' && node.tagName === 'BUTTON') {
 
               // Only process the element once
               if (!node.dataset.scAdopted) {
 
+                node.dataset.scAdopted = '1';
+
                 const id = node.id;
 
-                stackHandle.addExistingDomElements(`#${id}`);
+                stack.addExistingDomElements(`#${id}`);
 
-                const el = scrawlHandle.findElement(id);
+                const el = scrawl.findElement(id);
 
                 el.set({
                   start: ['center', 'center'],
@@ -568,21 +595,17 @@ export const initFormBuilder = (scrawl = null, dom = null, stack = null, canvas 
 
                 actionWrapper.killList.push(el)
                 actionWrapper.buttonElement = el.domElement;
-
-                node.dataset.scAdopted = '1';
               }
             }
 
             // Wire up filter action forms after they get added to the DOM
-            // - direct children appended to #filter-controls-panel must be DETAILS[data-action-wrapper]
             if (mutation.target.id === 'filter-controls-panel' && node.tagName === 'DETAILS') {
 
               // Only process the element once
               if (!node.dataset.formWired) {
 
-                createEventsForFormControls(actionWrapper);
-
                 node.dataset.formWired = '1';
+                createEventsForFormControls(actionWrapper);
               }
             }
           }
@@ -590,7 +613,6 @@ export const initFormBuilder = (scrawl = null, dom = null, stack = null, canvas 
       }
     }
   });
-
   multiObserver.observe(filterBuilderAreaHold, { childList: true });
   multiObserver.observe(filterControlsPanel, { childList: true });
 
