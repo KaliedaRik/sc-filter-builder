@@ -361,20 +361,21 @@ const generateFormControls = (id, schema, formCollection) => {
 
 const generateFormSection = (id, action, section, controls, formCollection) => {
 
-  const sect = document.createElement('div');
-  sect.classList.add('form-action-section-panel');
+  const detailsEl = document.createElement('details');
+  detailsEl.classList.add('form-action-section-panel');
+  if (section.openOnLoad) detailsEl.setAttribute('open', '');
 
-  const h3 = document.createElement('h3');
-  h3.textContent = section.header;
-  sect.appendChild(h3);
+  const summaryEl = document.createElement('summary');
+  summaryEl.textContent = section.header;
+  detailsEl.appendChild(summaryEl);
 
   section.inputs.forEach(item => {
 
     const row = createControl(id, action, controls[item], formCollection);
-    sect.appendChild(row);
+    detailsEl.appendChild(row);
   });
 
-  return sect;
+  return detailsEl;
 };
 
 

@@ -24,6 +24,7 @@
 
   --filter-bar-background: rgb(255 248 255 / 1);
   --filter-bar-section-border: rgb(60 60 60 / 1);
+  --filter-bar-input-background: rgb(255 252 255 / 1);
 
   /* Right bar app constants - values without measurement units are ratios */
   --minimum-image-work-ratio: 0.3;
@@ -169,7 +170,7 @@ main {
   grid-template-columns: var(--left-bar-width) 1fr;
 }
 
-#image-controls-panel, #filter-controls-panel {
+#image-controls-panel {
   height: 100%;
   min-height: 0;
   width: 100%;
@@ -362,12 +363,29 @@ main {
     padding: 0;
     border: 0;
     overflow: hidden;
-    background-color: black;
+    background-color: var(--filter-bar-section-border);
   }
 }
 
 #filter-controls-panel {
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+  border-right: 1px solid var(--left-bar-right-border);
+  padding: 0 0.5rem;
   background-color: var(--filter-bar-background);
+
+  & h1 {
+    font-size: 150%;
+    margin: 0.5rem 0 0;
+    color: var(--tool-logo-color);
+    background-color: var(--tool-logo-background);
+    padding: 0.5rem;
+    text-align: center;
+    border-radius: 5px;
+  }
 
   & > h2 {
     font-size: 100%;
@@ -381,74 +399,112 @@ main {
       font-style: italic;
     }
   }
-}
 
-.summary-title {
-  font-size: 1.1rem;
-}
+  & > button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font-size: 100%;
+    margin: 0.5rem 0;
+    border: 1px solid var(--left-bar-section-border);
+    padding: 0.25rem 0.5rem;
+    border-radius: 5px;
+    background-color: var(--left-bar-section-background);
+    color: var(--advice-color);
+    font-weight: bold;
 
-.summary-identifier {
-  font-size: 0.8rem;
-  font-weight: normal;
-}
+    &:hover {
+      cursor: pointer;
+    }
+  }
 
-.form-action-controls-panel {
-  margin-bottom: 0.5rem;
+  & details {
+    margin: 0.5rem 0;
+    border: 1px solid var(--left-bar-section-border);
+    padding: 0.25rem 0.5rem;
+    border-radius: 5px;
+    background-color: var(--left-bar-section-background);
 
-  & .form-action-section-panel {
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
+    &:hover {
+      cursor: pointer;
+    }
 
-    /* filter-schema.js - controlType: 'line-text' */
-    & .action-control-inputs-for-linetext {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-column-gap: 2px;
-      justify-content: start;
+    & summary {
+      font-weight: bold;
 
-      margin: 0.5rem 0 0;
-      border: 1px dotted black;
-      padding: 0.5rem;
-      border-radius: 5px;
+      & .summary-title {
+        font-size: 1.1rem;
+      }
 
-      & input {
-        width: calc(100% - 0.5rem);
+      & .summary-identifier {
+        font-size: 0.8rem;
+        font-weight: normal;
       }
     }
 
-    /* filter-schema.js - controlType: 'number' */
-    & .action-control-inputs-for-number {
-      margin: 0.5rem 0 0;
-      border: 1px dotted black;
-      padding: 0.5rem;
-      border-radius: 5px;
+    & .form-action-controls-panel {
+      margin-bottom: 0.5rem;
 
-      & .action-control-inputs-for-number-row-1 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-column-gap: 2px;
-        justify-content: start;
-      }
+      & .form-action-section-panel {
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        background-color: var(--filter-bar-background);
+        padding-bottom: 0.5rem;
 
-      & .action-control-inputs-for-number-row-2 {
+        & > div {
+          background-color: var(--filter-bar-input-background);
+          border: 0;
+        }
 
-        & label {
-          position: absolute;
-          left: -1000px;
+        /* filter-schema.js - controlType: 'line-text' */
+        & .action-control-inputs-for-linetext {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          grid-column-gap: 2px;
+          justify-content: start;
+
+          margin: 0.5rem 0 0;
+          padding: 0.5rem;
+          border-radius: 5px;
+
+          & input {
+            width: calc(100% - 0.5rem);
+          }
+        }
+
+        /* filter-schema.js - controlType: 'number' */
+        & .action-control-inputs-for-number {
+          margin: 0.5rem 0 0;
+          padding: 0.5rem;
+          border-radius: 5px;
+
+          & .action-control-inputs-for-number-row-1 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-column-gap: 2px;
+            justify-content: start;
+          }
+
+          & .action-control-inputs-for-number-row-2 {
+
+            & label {
+              position: absolute;
+              left: -1000px;
+            }
+          }
+        }
+
+        & .action-control-inputs-for-boolean {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          grid-column-gap: 2px;
+          justify-content: start;
+
+          margin: 0.5rem 0 0;
+          padding: 0.5rem;
+          border-radius: 5px;
         }
       }
-    }
-
-    & .action-control-inputs-for-boolean {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-column-gap: 2px;
-      justify-content: start;
-
-      margin: 0.5rem 0 0;
-      border: 1px dotted black;
-      padding: 0.5rem;
-      border-radius: 5px;
     }
   }
 }

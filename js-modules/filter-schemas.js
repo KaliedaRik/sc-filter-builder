@@ -44,9 +44,11 @@ const requiredControls = {
 
 const defaultPresentation = [{
     header: 'Connections',
+    openOnLoad: false,
     inputs: ['lineIn', 'lineOut'],
   },{
     header: 'Impact',
+    openOnLoad: true,
     inputs: ['opacity'],
 }];
 
@@ -2999,18 +3001,23 @@ F.presentation = [...defaultPresentation];
 F = filterSchemas.areaAlpha = structuredClone(actionSchemas['area-alpha']);
 F.presentation = [{
   header: 'Connections',
+  openOnLoad: false,
   inputs: ['lineIn', 'lineOut'],
 },{
   header: 'Tile section dimensions',
+  openOnLoad: true,
   inputs: ['tileWidth', 'tileHeight', 'gutterWidth', 'gutterHeight'],
 },{
   header: 'Tile section alphas',
+  openOnLoad: true,
   inputs: ['areaAlphaLevels'],
 },{
   header: 'Tile offset',
+  openOnLoad: false,
   inputs: ['offsetX', 'offsetY'],
 },{
   header: 'Impact',
+  openOnLoad: true,
   inputs: ['opacity'],
 }];
 
@@ -3018,15 +3025,19 @@ F.presentation = [{
 F = filterSchemas.blend = structuredClone(actionSchemas['blend']);
 F.presentation = [{
     header: 'Connections',
+    openOnLoad: false,
     inputs: ['lineIn', 'lineMix', 'lineOut'],
   },{
     header: 'Mix input offset',
+    openOnLoad: false,
     inputs: ['offsetX', 'offsetY'],
   },{
     header: 'Blend operation',
+    openOnLoad: true,
     inputs: ['blend'],
   },{
     header: 'Impact',
+    openOnLoad: true,
     inputs: ['opacity'],
 }];
 
@@ -3075,24 +3086,31 @@ F.controls.passes = {
 };
 F.presentation = [{
     header: 'Connections',
+    openOnLoad: false,
     inputs: ['lineIn', 'lineOut'],
   },{
     header: 'Quick inputs',
+    openOnLoad: true,
     inputs: ['radius', 'step', 'passes'],
   },{
     header: 'Horizontal',
+    openOnLoad: false,
     inputs: ['processHorizontal', 'radiusHorizontal', 'stepHorizontal', 'passesHorizontal'],
   },{
     header: 'Vertical',
+    openOnLoad: false,
     inputs: ['processVertical', 'radiusVertical', 'stepVertical', 'passesVertical'],
   },{
     header: 'Inclusions',
+    openOnLoad: false,
     inputs: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha'],
   },{
     header: 'Exclusions',
+    openOnLoad: false,
     inputs: ['excludeTransparentPixels'],
   },{
     header: 'Impact',
+    openOnLoad: true,
     inputs: ['opacity'],
 }];
 
@@ -3116,12 +3134,15 @@ F.controls.level = {
 };
 F.presentation = [{
     header: 'Connections',
+    openOnLoad: false,
     inputs: ['lineIn', 'lineOut'],
   },{
     header: 'Modulation',
+    openOnLoad: true,
     inputs: ['level'],
   },{
     header: 'Impact',
+    openOnLoad: true,
     inputs: ['opacity'],
 }];
 
@@ -3129,12 +3150,15 @@ F.presentation = [{
 F = filterSchemas.channelLevels = structuredClone(actionSchemas['lock-channels-to-levels']);
 F.presentation = [{
     header: 'Connections',
+    openOnLoad: false,
     inputs: ['lineIn', 'lineOut'],
   },{
     header: 'Reference values',
+    openOnLoad: true,
     inputs: ['red', 'green', 'blue', 'alpha'],
   },{
     header: 'Impact',
+    openOnLoad: true,
     inputs: ['opacity'],
 }];
 
@@ -3144,12 +3168,15 @@ F.label = 'Channels modulation';
 F.description = '';
 F.presentation = [{
     header: 'Connections',
+    openOnLoad: false,
     inputs: ['lineIn', 'lineOut'],
   },{
     header: 'Channels',
+    openOnLoad: true,
     inputs: ['red', 'green', 'blue', 'alpha'],
   },{
     header: 'Impact',
+    openOnLoad: true,
     inputs: ['opacity'],
 }];
 
@@ -3157,13 +3184,16 @@ F.presentation = [{
 F = filterSchemas.channelstep = structuredClone(actionSchemas['step-channels']);
 F.presentation = [{
     header: 'Connections',
+    openOnLoad: false,
     inputs: ['lineIn', 'lineOut'],
   },{
     header: 'Effect',
+    openOnLoad: true,
     inputs: ['red', 'green', 'blue', 'clamp'],
   },{
     header: 'Impact',
-  inputs: ['opacity'],
+    openOnLoad: true,
+    inputs: ['opacity'],
 }];
 
 // channelsToAlpha
@@ -3188,15 +3218,19 @@ F.controls.feather = {
 };
 F.presentation = [{
     header: 'Connections',
+    openOnLoad: false,
     inputs: ['lineIn', 'lineOut'],
   },{
     header: 'Reference colors',
+    openOnLoad: true,
     inputs: ['ranges'],
   },{
     header: 'Feathering',
+    openOnLoad: false,
     inputs: ['feather', 'featherRed', 'featherGreen', 'featherBlue'],
   },{
     header: 'Impact',
+    openOnLoad: true,
     inputs: ['opacity'],
 }];
 
@@ -3215,15 +3249,19 @@ F.controls.reference = {
 };
 F.presentation = [{
     header: 'Connections',
+    openOnLoad: false,
     inputs: ['lineIn', 'lineOut'],
   },{
     header: 'Reference color',
+    openOnLoad: true,
     inputs: ['color', 'red', 'green', 'blue'],
   },{
     header: 'Effect controls',
+    openOnLoad: true,
     inputs: ['transparentAt', 'opaqueAt'],
   },{
     header: 'Impact',
+    openOnLoad: true,
     inputs: ['opacity'],
 }];
 
@@ -3253,15 +3291,19 @@ F.controls.highColor = {
 };
 F.presentation = [{
     header: 'Connections',
+    openOnLoad: false,
     inputs: ['lineIn', 'lineOut'],
   },{
     header: 'Low color',
+    openOnLoad: true,
     inputs: ['lowColor', 'lowRed', 'lowGreen', 'lowBlue'],
   },{
     header: 'High color',
+    openOnLoad: true,
     inputs: ['highColor', 'highRed', 'highGreen', 'highBlue'],
   },{
     header: 'Impact',
+    openOnLoad: true,
     inputs: ['opacity'],
 }];
 
@@ -3269,15 +3311,19 @@ F.presentation = [{
 F = filterSchemas.compose = structuredClone(actionSchemas['compose']);
 F.presentation = [{
     header: 'Connections',
+    openOnLoad: false,
     inputs: ['lineIn', 'lineMix', 'lineOut'],
   },{
     header: 'Mix input offset',
+    openOnLoad: false,
     inputs: ['offsetX', 'offsetY'],
   },{
     header: 'Compose operation',
+    openOnLoad: true,
     inputs: ['compose'],
   },{
     header: 'Impact',
+    openOnLoad: true,
     inputs: ['opacity'],
 }];
 
@@ -3509,15 +3555,19 @@ F.presentation = [...defaultPresentation];
 F = filterSchemas.pixelate = structuredClone(actionSchemas['pixelate']);
 F.presentation = [{
     header: 'Connections',
+    openOnLoad: false,
     inputs: ['lineIn', 'lineOut'],
   },{
     header: 'Channels',
+    openOnLoad: false,
     inputs: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha'],
   },{
     header: 'Tiles',
+    openOnLoad: true,
     inputs: ['tileWidth', 'tileHeight', 'offsetX', 'offsetY'],
   },{
     header: 'Impact',
+    openOnLoad: true,
     inputs: ['opacity'],
 }];
 
@@ -3562,12 +3612,15 @@ F.controls.level = {
 };
 F.presentation = [{
     header: 'Connections',
+    openOnLoad: false,
     inputs: ['lineIn', 'lineOut'],
   },{
     header: 'Modulation',
+    openOnLoad: true,
     inputs: ['level'],
   },{
     header: 'Impact',
+    openOnLoad: true,
     inputs: ['opacity'],
 }];
 
@@ -3705,9 +3758,11 @@ F.presentation = [...defaultPresentation];
 F = filterSchemas.tiles = structuredClone(actionSchemas['tiles']);
 F.presentation = [{
     header: 'Connections',
+    openOnLoad: false,
     inputs: ['lineIn', 'lineOut'],
   },{
     header: 'Impact',
+    openOnLoad: true,
     inputs: ['opacity'],
 }];
 
@@ -3752,9 +3807,11 @@ F.presentation = [...defaultPresentation];
 F = filterSchemas.unsharp = structuredClone(actionSchemas['unsharp']);
 F.presentation = [{
     header: 'Connections',
+    openOnLoad: false,
     inputs: ['lineIn', 'lineOut'],
   },{
     header: 'Impact',
+    openOnLoad: true,
     inputs: ['opacity'],
 }];
 
