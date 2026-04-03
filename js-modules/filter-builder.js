@@ -90,8 +90,8 @@ export const initFilterBuilder = (scrawl = null, dom = null, canvas = null) => {
   starterGrid.replaceChildren(frag);
 
 
-  // We always start with a grayscale filter on page load
-  const starter = starterFilters['SC-starter-filter_grayscale'],
+  // We always start with the desaturate (grayscale) filter on page load
+  const starter = starterFilters['SC-starter-filter_desaturate'],
     filter = canvas.actionPacket(starter.packet);
 
   currentFilterWrapper = wrap(filter, starter.formSchemaName);

@@ -23,7 +23,8 @@
   --control-button-panel-background: rgb(240 240 240 / 1);
 
   --filter-bar-background: rgb(255 248 255 / 1);
-  --filter-bar-section-border: rgb(60 60 60 / 1);
+  --filter-bar-section-border: rgb(80 60 60 / 1);
+  --filter-bar-section-background: rgb(230 220 220 / 1);;
   --filter-bar-input-background: rgb(255 252 255 / 1);
 
   /* Right bar app constants - values without measurement units are ratios */
@@ -377,16 +378,6 @@ main {
   padding: 0 0.5rem;
   background-color: var(--filter-bar-background);
 
-  & h1 {
-    font-size: 150%;
-    margin: 0.5rem 0 0;
-    color: var(--tool-logo-color);
-    background-color: var(--tool-logo-background);
-    padding: 0.5rem;
-    text-align: center;
-    border-radius: 5px;
-  }
-
   & > h2 {
     font-size: 100%;
     line-height: 1.5;
@@ -406,10 +397,10 @@ main {
     text-align: left;
     font-size: 100%;
     margin: 0.5rem 0;
-    border: 1px solid var(--left-bar-section-border);
+    border: 1px solid var(--filter-bar-section-border);
     padding: 0.25rem 0.5rem;
     border-radius: 5px;
-    background-color: var(--left-bar-section-background);
+    background-color: var(--filter-bar-section-background);
     color: var(--advice-color);
     font-weight: bold;
 
@@ -420,10 +411,10 @@ main {
 
   & details {
     margin: 0.5rem 0;
-    border: 1px solid var(--left-bar-section-border);
+    border: 1px solid var(--filter-bar-section-border);
     padding: 0.25rem 0.5rem;
     border-radius: 5px;
-    background-color: var(--left-bar-section-background);
+    background-color: var(--filter-bar-section-background);
 
     &:hover {
       cursor: pointer;
@@ -719,7 +710,9 @@ dialog {
       border-radius: 8px;
       border: 1px solid var(--dialog-button-border);
       background-color: var(background);
-      min-width: calc(100px + 1rem);
+      width: calc(120px + 1rem);
+      min-width: calc(120px + 1rem);
+      max-width: calc(120px + 1rem);
     }
 
     & img {

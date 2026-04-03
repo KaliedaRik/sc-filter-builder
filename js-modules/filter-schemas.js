@@ -1167,7 +1167,27 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
+    presentation: [{
+      header: 'Connections',
+      openOnLoad: false,
+      inputs: ['lineIn', 'lineOut'],
+    },{
+      header: 'Radius + angle',
+      openOnLoad: true,
+      inputs: ['radiusHorizontal', 'radiusVertical', 'angle'],
+    },{
+      header: 'Inclusions',
+      openOnLoad: false,
+      inputs: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha'],
+    },{
+      header: 'Flags',
+      openOnLoad: false,
+      inputs: ['excludeTransparentPixels', 'premultiply'],
+    },{
+      header: 'Impact',
+      openOnLoad: true,
+      inputs: ['opacity'],
+    }],
   },
 
   ['glitch']: {
@@ -1930,7 +1950,23 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
+    presentation: [{
+      header: 'Connections',
+      openOnLoad: false,
+      inputs: ['lineIn', 'lineOut'],
+    },{
+      header: 'Tiles',
+      openOnLoad: true,
+      inputs: ['tileWidth', 'tileHeight', 'offsetX', 'offsetY'],
+    },{
+      header: 'Channels',
+      openOnLoad: false,
+      inputs: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha'],
+    },{
+      header: 'Impact',
+      openOnLoad: true,
+      inputs: ['opacity'],
+    }],
   },
 
   ['process-image']: {
@@ -3415,7 +3451,7 @@ F.presentation = [...defaultPresentation];
 
 // gaussianBlur
 F = filterSchemas.gaussianBlur = structuredClone(actionSchemas['gaussian-blur']);
-F.presentation = [...defaultPresentation];
+// F.presentation = [...defaultPresentation];
 
 // glitch
 F = filterSchemas.glitch = structuredClone(actionSchemas['glitch']);
@@ -3553,23 +3589,23 @@ F.presentation = [...defaultPresentation];
 
 // pixelate
 F = filterSchemas.pixelate = structuredClone(actionSchemas['pixelate']);
-F.presentation = [{
-    header: 'Connections',
-    openOnLoad: false,
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Channels',
-    openOnLoad: false,
-    inputs: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha'],
-  },{
-    header: 'Tiles',
-    openOnLoad: true,
-    inputs: ['tileWidth', 'tileHeight', 'offsetX', 'offsetY'],
-  },{
-    header: 'Impact',
-    openOnLoad: true,
-    inputs: ['opacity'],
-}];
+// F.presentation = [{
+//     header: 'Connections',
+//     openOnLoad: false,
+//     inputs: ['lineIn', 'lineOut'],
+//   },{
+//     header: 'Channels',
+//     openOnLoad: false,
+//     inputs: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha'],
+//   },{
+//     header: 'Tiles',
+//     openOnLoad: true,
+//     inputs: ['tileWidth', 'tileHeight', 'offsetX', 'offsetY'],
+//   },{
+//     header: 'Impact',
+//     openOnLoad: true,
+//     inputs: ['opacity'],
+// }];
 
 // randomNoise
 F = filterSchemas.randomNoise = structuredClone(actionSchemas['random-noise']);
