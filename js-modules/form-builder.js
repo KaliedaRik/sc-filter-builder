@@ -332,7 +332,8 @@ const generateFormHtml = (actionWrapper) => {
   summarySpan2.textContent = `(${actionWrapper.id.substring(0, 8)})`;
   summary.appendChild(summarySpan2);
 
-  const controls = generateFormControls(id, actionWrapper.formSchema, actionWrapper.formCollection);
+  // const controls = generateFormControls(id, actionWrapper.formSchema, actionWrapper.formCollection, actionWrapper.killList);
+  const controls = generateFormControls(actionWrapper);
 
   details.appendChild(summary);
   details.appendChild(controls);
@@ -344,14 +345,16 @@ const generateFormHtml = (actionWrapper) => {
   return details;
 };
 
-const generateFormControls = (id, schema, formCollection) => {
+// const generateFormControls = (id, schema, formCollection, killList) => {
+const generateFormControls = (actionWrapper) => {
 
   const controls = document.createElement('div');
   controls.classList.add('form-action-controls-panel');
 
-  schema.presentation.forEach(section => {
+  actionWrapper.formSchema.presentation.forEach(section => {
 
-    const res = generateFormSection(id, schema.action, section, schema.controls, formCollection);
+    // const res = generateFormSection(id, schema.action, section, schema.controls, formCollection, killList);
+    const res = generateFormSection(section, actionWrapper);
 
     controls.appendChild(res);
   });
@@ -359,7 +362,10 @@ const generateFormControls = (id, schema, formCollection) => {
   return controls;
 };
 
-const generateFormSection = (id, action, section, controls, formCollection) => {
+// const generateFormSection = (id, action, section, controls, formCollection, killList) => {
+const generateFormSection = (section, actionWrapper) => {
+
+  const controls = actionWrapper.formSchema.controls;
 
   const detailsEl = document.createElement('details');
   detailsEl.classList.add('form-action-section-panel');
@@ -371,7 +377,7 @@ const generateFormSection = (id, action, section, controls, formCollection) => {
 
   section.inputs.forEach(item => {
 
-    const row = createControl(id, action, controls[item], formCollection);
+    const row = createControl(controls[item], actionWrapper);
     detailsEl.appendChild(row);
   });
 
@@ -381,16 +387,16 @@ const generateFormSection = (id, action, section, controls, formCollection) => {
 
 // Form controls creation
 // ------------------------------------------------------------------------
-const createControl = (id, action, data, formCollection) => {
+const createControl = (data, actionWrapper) => {
 
   switch (data.controlType) {
 
-    case 'line-text': return createControl_lineText(id, action, data, formCollection);
-    case 'number': return createControl_number(id, action, data, formCollection);
-    case 'boolean': return createControl_boolean(id, action, data, formCollection);
+    case 'line-text': return createControl_lineText(data, actionWrapper);
+    case 'number': return createControl_number(data, actionWrapper);
+    case 'boolean': return createControl_boolean(data, actionWrapper);
     default:
       const el = document.createElement('div');
-      el.textContent = `No function for ${id} - ${data.label}`;
+      el.textContent = `No function for ${actionWrapper.formId} - ${data.label}`;
       return el;
   }
 };
@@ -407,10 +413,13 @@ const getFilterAttributeValue = (action, attribute) => {
   return act[0][attribute];
 };
 
-const createControl_lineText = (id, action, data, formCollection) => {
+// const createControl_lineText = (id, action, data, formCollection, killList) => {
+const createControl_lineText = (data, actionWrapper) => {
 
-  const localId = `${id}_${data.key}`,
-    listenId = getListenId(id);
+  const {formId, formSchema, formCollection, killList } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`,
+    listenId = getListenId(formId);
 
   const el = document.createElement('div');
   el.classList.add('action-control-inputs-for-linetext');
@@ -421,7 +430,7 @@ const createControl_lineText = (id, action, data, formCollection) => {
   label.setAttribute('for', localId);
   el.appendChild(label);
 
-  const val = getFilterAttributeValue(action, data.key);
+  const val = getFilterAttributeValue(formSchema.action, data.key);
 
   const input = document.createElement('input');
   input.id = localId;
@@ -436,10 +445,13 @@ const createControl_lineText = (id, action, data, formCollection) => {
   return el;
 };
 
-const createControl_boolean = (id, action, data, formCollection) => {
+// const createControl_boolean = (id, action, data, formCollection, killList) => {
+const createControl_boolean = (data, actionWrapper) => {
 
-  const localId = `${id}_${data.key}`,
-    listenId = getListenId(id);
+  const {formId, formSchema, formCollection, killList } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`,
+    listenId = getListenId(formId);
 
   const el = document.createElement('div');
   el.classList.add('action-control-inputs-for-boolean');
@@ -466,7 +478,7 @@ const createControl_boolean = (id, action, data, formCollection) => {
   input.appendChild(isFalse);
   input.appendChild(isTrue);
 
-  let val = getFilterAttributeValue(action, data.key);
+  let val = getFilterAttributeValue(formSchema.action, data.key);
   val = (val != null) ? val : data.default;
   val = (val) ? '1' : '0';
 
@@ -479,10 +491,13 @@ const createControl_boolean = (id, action, data, formCollection) => {
   return el;
 };
 
-const createControl_number = (id, action, data, formCollection) => {
+// const createControl_number = (id, action, data, formCollection, killList) => {
+const createControl_number = (data, actionWrapper) => {
 
-  const localId = `${id}_${data.key}`,
-    listenId = getListenId(id);
+  const {formId, formSchema, formCollection, killList } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`,
+    listenId = getListenId(formId);
 
   const el = document.createElement('div');
   el.classList.add('action-control-inputs-for-number');
@@ -499,7 +514,7 @@ const createControl_number = (id, action, data, formCollection) => {
 
   const localId_number = `${localId}_number`;
 
-  const val = getFilterAttributeValue(action, data.key);
+  const val = getFilterAttributeValue(formSchema.action, data.key);
 
   const numberInput = document.createElement('input');
   numberInput.id = localId_number;
@@ -511,8 +526,6 @@ const createControl_number = (id, action, data, formCollection) => {
   numberInput.step = data.step;
   numberInput.classList.add(listenId);
   row1.appendChild(numberInput);
-
-  formCollection[localId_number] = [data.key, 'float'];
 
   const row2 = document.createElement('div');
   row2.classList.add('action-control-inputs-for-number-row-2');
@@ -536,7 +549,58 @@ const createControl_number = (id, action, data, formCollection) => {
   rangeInput.classList.add(listenId);
   row2.appendChild(rangeInput);
 
-  formCollection[localId_range] = [data.key, 'float'];
+  if (data.alternativeControl) {
+
+    if ('set-alternatives-to-this' === data.alternativeAction) {
+
+      const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+        if (e && e.target) {
+
+          e.preventDefault();
+
+          const target = e.target;
+
+          let val;
+
+          if (data.step < 1) val = parseFloat(target.value);
+          else val = parseInt(target.value, 10);
+
+          data.alternativeFor.forEach(alt => actionWrapper.set({
+            [alt]: val,
+          }));
+
+          currentFilter.updateDisplayFilter();
+          currentFilter.updateHistory();
+        }
+      }, [numberInput, rangeInput]);
+
+      killList.push(listener);
+    }
+  }
+  else {
+
+    if (data.step < 1) {
+
+      formCollection[localId_number] = [data.key, 'float'];
+      formCollection[localId_range] = [data.key, 'float'];
+    }
+    else {
+
+      formCollection[localId_number] = [data.key, 'round'];
+      formCollection[localId_range] = [data.key, 'round'];
+    }
+  }
+
+  const numberToRange = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+    if (e?.target?.value != null) rangeInput.value = e.target.value;
+  }, numberInput);
+
+  const rangeToNumber = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+    if (e?.target?.value != null) numberInput.value = e.target.value;
+  }, rangeInput);
+
+  killList.push(numberToRange, rangeToNumber);
 
   el.appendChild(row1);
   el.appendChild(row2);
@@ -546,32 +610,7 @@ const createControl_number = (id, action, data, formCollection) => {
 
 const createEventsForFormControls = (actionWrapper) => {
 
-  const { formId, formElement, formCollection, formSchema, killList } = actionWrapper;
-  const { controls } = formSchema;
-
-  Object.values(controls).forEach(item => {
-
-    switch (item.controlType) {
-
-      case 'number': {
-
-        const numberEl = formElement.querySelector(`#${formId}_${item.key}_number`),
-          rangeEl = formElement.querySelector(`#${formId}_${item.key}_range`);
-
-        const numberToRange = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
-          if (e?.target?.value != null) rangeEl.value = e.target.value;
-        }, numberEl);
-
-        const rangeToNumber = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
-          if (e?.target?.value != null) numberEl.value = e.target.value;
-        }, rangeEl);
-
-        killList.push(numberToRange, rangeToNumber);
-        break;
-      };
-    }
-  });
-
+  const { formId, formCollection, killList } = actionWrapper;
   const listenClass = `.${getListenId(formId)}`;
 
   const updater = scrawlHandle.makeUpdater({

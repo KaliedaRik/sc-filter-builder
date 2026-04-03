@@ -42,16 +42,6 @@ const requiredControls = {
   },
 };
 
-const defaultPresentation = [{
-    header: 'Connections',
-    openOnLoad: false,
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Impact',
-    openOnLoad: true,
-    inputs: ['opacity'],
-}];
-
 /*
 __actionSchemas__ models the filter action objects which make up a Scrawl-canvas filter's actions array. Each filter is keyed by its filter-engine name (which often includes hyphens). Each attribute is a filter definition with the following attributes
 - `label` - filter's human-readable name
@@ -119,7 +109,6 @@ const actionSchemas = {
         description: 'If includeBlue is false, set the blue channel\'s value to 0',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['alpha-to-luminance']: {
@@ -131,7 +120,6 @@ const actionSchemas = {
     controls: {
       ...requiredControls,
     },
-    presentation: [...defaultPresentation],
   },
 
   ['area-alpha']: {
@@ -210,7 +198,6 @@ const actionSchemas = {
         description: 'Array of four alpha values between 0 and 255 for each quadrant, in the order [tile-tile, tile-gutter, gutter-tile, gutter-gutter]',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['average-channels']: {
@@ -264,7 +251,6 @@ const actionSchemas = {
         description: 'Include blue channel in the averaging calculation',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['blend']: {
@@ -311,7 +297,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['blur']: {
@@ -432,7 +417,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['channels-to-alpha']: {
@@ -465,7 +449,6 @@ const actionSchemas = {
         description: 'To exclude this channel from the averaging calculation, make this flag false',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['chroma']: {
@@ -514,7 +497,6 @@ const actionSchemas = {
         description: 'For blue channel values outside of a range value, but less than the feather value\'s distance, reduce the alpha value to form a feather effect',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['clamp-channels']: {
@@ -586,7 +568,6 @@ const actionSchemas = {
         description: 'Blue channel\'s contribution to the filter\'s upper bound',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['colors-to-alpha']: {
@@ -648,7 +629,6 @@ const actionSchemas = {
         description: 'Manipulate the sensitivity of the chroma key effect',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['compose']: {
@@ -695,7 +675,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['corrode']: {
@@ -783,7 +762,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['deconvolute']: {
@@ -879,7 +857,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['displace']: {
@@ -968,7 +945,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['emboss']: {
@@ -1024,7 +1000,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['flood']: {
@@ -1083,7 +1058,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['gaussian-blur']: {
@@ -1167,27 +1141,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [{
-      header: 'Connections',
-      openOnLoad: false,
-      inputs: ['lineIn', 'lineOut'],
-    },{
-      header: 'Radius + angle',
-      openOnLoad: true,
-      inputs: ['radiusHorizontal', 'radiusVertical', 'angle'],
-    },{
-      header: 'Inclusions',
-      openOnLoad: false,
-      inputs: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha'],
-    },{
-      header: 'Flags',
-      openOnLoad: false,
-      inputs: ['excludeTransparentPixels', 'premultiply'],
-    },{
-      header: 'Impact',
-      openOnLoad: true,
-      inputs: ['opacity'],
-    }],
   },
 
   ['glitch']: {
@@ -1347,7 +1300,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['grayscale']: {
@@ -1359,7 +1311,6 @@ const actionSchemas = {
     controls: {
       ...requiredControls,
     },
-    presentation: [...defaultPresentation],
   },
 
   ['invert-channels']: {
@@ -1392,7 +1343,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['lock-channels-to-levels']: {
@@ -1432,7 +1382,6 @@ const actionSchemas = {
         description: 'An array of integer numbers, each between 0 and 255',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['luminance-to-alpha']: {
@@ -1469,7 +1418,6 @@ const actionSchemas = {
         description: 'Expects to receive a Scrawl-canvas LinearGradient object, or the name value of the object. We need to create a gradient builder mini-tool before we can use this filter in the main tool',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['matrix']: {
@@ -1570,7 +1518,6 @@ const actionSchemas = {
         description: 'An array of matrix weights, with length = width * height',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['modify-ok-channels']: {
@@ -1612,7 +1559,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['modulate-channels']: {
@@ -1628,7 +1574,7 @@ const actionSchemas = {
         default: 1,
         key: 'red',
         minValue: 0,
-        maxValue: 3,
+        maxValue: 5,
         step: 0.01,
         label: 'Red channel',
         description: '',
@@ -1638,7 +1584,7 @@ const actionSchemas = {
         default: 1,
         key: 'green',
         minValue: 0,
-        maxValue: 3,
+        maxValue: 5,
         step: 0.01,
         label: 'Green channel',
         description: '',
@@ -1648,7 +1594,7 @@ const actionSchemas = {
         default: 1,
         key: 'blue',
         minValue: 0,
-        maxValue: 3,
+        maxValue: 5,
         step: 0.01,
         label: 'Blue channel',
         description: '',
@@ -1658,7 +1604,7 @@ const actionSchemas = {
         default: 1,
         key: 'alpha',
         minValue: 0,
-        maxValue: 3,
+        maxValue: 5,
         step: 0.01,
         label: 'Alpha channel',
         description: '',
@@ -1671,7 +1617,6 @@ const actionSchemas = {
         description: 'When false, acts as a brightness filter; when true, acts as a saturation filter',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['modulate-ok-channels']: {
@@ -1713,11 +1658,10 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['negative']: {
-    label: 'Negative',
+    label: 'OK Negative',
     description: 'Invert OKLab channel colors',
     group: 'OK color space filter',
     action: 'negative',
@@ -1725,7 +1669,6 @@ const actionSchemas = {
     controls: {
       ...requiredControls,
     },
-    presentation: [...defaultPresentation],
   },
 
   ['newsprint']: {
@@ -1747,7 +1690,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['offset']: {
@@ -1846,7 +1788,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['ok-perceptual-curves']: {
@@ -1870,7 +1811,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['pixelate']: {
@@ -1950,23 +1890,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [{
-      header: 'Connections',
-      openOnLoad: false,
-      inputs: ['lineIn', 'lineOut'],
-    },{
-      header: 'Tiles',
-      openOnLoad: true,
-      inputs: ['tileWidth', 'tileHeight', 'offsetX', 'offsetY'],
-    },{
-      header: 'Channels',
-      openOnLoad: false,
-      inputs: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha'],
-    },{
-      header: 'Impact',
-      openOnLoad: true,
-      inputs: ['opacity'],
-    }],
   },
 
   ['process-image']: {
@@ -2031,7 +1954,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['random-noise']: {
@@ -2130,7 +2052,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['reduce-palette']: {
@@ -2174,7 +2095,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['rotate-hue']: {
@@ -2196,7 +2116,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['set-channel-to-level']: {
@@ -2246,7 +2165,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['step-channels']: {
@@ -2296,7 +2214,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   // For the tool, we shall allow the user to define just one swirl per action
@@ -2334,7 +2251,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['threshold']: {
@@ -2501,7 +2417,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['tiles']: {
@@ -2658,7 +2573,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['tint-channels']: {
@@ -2760,7 +2674,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['unsharp']: {
@@ -2829,7 +2742,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['vary-channels-by-weights']: {
@@ -2855,7 +2767,6 @@ const actionSchemas = {
         description: 'Switch between weighting against a grayscaled image (default) and weighting on a per-channel basis',
       },
     },
-    presentation: [...defaultPresentation],
   },
 
   ['zoom-blur']: {
@@ -3011,7 +2922,6 @@ const actionSchemas = {
         description: '',
       },
     },
-    presentation: [...defaultPresentation],
   },
 };
 
@@ -3021,6 +2931,17 @@ The __filterSchemas__ object defines objects which either:
 - Port through the related actionSchema object, adding presentation details and (sometimes) convenience controls; or
 - Create a variant of an actionSchema object as a convenience filter, overwriting some of the actionSchema object's controls attribute default values
 */ 
+
+const defaultPresentation = [{
+    header: 'Connections',
+    openOnLoad: false,
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Impact',
+    openOnLoad: true,
+    inputs: ['opacity'],
+}];
+
 const filterSchemas = {};
 
 let F;
@@ -3094,6 +3015,9 @@ F.controls.radius = {
   alternativeAction: 'set-alternatives-to-this',
   sync: 'down-only',
   default: 1,
+  minValue: 0,
+  maxValue: 60,
+  step: 1,
   key: 'radius',
   label: 'Radius',
   description: '',
@@ -3105,6 +3029,9 @@ F.controls.step = {
   alternativeAction: 'set-alternatives-to-this',
   sync: 'down-only',
   default: 1,
+  minValue: 0,
+  maxValue: 20,
+  step: 1,
   key: 'step',
   label: 'Step',
   description: '',
@@ -3116,6 +3043,9 @@ F.controls.passes = {
   alternativeAction: 'set-alternatives-to-this',
   sync: 'down-only',
   default: 1,
+  minValue: 0,
+  maxValue: 10,
+  step: 1,
   key: 'passes',
   label: 'Passes',
   description: ''
@@ -3163,7 +3093,7 @@ F.controls.level = {
   default: 1,
   key: 'level',
   minValue: 0,
-  maxValue: 3,
+  maxValue: 5,
   step: 0.01,
   label: 'Level',
   description: ''
@@ -3451,7 +3381,27 @@ F.presentation = [...defaultPresentation];
 
 // gaussianBlur
 F = filterSchemas.gaussianBlur = structuredClone(actionSchemas['gaussian-blur']);
-// F.presentation = [...defaultPresentation];
+F.presentation = [{
+    header: 'Connections',
+    openOnLoad: false,
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Radius + angle',
+    openOnLoad: true,
+    inputs: ['radiusHorizontal', 'radiusVertical', 'angle'],
+  },{
+    header: 'Inclusions',
+    openOnLoad: false,
+    inputs: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha'],
+  },{
+    header: 'Flags',
+    openOnLoad: false,
+    inputs: ['excludeTransparentPixels', 'premultiply'],
+  },{
+    header: 'Impact',
+    openOnLoad: true,
+    inputs: ['opacity'],
+}],
 
 // glitch
 F = filterSchemas.glitch = structuredClone(actionSchemas['glitch']);
@@ -3459,7 +3409,7 @@ F.presentation = [...defaultPresentation];
 
 // gray ('average-channels' variant)
 F = filterSchemas.gray = structuredClone(actionSchemas['average-channels']);
-F.label = 'Desaturate';
+F.label = 'Gray monochrome';
 F.description = '';
 F.controls.includeRed.default = true;
 F.controls.includeGreen.default = true;
@@ -3589,23 +3539,23 @@ F.presentation = [...defaultPresentation];
 
 // pixelate
 F = filterSchemas.pixelate = structuredClone(actionSchemas['pixelate']);
-// F.presentation = [{
-//     header: 'Connections',
-//     openOnLoad: false,
-//     inputs: ['lineIn', 'lineOut'],
-//   },{
-//     header: 'Channels',
-//     openOnLoad: false,
-//     inputs: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha'],
-//   },{
-//     header: 'Tiles',
-//     openOnLoad: true,
-//     inputs: ['tileWidth', 'tileHeight', 'offsetX', 'offsetY'],
-//   },{
-//     header: 'Impact',
-//     openOnLoad: true,
-//     inputs: ['opacity'],
-// }];
+F.presentation = [{
+    header: 'Connections',
+    openOnLoad: false,
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Tiles',
+    openOnLoad: true,
+    inputs: ['tileWidth', 'tileHeight', 'offsetX', 'offsetY'],
+  },{
+    header: 'Channels',
+    openOnLoad: false,
+    inputs: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha'],
+  },{
+    header: 'Impact',
+    openOnLoad: true,
+    inputs: ['opacity'],
+}],
 
 // randomNoise
 F = filterSchemas.randomNoise = structuredClone(actionSchemas['random-noise']);
@@ -3641,7 +3591,7 @@ F.controls.level = {
   default: 1,
   key: 'level',
   minValue: 0,
-  maxValue: 3,
+  maxValue: 5,
   step: 0.01,
   label: 'Level',
   description: ''
