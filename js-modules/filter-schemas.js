@@ -2252,15 +2252,6 @@ const actionSchemas = {
       },
     },
   },
-// const defaultPresentation = [{
-//     header: 'Connections',
-//     openOnLoad: false,
-//     inputs: ['lineIn', 'lineOut'],
-//   },{
-//     header: 'Impact',
-//     openOnLoad: true,
-//     inputs: ['opacity'],
-// }];
 
   ['threshold']: {
     label: 'Threshold',
@@ -2427,15 +2418,6 @@ const actionSchemas = {
       },
     },
   },
-// const defaultPresentation = [{
-//     header: 'Connections',
-//     openOnLoad: false,
-//     inputs: ['lineIn', 'lineOut'],
-//   },{
-//     header: 'Impact',
-//     openOnLoad: true,
-//     inputs: ['opacity'],
-// }];
 
   ['tiles']: {
     label: 'Tiles',
@@ -2455,23 +2437,23 @@ const actionSchemas = {
       },
 // Check to see if originX/originY can take % values - if not, update filter to make this happen
       originX: {
-        controlType: 'number',
-        default: 0,
+        controlType: 'percentage-number',
+        default: 50,
         key: 'originX',
-        minValue: 0,
-        maxValue: 600,
-        step: 1,
-        label: 'Origin X (rect, hex)',
+        minValue: -20,
+        maxValue: 120,
+        step: 0.1,
+        label: 'Origin X [rect, hex]',
         description: '',
       },
       originY: {
-        controlType: 'number',
-        default: 0,
+        controlType: 'percentage-number',
+        default: 50,
         key: 'originY',
-        minValue: 0,
-        maxValue: 600,
-        step: 1,
-        label: 'Origin Y (rect, hex)',
+        minValue: -20,
+        maxValue: 120,
+        step: 0.1,
+        label: 'Origin Y [rect, hex]',
         description: '',
       },
       rectWidth: {
@@ -2481,7 +2463,7 @@ const actionSchemas = {
         minValue: 1,
         maxValue: 100,
         step: 1,
-        label: 'Width (rect)',
+        label: 'Width [rect]',
         description: '',
       },
       rectHeight: {
@@ -2491,7 +2473,7 @@ const actionSchemas = {
         minValue: 1,
         maxValue: 100,
         step: 1,
-        label: 'Height (rect)',
+        label: 'Height [rect]',
         description: '',
       },
       hexRadius: {
@@ -2501,17 +2483,17 @@ const actionSchemas = {
         minValue: 1,
         maxValue: 50,
         step: 1,
-        label: 'Radius (hex)',
+        label: 'Radius [hex]',
         description: '',
       },
       randomCount: {
         controlType: 'number',
-        default: 100,
+        default: 1000,
         key: 'randomCount',
         minValue: 10,
-        maxValue: 5000,
+        maxValue: 10000,
         step: 10,
-        label: 'Random points (random)',
+        label: 'Random points [random]',
         description: '',
       },
       pointsData: {
@@ -2528,7 +2510,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 360,
         step: 0.1,
-        label: 'Rotation angle (rect, hex)',
+        label: 'Rotation angle [rect, hex]',
         description: '',
       },
       spiralStrength: {
@@ -2538,7 +2520,7 @@ const actionSchemas = {
         minValue: -0.005,
         maxValue: 0.005,
         step: 0.00005,
-        label: 'Spiral strength (rect, hex)',
+        label: 'Spiral strength [rect, hex]',
         description: '',
       },
       seed: {
@@ -2592,15 +2574,6 @@ const actionSchemas = {
       },
     },
   },
-// const defaultPresentation = [{
-//     header: 'Connections',
-//     openOnLoad: false,
-//     inputs: ['lineIn', 'lineOut'],
-//   },{
-//     header: 'Impact',
-//     openOnLoad: true,
-//     inputs: ['opacity'],
-// }];
 
   ['tint-channels']: {
     label: 'Tint',
@@ -2702,15 +2675,6 @@ const actionSchemas = {
       },
     },
   },
-// const defaultPresentation = [{
-//     header: 'Connections',
-//     openOnLoad: false,
-//     inputs: ['lineIn', 'lineOut'],
-//   },{
-//     header: 'Impact',
-//     openOnLoad: true,
-//     inputs: ['opacity'],
-// }];
 
   ['unsharp']: {
     label: 'Unsharpen',
@@ -2779,15 +2743,6 @@ const actionSchemas = {
       },
     },
   },
-// const defaultPresentation = [{
-//     header: 'Connections',
-//     openOnLoad: false,
-//     inputs: ['lineIn', 'lineOut'],
-//   },{
-//     header: 'Impact',
-//     openOnLoad: true,
-//     inputs: ['opacity'],
-// }];
 
   ['vary-channels-by-weights']: {
     label: 'Vary channels by weights',
@@ -2813,15 +2768,6 @@ const actionSchemas = {
       },
     },
   },
-// const defaultPresentation = [{
-//     header: 'Connections',
-//     openOnLoad: false,
-//     inputs: ['lineIn', 'lineOut'],
-//   },{
-//     header: 'Impact',
-//     openOnLoad: true,
-//     inputs: ['opacity'],
-// }];
 
   ['zoom-blur']: {
     label: 'Zoom blur',
@@ -2961,7 +2907,7 @@ const actionSchemas = {
         key: 'samples',
         minValue: 0,
         maxValue: 32,
-        step: 0.01,
+        step: 1,
         label: 'Samples',
         description: '',
       },
@@ -2978,15 +2924,6 @@ const actionSchemas = {
     },
   },
 };
-// const defaultPresentation = [{
-//     header: 'Connections',
-//     openOnLoad: false,
-//     inputs: ['lineIn', 'lineOut'],
-//   },{
-//     header: 'Impact',
-//     openOnLoad: true,
-//     inputs: ['opacity'],
-// }];
 
 
 /*
@@ -3299,7 +3236,7 @@ F.presentation = [{
   },{
     header: 'Reference color',
     openOnLoad: true,
-    inputs: ['color', 'red', 'green', 'blue'],
+    inputs: ['color', ['red', 'green', 'blue']],
   },{
     header: 'Effect controls',
     openOnLoad: true,
@@ -3341,11 +3278,11 @@ F.presentation = [{
   },{
     header: 'Low color',
     openOnLoad: true,
-    inputs: ['lowColor', 'lowRed', 'lowGreen', 'lowBlue'],
+    inputs: ['lowColor', ['lowRed', 'lowGreen', 'lowBlue']],
   },{
     header: 'High color',
     openOnLoad: true,
-    inputs: ['highColor', 'highRed', 'highGreen', 'highBlue'],
+    inputs: ['highColor', ['highRed', 'highGreen', 'highBlue']],
   },{
     header: 'Impact',
     openOnLoad: true,
@@ -3394,7 +3331,23 @@ F.presentation = [{
 
 // curveWeights
 F = filterSchemas.curveWeights = structuredClone(actionSchemas['vary-channels-by-weights']);
-F.presentation = [...defaultPresentation];
+F.presentation = [{
+    header: 'Connections',
+    openOnLoad: false,
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Flags',
+    openOnLoad: true,
+    inputs: ['useMixedChannel'],
+  },{
+    header: 'Weights',
+    openOnLoad: true,
+    inputs: ['weights'],
+  },{
+    header: 'Impact',
+    openOnLoad: true,
+    inputs: ['opacity'],
+}];
 
 // cyan ('average-channels' variant)
 F = filterSchemas.cyan = structuredClone(actionSchemas['average-channels']);
@@ -3547,7 +3500,7 @@ F.presentation = [{
   },{
     header: 'Flood color',
     openOnLoad: true,
-    inputs: ['reference', 'red', 'green', 'blue'],
+    inputs: ['reference', ['red', 'green', 'blue']],
   },{
     header: 'Alpha management',
     openOnLoad: false,
@@ -4014,65 +3967,81 @@ F.presentation = [...defaultPresentation];
 // - swirl arrays then get pushed into the `swirls` attribute
 // - Might be easier to just feed the arguments into the `makeFilter({method: 'swirl'}) function and extract what we need`
 F = filterSchemas.swirl = structuredClone(actionSchemas['swirl']);
-F.controls.startX = {
-  controlType: 'percentage-number',
-  default: '50',
-  key: 'startX',
-  minValue: '-20',
-  maxValue: '120',
-  step: 0.001,
-  label: 'Horizontal start',
-  description: '',
-};
-F.controls.startY = {
-  controlType: 'percentage-number',
-  default: '50',
-  key: 'startY',
-  minValue: '-20',
-  maxValue: '120',
-  step: 1,
-  label: 'Vertical start',
-  description: '',
-};
-F.controls.innerRadius = {
-  controlType: 'percentage-number',
-  default: '0',
-  key: 'innerRadius',
-  minValue: '0',
-  maxValue: '120',
-  step: 1,
-  label: 'Inner radius',
-  description: '',
-};
-F.controls.outerRadius = {
-  controlType: 'percentage-number',
-  default: '30',
-  key: 'outerRadius',
-  minValue: '0',
-  maxValue: '120',
-  step: 1,
-  label: 'Outer radius',
-  description: '',
-};
-F.controls.angle = {
-  controlType: 'number',
-  default: 0,
-  key: 'angle',
-  minValue: 0,
-  maxValue: 360,
-  step: 0.1,
-  label: 'Angle',
-  description: '',
-};
-F.controls.easing = {
-  controlType: 'select',
-  default: 'linear',
-  key: 'easing',
-  options: ['linear', 'easeOut', 'easeOutIn', 'easeInOut', 'easeIn'],
-  label: 'Easing',
-  description: '',
-};
-F.presentation = [...defaultPresentation];
+// F.controls.startX = {
+//   controlType: 'percentage-number',
+//   default: '50',
+//   key: 'startX',
+//   minValue: '-20',
+//   maxValue: '120',
+//   step: 0.001,
+//   label: 'Horizontal start',
+//   description: '',
+// };
+// F.controls.startY = {
+//   controlType: 'percentage-number',
+//   default: '50',
+//   key: 'startY',
+//   minValue: '-20',
+//   maxValue: '120',
+//   step: 1,
+//   label: 'Vertical start',
+//   description: '',
+// };
+// F.controls.innerRadius = {
+//   controlType: 'percentage-number',
+//   default: '0',
+//   key: 'innerRadius',
+//   minValue: '0',
+//   maxValue: '120',
+//   step: 1,
+//   label: 'Inner radius',
+//   description: '',
+// };
+// F.controls.outerRadius = {
+//   controlType: 'percentage-number',
+//   default: '30',
+//   key: 'outerRadius',
+//   minValue: '0',
+//   maxValue: '120',
+//   step: 1,
+//   label: 'Outer radius',
+//   description: '',
+// };
+// F.controls.angle = {
+//   controlType: 'number',
+//   default: 0,
+//   key: 'angle',
+//   minValue: 0,
+//   maxValue: 360,
+//   step: 0.1,
+//   label: 'Angle',
+//   description: '',
+// };
+// F.controls.easing = {
+//   controlType: 'select',
+//   default: 'linear',
+//   key: 'easing',
+//   options: ['linear', 'easeOut', 'easeOutIn', 'easeInOut', 'easeIn'],
+//   label: 'Easing',
+//   description: '',
+// };
+F.presentation = [{
+    header: 'Connections',
+    openOnLoad: false,
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Swirls',
+    openOnLoad: true,
+    inputs: ['swirls'],
+  },{
+    header: 'Alpha management',
+    openOnLoad: false,
+    inputs: ['useInputAsMask', 'transparentEdges'],
+  },{
+    header: 'Impact',
+    openOnLoad: true,
+    inputs: ['opacity'],
+}];
 
 // threshold
 F = filterSchemas.threshold = structuredClone(actionSchemas['threshold']);
@@ -4109,7 +4078,49 @@ F.controls.referenceColor = {
   label: 'Levels color reference',
   description: 'Color string value for the level reference color',
 };
-F.presentation = [...defaultPresentation];
+F.controls.threshold = {
+  controlType: 'number',
+  alternativeControl: true,
+  alternativeFor: ['red', 'green', 'blue'],
+  alternativeAction: 'set-alternatives-to-this',
+  sync: 'down-only',
+  default: 127,
+  key: 'offsetX',
+  minValue: 0,
+  maxValue: 255,
+  step: 1,
+  label: 'Mixed channels threshold',
+  description: '',
+};
+F.presentation = [{
+    header: 'Connections',
+    openOnLoad: false,
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Mixed channels controls',
+    openOnLoad: true,
+    inputs: ['useMixedChannel', 'threshold'],
+  },{
+    header: 'Low color',
+    openOnLoad: true,
+    inputs: ['', 'lowRed', 'lowGreen', 'lowBlue', 'lowAlpha'],
+  },{
+    header: 'High color',
+    openOnLoad: true,
+    inputs: ['', 'highRed', 'highGreen', 'highBlue', 'highAlpha'],
+  },{
+    header: 'Reference color',
+    openOnLoad: false,
+    inputs: ['', 'red', 'green', 'blue', 'alpha'],
+  },{
+    header: 'Included channels',
+    openOnLoad: false,
+    inputs: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha'],
+  },{
+    header: 'Impact',
+    openOnLoad: true,
+    inputs: ['opacity'],
+}];
 
 // tiles
 F = filterSchemas.tiles = structuredClone(actionSchemas['tiles']);
@@ -4117,6 +4128,34 @@ F.presentation = [{
     header: 'Connections',
     openOnLoad: false,
     inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Mode',
+    openOnLoad: true,
+    inputs: ['mode', 'premultiply', 'useInputAsMask'],
+  },{
+    header: 'Origin',
+    openOnLoad: true,
+    inputs: ['originX', 'originY'],
+  },{
+    header: 'Rect controls',
+    openOnLoad: false,
+    inputs: ['rectWidth', 'rectHeight'],
+  },{
+    header: 'Hex controls',
+    openOnLoad: false,
+    inputs: ['hexRadius'],
+  },{
+    header: 'Random controls',
+    openOnLoad: false,
+    inputs: ['randomCount', 'seed'],
+  },{
+    header: 'Spiral controls',
+    openOnLoad: false,
+    inputs: ['angle', 'spiralStrength'],
+  },{
+    header: 'Included channels',
+    openOnLoad: false,
+    inputs: ['includeRed', 'includeGreen', 'includeBlue', 'includeAlpha'],
   },{
     header: 'Impact',
     openOnLoad: true,
@@ -4158,7 +4197,29 @@ F.controls.blueColor = {
   label: 'Blue color',
   description: 'Color string value of the blue colors reference',
 };
-F.presentation = [...defaultPresentation];
+F.presentation = [{
+    header: 'Connections',
+    openOnLoad: false,
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Red colors',
+    openOnLoad: false,
+    inputs: ['redColor', ['redInRed', 'redInGreen', 'redInBlue']],
+
+  },{
+    header: 'Green colors',
+    openOnLoad: false,
+    inputs: ['greenColor', ['greenInRed', 'greenInGreen', 'greenInBlue']],
+
+  },{
+    header: 'Blue colors',
+    openOnLoad: false,
+    inputs: ['blueColor', ['blueInRed', 'blueInGreen', 'blueInBlue']],
+  },{
+    header: 'Impact',
+    openOnLoad: true,
+    inputs: ['opacity'],
+}];
 
 // unsharp
 F = filterSchemas.unsharp = structuredClone(actionSchemas['unsharp']);
@@ -4166,6 +4227,14 @@ F.presentation = [{
     header: 'Connections',
     openOnLoad: false,
     inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Control values',
+    openOnLoad: true,
+    inputs: ['strength', 'radius', 'level', 'smoothing', 'clamp'],
+  },{
+    header: 'Alpha management',
+    openOnLoad: true,
+    inputs: ['useEdgeMask'],
   },{
     header: 'Impact',
     openOnLoad: true,
@@ -4183,7 +4252,35 @@ F.presentation = [...defaultPresentation];
 
 // zoomBlur
 F = filterSchemas.zoomBlur = structuredClone(actionSchemas['zoom-blur']);
-F.presentation = [...defaultPresentation];
+F.presentation = [{
+    header: 'Connections',
+    openOnLoad: false,
+    inputs: ['lineIn', 'lineOut'],
+  },{
+    header: 'Control values',
+    openOnLoad: true,
+    inputs: ['strength', 'angle', 'samples', 'variation', 'seed'],
+  },{
+    header: 'Flags',
+    openOnLoad: false,
+    inputs: ['premultiply', 'multiscale'],
+  },{
+    header: 'Radius and Origin',
+    openOnLoad: false,
+    inputs: ['startX', 'startY', 'innerRadius', 'outerRadius', 'easing'],
+  },{
+    header: 'Included channels',
+    openOnLoad: false,
+    inputs: ['includeRed', 'includeGreen', 'includeBlue'],
+  },{
+    header: 'Alpha management',
+    openOnLoad: false,
+    inputs: ['includeAlpha', 'excludeTransparentPixels'],
+  },{
+    header: 'Impact',
+    openOnLoad: true,
+    inputs: ['opacity'],
+}];
 
 
 export const getFilterSchema = (name) => {

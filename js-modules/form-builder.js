@@ -129,7 +129,10 @@ const createControl = (data, actionWrapper) => {
 
     case 'line-text': return createControl_lineText(data, actionWrapper);
     case 'number': return createControl_number(data, actionWrapper);
+    case 'percentage-number': return createControl_percentageNumber(data, actionWrapper);
     case 'boolean': return createControl_boolean(data, actionWrapper);
+    case 'text': return createControl_text(data, actionWrapper);
+    case 'select': return createControl_select(data, actionWrapper);
     default:
       const el = document.createElement('div');
       el.textContent = `No function for ${actionWrapper.formId} - ${data.label}`;
@@ -153,7 +156,7 @@ const getFilterAttributeValue = (action, attribute) => {
 
 const createControl_lineText = (data, actionWrapper) => {
 
-  const {formId, formSchema, formCollection, killList } = actionWrapper;
+  const {formId, formSchema, formCollection } = actionWrapper;
 
   const localId = `${formId}_${data.key}`,
     listenId = getListenId(formId);
@@ -183,9 +186,41 @@ const createControl_lineText = (data, actionWrapper) => {
 };
 
 
+const createControl_text = (data, actionWrapper) => {
+
+  const {formId, formSchema, formCollection } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`,
+    listenId = getListenId(formId);
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-text');
+  el.dataset.localId = localId;
+
+  const label = document.createElement('label');
+  label.textContent = data.label;
+  label.setAttribute('for', localId);
+  el.appendChild(label);
+
+  const val = getFilterAttributeValue(formSchema.action, data.key);
+
+  const input = document.createElement('input');
+  input.id = localId;
+  input.name = localId;
+  input.type = 'text';
+  input.value = (val != null) ? val : data.default;
+  input.classList.add(listenId);
+  el.appendChild(input);
+
+  formCollection[localId] = [data.key, 'raw'];
+
+  return el;
+};
+
+
 const createControl_boolean = (data, actionWrapper) => {
 
-  const {formId, formSchema, formCollection, killList } = actionWrapper;
+  const {formId, formSchema, formCollection } = actionWrapper;
 
   const localId = `${formId}_${data.key}`,
     listenId = getListenId(formId);
@@ -343,6 +378,169 @@ const createControl_number = (data, actionWrapper) => {
 
   el.appendChild(row1);
   el.appendChild(row2);
+
+  return el;
+};
+
+
+const createControl_percentageNumber = (data, actionWrapper) => {
+
+  const {formId, formSchema, formCollection, killList } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`,
+    listenId = getListenId(formId);
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-number');
+  el.dataset.localId = localId;
+
+  const row1 = document.createElement('div');
+  row1.classList.add('action-control-inputs-for-number-row-1');
+
+  const label = document.createElement('label');
+  label.classList.add('action-control-visible-label');
+  label.textContent = `${data.label} (%)`;
+  label.setAttribute('for', `${localId}_number`);
+  row1.appendChild(label);
+
+  const localId_number = `${localId}_number`;
+
+  let val = getFilterAttributeValue(formSchema.action, data.key);
+
+  if (typeof val === 'string') val = parseFloat(val);
+
+  const numberInput = document.createElement('input');
+  numberInput.id = localId_number;
+  numberInput.name = localId_number;
+  numberInput.type = 'number';
+  numberInput.value = (val != null) ? val : data.default;
+  numberInput.min = data.minValue;
+  numberInput.max = data.maxValue;
+  numberInput.step = data.step;
+  numberInput.classList.add(listenId);
+  row1.appendChild(numberInput);
+
+  const row2 = document.createElement('div');
+  row2.classList.add('action-control-inputs-for-number-row-2');
+
+  const hiddenLabel = document.createElement('label');
+  hiddenLabel.classList.add('action-control-hidden-label');
+  hiddenLabel.textContent = `${data.label} for range input`;
+  hiddenLabel.setAttribute('for', `${localId}_range`);
+  row2.appendChild(hiddenLabel);
+
+  const localId_range = `${localId}_range`;
+
+  const rangeInput = document.createElement('input');
+  rangeInput.id = localId_range;
+  rangeInput.name = localId_range;
+  rangeInput.type = 'range';
+  rangeInput.value = (val != null) ? val : data.default;
+  rangeInput.min = data.minValue;
+  rangeInput.max = data.maxValue;
+  rangeInput.step = data.step;
+  rangeInput.classList.add(listenId);
+  row2.appendChild(rangeInput);
+
+  if (data.alternativeControl) {
+
+    if ('set-alternatives-to-this' === data.alternativeAction) {
+
+      const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+        if (e && e.target) {
+
+          e.preventDefault();
+
+          const target = e.target;
+
+          let val;
+
+          if (data.step < 1) val = parseFloat(target.value);
+          else val = parseInt(target.value, 10);
+
+          data.alternativeFor.forEach(alt => actionWrapper.set({
+            [alt]: val,
+          }));
+
+          const currentFilter = getWrapper();
+
+          currentFilter.updateDisplayFilter();
+          currentFilter.updateHistory();
+        }
+      }, [numberInput, rangeInput]);
+
+      killList.push(listener);
+    }
+  }
+  else {
+
+    if (data.step < 1) {
+
+      formCollection[localId_number] = [data.key, '%'];
+      formCollection[localId_range] = [data.key, '%'];
+    }
+    else {
+
+      formCollection[localId_number] = [data.key, '%'];
+      formCollection[localId_range] = [data.key, '%'];
+    }
+  }
+
+  const numberToRange = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+    if (e?.target?.value != null) rangeInput.value = e.target.value;
+  }, numberInput);
+
+  const rangeToNumber = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+    if (e?.target?.value != null) numberInput.value = e.target.value;
+  }, rangeInput);
+
+  killList.push(numberToRange, rangeToNumber);
+
+  el.appendChild(row1);
+  el.appendChild(row2);
+
+  return el;
+};
+
+
+const createControl_select = (data, actionWrapper) => {
+
+  const {formId, formSchema, formCollection } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`,
+    listenId = getListenId(formId);
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-select');
+  el.dataset.localId = localId;
+
+  const label = document.createElement('label');
+  label.textContent = data.label;
+  label.setAttribute('for', localId);
+  el.appendChild(label);
+
+  const input = document.createElement('select');
+  input.id = localId;
+  input.name = localId;
+  input.classList.add(listenId);
+
+  data.options.forEach(val => {
+
+    const option = document.createElement('option');
+    option.value = val;
+    option.textContent = val;
+    input.appendChild(option);
+  })
+
+  let value = getFilterAttributeValue(formSchema.action, data.key);
+  value = (value != null) ? value : data.default;
+
+  input.options.selectedIndex = value;
+
+  el.appendChild(input);
+
+  formCollection[localId] = [data.key, 'raw'];
 
   return el;
 };

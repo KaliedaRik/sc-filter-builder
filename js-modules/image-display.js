@@ -418,7 +418,6 @@ export const displayDefaultScreen = (imagesAvailable = false) => {
 
   currentlyDisplaying = '';
 
-  checkerboard.set({ visibility: true });
   liveView.set({ visibility: false });
   minimapCell.set({ shown: false });
 
@@ -434,7 +433,6 @@ export const displayDefaultScreen = (imagesAvailable = false) => {
 
 const removeDefaultScreen = () => {
 
-  checkerboard.set({ visibility: false });
   noImagesMessage.set({ visibility: false });
   haveImagesMessage.set({ visibility: false });
 
@@ -500,7 +498,6 @@ export const initImageDisplay = (scrawl = null, dom = null) => {
     group: canvas.get('baseName'),
     dimensions: ['100%', '100%'],
     fillStyle: name('checkerboard-background-cell'),
-    visibility: false,
   });
 
   // Create the default screen messages

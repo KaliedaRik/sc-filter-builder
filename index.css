@@ -270,6 +270,23 @@ main {
     }
   }
 
+  & .scale-parameters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 0.5rem;
+    align-items: center;
+    margin: 0.5rem 0 1rem;
+
+    & button {
+      font-size: 100%;
+      display: block;
+      box-sizing: border-box;
+      background-color: var(--dialog-button-background);
+      border-radius: 5px;
+      padding: 0.25rem;
+      margin: 0.25rem;
+    }
+  }
   & button#image-batch-modal-button {
     font-size: 100%;
     border: 1px solid var(--dialog-button-border);
@@ -391,21 +408,30 @@ main {
     }
   }
 
-  & > button {
-    display: block;
-    width: 100%;
-    text-align: left;
-    font-size: 100%;
-    margin: 0.5rem 0;
-    border: 1px solid var(--filter-bar-section-border);
-    padding: 0.25rem 0.5rem;
-    border-radius: 5px;
-    background-color: var(--filter-bar-section-background);
-    color: var(--advice-color);
-    font-weight: bold;
+  & .filter-controls-panel-top-buttons {
 
-    &:hover {
-      cursor: pointer;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 0.5rem;
+    justify-content: start;
+    margin: 0.5rem 0;
+
+    & button {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-size: 100%;
+      margin: 0;
+      border: 1px solid var(--filter-bar-section-border);
+      padding: 0.25rem 0.5rem;
+      border-radius: 5px;
+      background-color: var(--filter-bar-section-background);
+      color: var(--advice-color);
+      font-weight: bold;
+
+      &:hover {
+        cursor: pointer;
+      }
     }
   }
 
@@ -459,6 +485,38 @@ main {
           border-radius: 5px;
 
           & input {
+            width: calc(100% - 0.5rem);
+          }
+        }
+
+        /* filter-schema.js - controlType: 'text' */
+        & .action-control-inputs-for-text {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          grid-column-gap: 2px;
+          justify-content: start;
+
+          margin: 0.5rem 0 0;
+          padding: 0.5rem;
+          border-radius: 5px;
+
+          & input {
+            width: calc(100% - 0.5rem);
+          }
+        }
+
+        /* filter-schema.js - controlType: 'select' */
+        & .action-control-inputs-for-select {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          grid-column-gap: 2px;
+          justify-content: start;
+
+          margin: 0.5rem 0 0;
+          padding: 0.5rem;
+          border-radius: 5px;
+
+          & select {
             width: calc(100% - 0.5rem);
           }
         }

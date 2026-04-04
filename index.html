@@ -45,10 +45,21 @@
 
         <!-- Minimap + scaling -->
         <details id='minimap-panel'>
-          <summary>Minimap + scale</summary>
+          <summary>Scale + minimap</summary>
           <div>
 
-            <h3>Positioning</h3>
+            <h3>Image view scale</h3>
+
+            <div class="minimap-parameters">
+
+              <label for="image-scale">Scale factor</label>
+              <input type="range" class="scale-controls" id="image-scale" name="image-scale" min="1" max="4" value="1" step="0.05">
+
+            </div>
+
+            <hr />
+
+            <h3>Minimap position</h3>
 
             <p class="advice-text">Drag the minimap to reveal what’s behind it. Or use the position controls below.</p>
 
@@ -67,7 +78,7 @@
 
             <hr />
 
-            <h3>Navigation</h3>
+            <h3>Minimap navigation</h3>
 
             <p class="advice-text">Drag  the red frame to move around the image. Or use the navigation controls below.</p>
 
@@ -84,17 +95,6 @@
             <p class="advice-text">If the red frame gets stuck, click the "Bring to center" button below.</p>
 
             <button type="button" id="navigation-center">Bring to center</button>
-
-            <hr />
-
-            <h3>Scaling</h3>
-
-            <div class="minimap-parameters">
-
-              <label for="image-scale">Scale factor</label>
-              <input type="range" class="scale-controls" id="image-scale" name="image-scale" min="1" max="4" value="1" step="0.05">
-
-            </div>
 
           </div>
         </details>
@@ -125,10 +125,17 @@
 
       <!-- Bottom-left filter controls panel -->
       <div id="filter-controls-panel">
-        
-        <!-- Change filter -->
-        <button type="button" id="change-filter-modal-button">Change filter</button>
 
+        <div class="filter-controls-panel-top-buttons">
+          
+          <!-- Change filter -->
+          <button type="button" id="change-filter-modal-button">Change filter</button>
+
+          <!-- Download current filter -->
+          <button type="button" id="download-filter-button">Download filter</button>
+
+        </div>
+        
         <!-- Current filter details -->
         <h2>Current filter:<br><span id="current-filter-name">[current filter name goes here]</span></h2>
 

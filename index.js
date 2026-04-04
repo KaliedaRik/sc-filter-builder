@@ -79,7 +79,9 @@ const dom = scrawl.initializeDomInputs([
 // Start the page running
 // ------------------------------------------------------------------------
 initSplitter(scrawl, dom);
+
 initModalManagement(scrawl, dom);
+
 initImageImport(scrawl, dom);
 
 const {
@@ -95,6 +97,7 @@ const {
 } = initFormObjects(scrawl, getImageDisplayViews);
 
 initFormBuilder(scrawl, dom, getCurrentWrappedFilter, actionWrapperLibrary);
+
 initFilterBuilder(scrawl, dom);
 
 
