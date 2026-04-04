@@ -443,12 +443,13 @@ const removeDefaultScreen = () => {
 };
 
 // Export for initialization 
-export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
+export const initImageDisplay = (scrawl = null, dom = null) => {
 
   if (!scrawl) throw new Error('Scrawl library not passed to initImageDisplay function');
   if (!dom) throw new Error('DOM mappings not passed to initImageDisplay function');
-  if (!canvas) throw new Error('Canvas element not passed to initImageDisplay function');
 
+
+  const canvas = scrawl.findCanvas('main-canvas');
 
   // Populate local handles
   scrawlHandle = scrawl;

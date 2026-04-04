@@ -17,6 +17,7 @@ import { initImageImport } from './js-modules/image-import.js';
 import { initImageDisplay } from './js-modules/image-display.js';
 import { initFilterBuilder } from './js-modules/filter-builder.js';
 import { initFormBuilder } from './js-modules/form-builder.js';
+import { initFormObjects } from './js-modules/form-objects.js';
 
 
 // ------------------------------------------------------------------------
@@ -79,20 +80,22 @@ const dom = scrawl.initializeDomInputs([
 // ------------------------------------------------------------------------
 initSplitter(scrawl, dom);
 initModalManagement(scrawl, dom);
-initImageImport(scrawl, dom, mainCanvas);
+initImageImport(scrawl, dom);
 
 const {
   displayDefaultScreen,
   checkLiveView,
   getImageDisplayViews,
   displayFilterFlag,
-} = initImageDisplay(scrawl, dom, mainCanvas);
+} = initImageDisplay(scrawl, dom);
 
 const {
   getCurrentWrappedFilter,
-} = initFormBuilder(scrawl, dom, builderStack, builderCanvas, getImageDisplayViews);
+  actionWrapperLibrary,
+} = initFormObjects(scrawl, getImageDisplayViews);
 
-initFilterBuilder(scrawl, dom, builderCanvas);
+initFormBuilder(scrawl, dom, getCurrentWrappedFilter, actionWrapperLibrary);
+initFilterBuilder(scrawl, dom);
 
 
 // Show the default canvas display

@@ -4,7 +4,7 @@
 
 // Imports
 import { starterFilters } from './starter-filters.js';
-import { wrap } from './form-builder.js';
+import { wrap } from './form-objects.js';
 
 let currentFilterWrapper = null,
   currentFilterInitialValues = null,
@@ -53,13 +53,16 @@ const loadStarterFilter = (starter) => {
 
 
 // Init function
-export const initFilterBuilder = (scrawl = null, dom = null, canvas = null) => {
+export const initFilterBuilder = (scrawl = null, dom = null) => {
 
   if (!scrawl) throw new Error('Scrawl library not passed to initFilterBuilder function');
   if (!dom) throw new Error('DOM mappings not passed to initFilterBuilder function');
-  if (!canvas) throw new Error('Canvas not passed to initFilterBuilder function');
+
+
+  const canvas = scrawl.findCanvas('filter-builder-canvas');
 
   canvasHandle = canvas;
+
 
   // Build out the related modal, populating with starter-filter data
   const starterKeys = Object.keys(starterFilters),
@@ -103,5 +106,7 @@ export const initFilterBuilder = (scrawl = null, dom = null, canvas = null) => {
   currentFilterTitleElement = dom['current-filter-name'];
   currentFilterTitleElement.textContent = starter.readableName;
 
+
+  // Return object
   return {};
 };

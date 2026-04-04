@@ -5,8 +5,6 @@
 
 // Imports
 // ------------------------------------------------------------------------
-import { getFilterSchema, getActionSchema, getFilterSchemas } from './filter-schemas.js';
-import { generateUuid } from './utilities.js';
 
 
 // Module-scoped Handles and variables
@@ -14,265 +12,7 @@ import { generateUuid } from './utilities.js';
 let scrawlHandle = null,
   filterControlsPanel = null,
   filterBuilderAreaHold = null,
-  currentFilter = null,
-  displayFilter = null,
-  getView = null;
-
-
-const getCurrentWrappedFilter = () => currentFilter;
-
-
-// FilterWrapper object
-// - We only care about the last created filter wrapper
-// ------------------------------------------------------------------------
-const FilterWrapper = function (filter, formSchemaName = '') {
-
-  // There can be only one filter (with one or more action objects)!
-  currentFilter = this;
-
-  this.filter = filter;
-  this.name = filter.name;
-  this.formSchemaName = formSchemaName;
-  this.undoArray = [];
-  this.redoArray = [];
-  this.actions = [];
-
-  // Dirty flags
-  this.dirtySort = true;
-
-  const actObjects = filter.actions;
-
-  if (this.formSchemaName.length && actObjects.length === 1) {
-
-    const id = generateUuid();
-
-    // Starter filters come with convenience method forms
-    const wrapper = new FilterActionWrapper({
-      id,
-      formId: `form_${id}`,
-      order: 0,
-      action: actObjects[0],
-      formSchema: getFilterSchema(this.formSchemaName),
-    });
-
-    this.actions.push(wrapper);
-  }
-  else {
-
-    // Other, more complex, filters - we show the action forms for each action
-    actObjects.forEach((act, index) => {
-
-      const id = generateUuid();
-
-      const wrapper = new FilterActionWrapper({
-        id,
-        formId: `form_${id}`,
-        order: index,
-        action: act,
-        formSchema: getActionSchema(act.action),
-      });
-
-      this.actions.push(wrapper);
-    });
-  }
-
-  this.undoArray.push(this.toString());
-
-  return this;
-};
-
-
-// FilterWrapper object - prototype
-const F = FilterWrapper.prototype = Object.create(Object.prototype);
-
-F.toString = function () {
-
-  return `[${this.actions.map(act => act.toString()).join(',')}]`;
-};
-
-// Undo-redo functionality
-let lastRecordedAction = 0;
-const recordedActionChoke = 200;
-
-F.updateHistory = function () {
-
-  const now = Date.now();
-
-  if (lastRecordedAction + recordedActionChoke < now) {
-
-    const undoArray = this.undoArray,
-      lastUpdate = (undoArray.length) ? undoArray[undoArray.length - 1] : '',
-      newUpdate = this.toString();
-
-    if (lastUpdate !== newUpdate) {
-
-      undoArray.push(newUpdate);
-      lastRecordedAction = now;
-    }
-  }
-};
-F.undo = function () {};
-F.redo = function () {};
-
-F.sort = function () {
-
-  if (this.dirtySort) {
-
-    this.dirtySort = false;
-
-    // Perform sort
-  }
-};
-
-F.kill = function () {
-
-  this.undoArray.length = 0;
-  this.redoArray.length = 0;
-
-  this.actions.forEach(act => act.kill());
-  this.actions.length = 0;
-
-  this.filter.kill();
-
-  return true;
-};
-
-F.updateFilter = function () {
-
-  this.sort();
-
-  const actions = this.actions.map(act => act.action);
-
-  this.filter.set({ actions });
-};
-
-F.updateDisplayFilter = function () {
-
-  this.updateFilter();
-
-  const actions = structuredClone(this.filter.get('actions'));
-
-  // We need to manipulate the actions because some are scale and position sensitive
-  // - This is why we separate the working and display filters 
-  const view = getView();
-
-  actions.forEach(act => {
-
-    switch (act.action) {
-
-      case 'pixelate': correctDisplayFilterAction_pixelate(act, view);
-    }
-  });
-
-  displayFilter.set({ actions });
-};
-
-
-// updateDisplayFilter correction functions
-const correctDisplayFilterAction_pixelate = (action, view) => {
-
-/*
-const view = {
-  x: 0,
-  y: 0,
-  width: 1,
-  height: 1,
-  assetWidth: 1,
-  assetHeight: 1,
-  currentScale: 1,
-};
-*/
-  const { x, y, currentScale } = view;
-
-  const updatedWidth = action.tileWidth * currentScale,
-    updatedHeight = action.tileHeight * currentScale,
-    remainingX = (action.offsetX + (x % action.tileWidth)) * currentScale,
-    remainingY = (action.offsetY + (y % action.tileHeight)) * currentScale;
-
-  action.tileWidth = updatedWidth;
-  action.tileHeight = updatedHeight;
-  action.offsetX = remainingX;
-  action.offsetY = remainingY;
-};
-
-
-// FilterActionWrapper object
-// ------------------------------------------------------------------------
-const actionWrapperLibrary = {};
-
-const FilterActionWrapper = function (items) {
-
-  this.id = items.id;
-  this.formId = items.formId;
-  this.order = items.order;
-  this.action = items.action;
-  this.formSchema = items.formSchema;
-
-  // Keep track of everything we need to invoke during cleanup
-  this.killList = [];
-
-  // Used to build the SC updater
-  this.formCollection = {};
-
-  actionWrapperLibrary[items.id] = this;
-
-  this.formElement = generateFormHtml(this);
-  this.buttonElement = generateButtonHtml(this);
-
-  return this;
-};
-
-// FilterActionWrapper object - prototype
-const A = FilterActionWrapper.prototype = Object.create(Object.prototype);
-
-A.toString = function () {return JSON.stringify(this.action)};
-
-A.kill = function () {
-
-  this.killList.forEach(item => {
-
-    if (item.kill != null) item.kill();
-    else if (typeof item === 'function') item();
-  });
-
-  this.formElement.remove();
-  this.buttonElement.remove();
-
-  delete actionWrapperLibrary[this.id];
-};
-
-// Set function
-A.set = function (items) {
-
-  let i, key, val, fn;
-
-  const keys = Object.keys(items),
-    keysLen = keys.length;
-
-  if (keysLen) {
-
-    const setters = this.setters,
-      action = this.action;
-
-    for (i = 0; i < keysLen; i++) {
-
-      key = keys[i];
-      val = items[key];
-
-      if (key && key !== 'id' && val != null) {
-
-        fn = setters[key];
-
-        if (fn) fn.call(this, val);
-        else action[key] = val;
-      }
-    }
-  }
-  return this;
-};
-
-// Bespoke setters for more complex action forms
-const S = A.setters = {};
+  getWrapper = null;
 
 
 // CSS considerations
@@ -285,7 +25,7 @@ const actionGroupCSS = {
 
 // Generate the HTML for the builder area button for a filter action
 // ------------------------------------------------------------------------
-const generateButtonHtml = (actionWrapper) => {
+export const generateButtonHtml = (actionWrapper) => {
 
   const button = document.createElement('button');
   button.id = `button_${actionWrapper.id}`;
@@ -311,7 +51,7 @@ const generateButtonHtml = (actionWrapper) => {
 
 // Generate the HTML for the filter action form
 // ------------------------------------------------------------------------
-const generateFormHtml = (actionWrapper) => {
+export const generateFormHtml = (actionWrapper) => {
 
   const id = actionWrapper.formId;
 
@@ -332,7 +72,6 @@ const generateFormHtml = (actionWrapper) => {
   summarySpan2.textContent = `(${actionWrapper.id.substring(0, 8)})`;
   summary.appendChild(summarySpan2);
 
-  // const controls = generateFormControls(id, actionWrapper.formSchema, actionWrapper.formCollection, actionWrapper.killList);
   const controls = generateFormControls(actionWrapper);
 
   details.appendChild(summary);
@@ -345,7 +84,6 @@ const generateFormHtml = (actionWrapper) => {
   return details;
 };
 
-// const generateFormControls = (id, schema, formCollection, killList) => {
 const generateFormControls = (actionWrapper) => {
 
   const controls = document.createElement('div');
@@ -353,7 +91,6 @@ const generateFormControls = (actionWrapper) => {
 
   actionWrapper.formSchema.presentation.forEach(section => {
 
-    // const res = generateFormSection(id, schema.action, section, schema.controls, formCollection, killList);
     const res = generateFormSection(section, actionWrapper);
 
     controls.appendChild(res);
@@ -362,7 +99,6 @@ const generateFormControls = (actionWrapper) => {
   return controls;
 };
 
-// const generateFormSection = (id, action, section, controls, formCollection, killList) => {
 const generateFormSection = (section, actionWrapper) => {
 
   const controls = actionWrapper.formSchema.controls;
@@ -408,12 +144,13 @@ const getListenId = (id) => `${id}_listen`;
 // - this solution only returns the first instance of multiple actions of same type
 const getFilterAttributeValue = (action, attribute) => {
 
+  const currentFilter = getWrapper();
   const act = currentFilter.filter.actions.filter(f => f.action === action);
 
   return act[0][attribute];
 };
 
-// const createControl_lineText = (id, action, data, formCollection, killList) => {
+
 const createControl_lineText = (data, actionWrapper) => {
 
   const {formId, formSchema, formCollection, killList } = actionWrapper;
@@ -445,7 +182,7 @@ const createControl_lineText = (data, actionWrapper) => {
   return el;
 };
 
-// const createControl_boolean = (id, action, data, formCollection, killList) => {
+
 const createControl_boolean = (data, actionWrapper) => {
 
   const {formId, formSchema, formCollection, killList } = actionWrapper;
@@ -491,7 +228,7 @@ const createControl_boolean = (data, actionWrapper) => {
   return el;
 };
 
-// const createControl_number = (id, action, data, formCollection, killList) => {
+
 const createControl_number = (data, actionWrapper) => {
 
   const {formId, formSchema, formCollection, killList } = actionWrapper;
@@ -570,6 +307,8 @@ const createControl_number = (data, actionWrapper) => {
             [alt]: val,
           }));
 
+          const currentFilter = getWrapper();
+
           currentFilter.updateDisplayFilter();
           currentFilter.updateHistory();
         }
@@ -608,6 +347,7 @@ const createControl_number = (data, actionWrapper) => {
   return el;
 };
 
+
 const createEventsForFormControls = (actionWrapper) => {
 
   const { formId, formCollection, killList } = actionWrapper;
@@ -624,6 +364,8 @@ const createEventsForFormControls = (actionWrapper) => {
 
     callback: () => {
 
+      const currentFilter = getWrapper();
+
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
     }
@@ -633,38 +375,28 @@ const createEventsForFormControls = (actionWrapper) => {
 };
 
 
-// Exported wrapper function
-// ------------------------------------------------------------------------
-export const wrap = (filter, form) => new FilterWrapper(filter, form);
-
-
 // Export for initialization 
 // ------------------------------------------------------------------------
-export const initFormBuilder = (scrawl = null, dom = null, stack = null, canvas = null, getImageDisplayViews = null) => {
+export const initFormBuilder = (
+  scrawl = null,
+  dom = null,
+  getCurrentWrappedFilter = null,
+  actionWrapperLibrary = null,
+) => {
 
   if (!scrawl) throw new Error('Scrawl library not passed to initFormBuilder function');
   if (!dom) throw new Error('DOM mappings not passed to initFormBuilder function');
-  if (!stack) throw new Error('Stack not passed to initFormBuilder function');
-  if (!canvas) throw new Error('Canvas not passed to initFormBuilder function');
-  if (!getImageDisplayViews) throw new Error('getImageDisplayViews function not passed to initFormBuilder function');
+  if (!getCurrentWrappedFilter) throw new Error('getCurrentWrappedFilter not passed to initFormBuilder function');
+  if (!actionWrapperLibrary) throw new Error('actionWrapperLibrary not passed to initFormBuilder function');
 
 
-  // populate module-level variables
+  const stack = scrawl.findStack('filter-builder-stack');
+
+  // // populate module-level variables
   scrawlHandle = scrawl;
-  getView = getImageDisplayViews;
   filterControlsPanel = dom['filter-controls-panel'];
   filterBuilderAreaHold = dom['filter-builder-area-hold'];
-
-
-  // Create the display filter and add it to picture
-  const picture = scrawl.findEntity('live-view');
-
-  displayFilter = scrawl.makeFilter({
-    name: 'eternal-display-filter',
-    actions: [],
-  });
-
-  picture.addFilters(displayFilter);
+  getWrapper = getCurrentWrappedFilter;
 
 
   // Make the stack elements draggable
@@ -743,12 +475,10 @@ export const initFormBuilder = (scrawl = null, dom = null, stack = null, canvas 
 
 
   // Return object
-  return {
-    getCurrentWrappedFilter,
-  };
+  return {};
 };
 
 
 // Development
 // ------------------------------------------------------------------------
-console.log(getFilterSchemas());
+
