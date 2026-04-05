@@ -160,7 +160,22 @@ F.updateDisplayFilter = function () {
 
     switch (act.action) {
 
-      case 'pixelate': correctDisplayFilterAction_pixelate(act, view);
+      case 'area-alpha': {
+        correctDisplayFilterAction_areaAlpha(act, view);
+        break;
+      }
+      case 'pixelate': {
+        correctDisplayFilterAction_pixelate(act, view);
+        break;
+      }
+      case 'tiles': {
+        correctDisplayFilterAction_tiles(act, view);
+        break;
+      }
+      case 'zoom-blur': {
+        correctDisplayFilterAction_zoomBlur(act, view);
+        break;
+      }
     }
   });
 
@@ -169,19 +184,102 @@ F.updateDisplayFilter = function () {
 
 
 // updateDisplayFilter correction functions
-const correctDisplayFilterAction_pixelate = (action, view) => {
+const correctDisplayFilterAction_areaAlpha = (action, view) => {
+
+  console.log('correctDisplayFilterAction_areaAlpha - action', action, 'view', view)
 
   const { x, y, currentScale } = view;
+  const { tileWidth, tileHeight, gutterWidth, gutterHeight, offsetX, offsetY } = action;
 
-  const updatedWidth = action.tileWidth * currentScale,
-    updatedHeight = action.tileHeight * currentScale,
-    remainingX = (action.offsetX + (x % action.tileWidth)) * currentScale,
-    remainingY = (action.offsetY + (y % action.tileHeight)) * currentScale;
+  const updatedTileWidth = tileWidth * currentScale,
+    updatedTileHeight = tileHeight * currentScale,
+    updatedGutterWidth = gutterWidth * currentScale,
+    updatedGutterHeight = gutterHeight * currentScale,
+    totalWidth = tileWidth + gutterWidth,
+    totalHeight = tileHeight + gutterHeight;
+
+  let updatedOffsetX = totalWidth - (x % totalWidth) + offsetX,
+    updatedOffsetY = totalHeight - (y % totalHeight) + offsetY;
+
+  if (updatedOffsetX >= totalWidth) updatedOffsetX -= totalWidth;
+  if (updatedOffsetX < 0) updatedOffsetX += totalWidth;
+  if (updatedOffsetY >= totalHeight) updatedOffsetY -= totalHeight;
+  if (updatedOffsetY < 0) updatedOffsetY += totalHeight;
+
+  action.offsetX = updatedOffsetX * currentScale;
+  action.offsetY = updatedOffsetY * currentScale;
+  action.tileWidth = updatedTileWidth;
+  action.tileHeight = updatedTileHeight;
+  action.gutterWidth = updatedGutterWidth;
+  action.gutterHeight = updatedGutterHeight;
+};
+
+const correctDisplayFilterAction_pixelate = (action, view) => {
+
+  console.log('correctDisplayFilterAction_pixelate - action', action, 'view', view)
+
+  const { x, y, currentScale } = view;
+  const { tileWidth, tileHeight, offsetX, offsetY } = action;
+
+  const updatedWidth = tileWidth * currentScale,
+    updatedHeight = tileHeight * currentScale;
+
+  let updatedOffsetX = tileWidth - (x % tileWidth) + offsetX,
+    updatedOffsetY = tileHeight - (y % tileHeight) + offsetY;
+
+  if (updatedOffsetX >= tileWidth) updatedOffsetX -= tileWidth;
+  if (updatedOffsetX < 0) updatedOffsetX += tileWidth;
+  if (updatedOffsetY >= tileHeight) updatedOffsetY -= tileHeight;
+  if (updatedOffsetY < 0) updatedOffsetY += tileHeight;
+
 
   action.tileWidth = updatedWidth;
   action.tileHeight = updatedHeight;
-  action.offsetX = remainingX;
-  action.offsetY = remainingY;
+  action.offsetX = updatedOffsetX * currentScale;
+  action.offsetY = updatedOffsetY * currentScale;
+};
+
+const correctDisplayFilterAction_tiles = (action, view) => {
+
+  console.log('correctDisplayFilterAction_tiles - action', action, 'view', view)
+
+  const { x, y, assetWidth, assetHeight, currentScale } = view;
+  const { originX, originY, hexRadius, rectWidth, rectHeight } = action;
+
+  let fX, fY;
+
+  if (typeof originX === 'string') fX = parseFloat(originX) / 100;
+  else fX = originX / assetWidth;
+
+  if (typeof originY === 'string') fY = parseFloat(originY) / 100;
+  else fY = originY / assetHeight;
+
+  action.originX = ((assetWidth * fX) - x) * currentScale;
+  action.originY = ((assetHeight * fY) - y) * currentScale;
+  action.hexRadius = hexRadius * currentScale;
+  action.rectWidth = rectWidth * currentScale;
+  action.rectHeight = rectHeight * currentScale;
+};
+
+const correctDisplayFilterAction_zoomBlur = (action, view) => {
+
+  console.log('correctDisplayFilterAction_zoomBlur - action', action, 'view', view)
+
+  const { x, y, assetWidth, assetHeight, currentScale } = view;
+  const { startX, startY, innerRadius, outerRadius } = action;
+
+  let fX, fY;
+
+  if (typeof startX === 'string') fX = parseFloat(startX) / 100;
+  else fX = startX / assetWidth;
+
+  if (typeof startY === 'string') fY = parseFloat(startY) / 100;
+  else fY = startY / assetHeight;
+
+  action.startX = ((assetWidth * fX) - x) * currentScale;
+  action.startY = ((assetHeight * fY) - y) * currentScale;
+  action.innerRadius = innerRadius * currentScale;
+  action.outerRadius = outerRadius * currentScale;
 };
 
 
@@ -199,9 +297,6 @@ const FilterActionWrapper = function (items) {
 
   // Keep track of everything we need to invoke during cleanup
   this.killList = [];
-
-  // Used to build the SC updater (in form-builder module)
-  this.formCollection = {};
 
   actionWrapperLibrary[items.id] = this;
 

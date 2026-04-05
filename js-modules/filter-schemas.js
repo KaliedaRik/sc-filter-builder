@@ -514,7 +514,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 255,
         step: 1,
-        label: 'Red channel low bound',
+        label: 'Red',
         description: '',
       },
       lowGreen: {
@@ -524,7 +524,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 255,
         step: 1,
-        label: 'Green channel low bound',
+        label: 'Green',
         description: '',
       },
       lowBlue: {
@@ -534,7 +534,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 255,
         step: 1,
-        label: 'Blue channel low bound',
+        label: 'Blue',
         description: '',
       },
       highRed: {
@@ -544,7 +544,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 255,
         step: 1,
-        label: 'Red channel high bound',
+        label: 'Red',
         description: 'Red channel\'s contribution to the filter\'s upper bound',
       },
       highGreen: {
@@ -554,7 +554,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 255,
         step: 1,
-        label: 'Green channel high bound',
+        label: 'Green',
         description: 'Green channel\'s contribution to the filter\'s upper bound',
       },
       highBlue: {
@@ -564,7 +564,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 255,
         step: 1,
-        label: 'Blue channel high bound',
+        label: 'Blue',
         description: 'Blue channel\'s contribution to the filter\'s upper bound',
       },
     },
@@ -585,7 +585,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 255,
         step: 1,
-        label: 'Red channel',
+        label: 'Red',
         description: 'Reference color red channel value',
       },
       green: {
@@ -595,7 +595,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 255,
         step: 1,
-        label: 'Green channel',
+        label: 'Green',
         description: 'Reference color green channel value',
       },
       blue: {
@@ -605,7 +605,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 255,
         step: 1,
-        label: 'Blue channel',
+        label: 'Blue',
         description: 'Reference color blue channel value',
       },
       transparentAt: {
@@ -1017,7 +1017,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 255,
         step: 1,
-        label: 'Red channel',
+        label: 'Red',
         description: 'Red channel value of the flood color',
       },
       green: {
@@ -1027,7 +1027,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 255,
         step: 1,
-        label: 'Green channel',
+        label: 'Green',
         description: 'Green channel value of the flood color',
       },
       blue: {
@@ -1037,7 +1037,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 255,
         step: 1,
-        label: 'Blue channel',
+        label: 'Blue',
         description: 'Blue channel value of the flood color',
       },
       alpha: {
@@ -1576,7 +1576,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 5,
         step: 0.01,
-        label: 'Red channel',
+        label: 'Red',
         description: '',
       },
       green: {
@@ -1586,7 +1586,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 5,
         step: 0.01,
-        label: 'Green channel',
+        label: 'Green',
         description: '',
       },
       blue: {
@@ -1596,7 +1596,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 5,
         step: 0.01,
-        label: 'Blue channel',
+        label: 'Blue',
         description: '',
       },
       alpha: {
@@ -2261,84 +2261,24 @@ const actionSchemas = {
     hasOrigin: false,
     controls: {
       ...requiredControls,
-      lowRed: {
-        controlType: 'number',
-        default: 0,
-        key: 'lowRed',
-        minValue: 0,
-        maxValue: 255,
+      low: {
+        controlType: 'color-array',
+        default: [0, 0, 0, 255],
+        key: 'low',
+        minValues: 0,
+        maxValues: 255,
         step: 1,
-        label: 'Low color red channel',
+        label: 'Low color',
         description: '',
       },
-      lowGreen: {
-        controlType: 'number',
-        default: 0,
-        key: 'lowGreen',
-        minValue: 0,
-        maxValue: 255,
+      high: {
+        controlType: 'color-array',
+        default: [255, 255, 255, 255],
+        key: 'high',
+        minValues: 0,
+        maxValues: 255,
         step: 1,
-        label: 'Low color green channel',
-        description: '',
-      },
-      lowBlue: {
-        controlType: 'number',
-        default: 0,
-        key: 'lowBlue',
-        minValue: 0,
-        maxValue: 255,
-        step: 1,
-        label: 'Low color blue channel',
-        description: '',
-      },
-      lowAlpha: {
-        controlType: 'number',
-        default: 1,
-        key: 'lowAlpha',
-        minValue: 0,
-        maxValue: 1,
-        step: 0.005,
-        label: 'Low color alpha channel',
-        description: '',
-      },
-      highRed: {
-        controlType: 'number',
-        default: 255,
-        key: 'highRed',
-        minValue: 0,
-        maxValue: 255,
-        step: 1,
-        label: 'High color red channel',
-        description: '',
-      },
-      highGreen: {
-        controlType: 'number',
-        default: 255,
-        key: 'highGreen',
-        minValue: 0,
-        maxValue: 255,
-        step: 1,
-        label: 'High color green channel',
-        description: '',
-      },
-      highBlue: {
-        controlType: 'number',
-        default: 255,
-        key: 'highBlue',
-        minValue: 0,
-        maxValue: 255,
-        step: 1,
-        label: 'High color blue channel',
-        description: '',
-      },
-      highAlpha: {
-        controlType: 'number',
-        default: 1,
-        key: 'highAlpha',
-        minValue: 0,
-        maxValue: 1,
-        step: 0.005,
-        label: 'High color alpha channel',
+        label: 'High color',
         description: '',
       },
       red: {
@@ -2348,7 +2288,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 255,
         step: 1,
-        label: 'Level reference color red channel',
+        label: 'Ref red',
         description: '',
       },
       green: {
@@ -2358,7 +2298,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 255,
         step: 1,
-        label: 'Level reference color green channel',
+        label: 'Ref green',
         description: '',
       },
       blue: {
@@ -2368,7 +2308,7 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 255,
         step: 1,
-        label: 'Level reference color blue channel',
+        label: 'Ref blue',
         description: '',
       },
       alpha: {
@@ -2378,7 +2318,17 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 1,
         step: 0.005,
-        label: 'Level reference color alpha channel',
+        label: 'Ref alpha',
+        description: '',
+      },
+      level: {
+        controlType: 'number',
+        default: 127,
+        key: 'level',
+        minValue: 0,
+        maxValue: 255,
+        step: 1,
+        label: 'Threshold level',
         description: '',
       },
       includeRed: {
@@ -2833,22 +2783,22 @@ const actionSchemas = {
         description: '',
       },
       innerRadius: {
-        controlType: 'percentage-number',
+        controlType: 'number',
         default: 0,
         key: 'innerRadius',
         minValue: 0,
-        maxValue: 60,
-        step: 0.1,
+        maxValue: 200,
+        step: 1,
         label: 'Inner radius',
         description: '',
       },
       outerRadius: {
-        controlType: 'percentage-number',
+        controlType: 'number',
         default: 0,
         key: 'outerRadius',
         minValue: 0,
-        maxValue: 60,
-        step: 0.1,
+        maxValue: 200,
+        step: 1,
         label: 'Outer radius',
         description: '',
       },
@@ -2984,10 +2934,14 @@ F.presentation = [{
   header: 'Tile section alphas',
   openOnLoad: true,
   inputs: ['areaAlphaLevels'],
-},{
-  header: 'Tile offset',
-  openOnLoad: false,
-  inputs: ['offsetX', 'offsetY'],
+
+// I'm pretty convinced the offset calculations in the area-alpha filter are incorrect
+// - Suppress this option for now
+// },{
+//   header: 'Tile offset',
+//   openOnLoad: false,
+//   inputs: ['offsetX', 'offsetY'],
+
 },{
   header: 'Impact',
   openOnLoad: true,
@@ -3236,7 +3190,7 @@ F.presentation = [{
   },{
     header: 'Reference color',
     openOnLoad: true,
-    inputs: ['color', ['red', 'green', 'blue']],
+    inputs: ['reference'],
   },{
     header: 'Effect controls',
     openOnLoad: true,
@@ -3257,7 +3211,7 @@ F.controls.lowColor = {
   sync: 'down-and-up',
   default: 'rgb(0 0 0)',
   key: 'lowColor',
-  label: 'Low color reference',
+  label: 'Low color',
   description: 'Color string value of the lower bound color',
 };
 F.controls.highColor = {
@@ -3268,7 +3222,7 @@ F.controls.highColor = {
   sync: 'down-and-up',
   default: 'rgb(255 255 255)',
   key: 'highColor',
-  label: 'High color reference',
+  label: 'High color',
   description: 'Color string value of the upper bound color',
 };
 F.presentation = [{
@@ -3278,11 +3232,11 @@ F.presentation = [{
   },{
     header: 'Low color',
     openOnLoad: true,
-    inputs: ['lowColor', ['lowRed', 'lowGreen', 'lowBlue']],
+    inputs: ['lowColor'],
   },{
     header: 'High color',
     openOnLoad: true,
-    inputs: ['highColor', ['highRed', 'highGreen', 'highBlue']],
+    inputs: ['highColor'],
   },{
     header: 'Impact',
     openOnLoad: true,
@@ -3500,7 +3454,7 @@ F.presentation = [{
   },{
     header: 'Flood color',
     openOnLoad: true,
-    inputs: ['reference', ['red', 'green', 'blue']],
+    inputs: ['reference'],
   },{
     header: 'Alpha management',
     openOnLoad: false,
@@ -3806,7 +3760,8 @@ F.presentation = [{
   },{
     header: 'Tiles',
     openOnLoad: true,
-    inputs: ['tileWidth', 'tileHeight', 'offsetX', 'offsetY'],
+    // inputs: ['tileWidth', 'tileHeight', 'offsetX', 'offsetY'],
+    inputs: ['tileWidth', 'tileHeight'],
   },{
     header: 'Channels',
     openOnLoad: false,
@@ -4045,52 +4000,16 @@ F.presentation = [{
 
 // threshold
 F = filterSchemas.threshold = structuredClone(actionSchemas['threshold']);
-F.controls.lowColor = {
-  controlType: 'color',
-  alternativeControl: true,
-  alternativeFor: ['lowRed', 'lowGreen', 'lowBlue', 'lowAlpha'],
-  alternativeAction: 'set-color-channels-to-this',
-  sync: 'down-and-up',
-  default: 'rgb(0 0 0 / 1)',
-  key: 'lowColor',
-  label: 'Low color reference',
-  description: 'Color string value for the low color',
-};
-F.controls.highColor = {
-  controlType: 'color',
-  alternativeControl: true,
-  alternativeFor: ['highRed', 'highGreen', 'highBlue', 'highAlpha'],
-  alternativeAction: 'set-color-channels-to-this',
-  sync: 'down-and-up',
-  default: 'rgb(255 255 255 / 1)',
-  key: 'highColor',
-  label: 'High color reference',
-  description: 'Color string value for the high color',
-};
 F.controls.referenceColor = {
   controlType: 'color',
   alternativeControl: true,
-  alternativeFor: ['red', 'green', 'blue', 'alpha'],
+  alternativeFor: ['red', 'green', 'blue'],
   alternativeAction: 'set-color-channels-to-this',
   sync: 'down-and-up',
-  default: 'rgb(128 128 128 / 1)',
+  default: 'rgb(127 127 127 / 1)',
   key: 'referenceColor',
-  label: 'Levels color reference',
+  label: 'Reference',
   description: 'Color string value for the level reference color',
-};
-F.controls.threshold = {
-  controlType: 'number',
-  alternativeControl: true,
-  alternativeFor: ['red', 'green', 'blue'],
-  alternativeAction: 'set-alternatives-to-this',
-  sync: 'down-only',
-  default: 127,
-  key: 'offsetX',
-  minValue: 0,
-  maxValue: 255,
-  step: 1,
-  label: 'Mixed channels threshold',
-  description: '',
 };
 F.presentation = [{
     header: 'Connections',
@@ -4099,19 +4018,19 @@ F.presentation = [{
   },{
     header: 'Mixed channels controls',
     openOnLoad: true,
-    inputs: ['useMixedChannel', 'threshold'],
+    inputs: ['useMixedChannel', 'level'],
+  },{
+    header: 'Per-channel threshold color',
+    openOnLoad: false,
+    inputs: ['referenceColor', 'alpha'],
   },{
     header: 'Low color',
     openOnLoad: true,
-    inputs: ['', 'lowRed', 'lowGreen', 'lowBlue', 'lowAlpha'],
+    inputs: ['low'],
   },{
     header: 'High color',
     openOnLoad: true,
-    inputs: ['', 'highRed', 'highGreen', 'highBlue', 'highAlpha'],
-  },{
-    header: 'Reference color',
-    openOnLoad: false,
-    inputs: ['', 'red', 'green', 'blue', 'alpha'],
+    inputs: ['high'],
   },{
     header: 'Included channels',
     openOnLoad: false,
@@ -4204,17 +4123,17 @@ F.presentation = [{
   },{
     header: 'Red colors',
     openOnLoad: false,
-    inputs: ['redColor', ['redInRed', 'redInGreen', 'redInBlue']],
+    inputs: ['redColor'],
 
   },{
     header: 'Green colors',
     openOnLoad: false,
-    inputs: ['greenColor', ['greenInRed', 'greenInGreen', 'greenInBlue']],
+    inputs: ['greenColor'],
 
   },{
     header: 'Blue colors',
     openOnLoad: false,
-    inputs: ['blueColor', ['blueInRed', 'blueInGreen', 'blueInBlue']],
+    inputs: ['blueColor'],
   },{
     header: 'Impact',
     openOnLoad: true,

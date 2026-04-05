@@ -160,7 +160,7 @@ export const starterFilters = {
     title: 'Copy alpha to channels',
     readableName: 'Copy alpha to channels starter',
     formSchemaName: 'alphaToChannels',
-    packet: `["SC-starter-filter_copy-alpha-to-channels","Filter","filter",{"name":"SC-starter-filter_copy-alpha-to-channels","actions":[{"action":"alpha-to-channels","lineIn":"","lineOut":"","opacity":0.2,"includeRed":true,"includeGreen":false,"includeBlue":true,"excludeRed":true,"excludeGreen":true,"excludeBlue":true}]}]`,
+    packet: `["SC-starter-filter_copy-alpha-to-channels","Filter","filter",{"name":"SC-starter-filter_copy-alpha-to-channels","actions":[{"action":"alpha-to-channels","lineIn":"","lineOut":"","opacity":0.2,"includeRed":true,"includeGreen":true,"includeBlue":true,"excludeRed":true,"excludeGreen":true,"excludeBlue":true}]}]`,
     imageSource: 'assets/thumb/starter-thumb_copy-alpha-to-channels.png',
   },
 
