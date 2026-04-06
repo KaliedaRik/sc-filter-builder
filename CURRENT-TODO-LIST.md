@@ -2,12 +2,9 @@
 The list is evolving and I do not commit to doing anything in the current order
 
 ## Starter filters work and form building
-- Restructure page to put filter forms on the right hand side
-  - because getting to the form is currently very painful!
 - Posterize by value - channel pin arrays form component
 - Chroma filters - color ranges form component
 - Reduce-palette filter - palette form component
-- Tint filter - unit-colors form component
 - Curve filters - curve generation form components
 
 Create packets for the following filters
