@@ -22,12 +22,15 @@
   --left-bar-controls-border: rgb(60 60 60 / 1);
   --control-button-panel-background: rgb(240 240 240 / 1);
 
+  /* Right bar control variables */
+  --right-bar-width: 320px;
   --filter-bar-background: rgb(255 248 255 / 1);
   --filter-bar-section-border: rgb(80 60 60 / 1);
   --filter-bar-section-background: rgb(230 220 220 / 1);;
   --filter-bar-input-background: rgb(255 252 255 / 1);
+  --right-bar-left-border: rgb(60 60 60 / 1);
 
-  /* Right bar app constants - values without measurement units are ratios */
+  /* Central area app constants - values without measurement units are ratios */
   --minimum-image-work-ratio: 0.3;
   --minimum-filter-work-ratio: 0.15;
   --splitter-height: 6px;
@@ -164,11 +167,18 @@ main {
   overflow: hidden;
 }
 
-#image-work, #filter-work {
+#image-work {
   min-height: 0;
   height: 100%;
   display: grid;
-  grid-template-columns: var(--left-bar-width) 1fr;
+  grid-template-columns: var(--left-bar-width) 1fr var(--right-bar-width);
+}
+
+#filter-work {
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
 }
 
 #image-controls-panel {
@@ -359,39 +369,13 @@ main {
   }
 }
 
-#splitter {
-  height: 6px;
-  cursor: row-resize;
-  background: var(--splitter-background);
-
-  &:hover {
-    background: var(--splitter-background-hover);
-  }
-}
-
-#filter-builder-area {
-  min-width: 0;
-  min-height: 0;
-  position: relative;
-
-  & #filter-builder-stack {
-    min-width: 0;
-    min-height: 0;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    overflow: hidden;
-    background-color: var(--filter-bar-section-border);
-  }
-}
-
 #filter-controls-panel {
   height: 100%;
   min-height: 0;
   width: 100%;
   overflow-y: auto;
   box-sizing: border-box;
-  border-right: 1px solid var(--left-bar-right-border);
+  border-left: 1px solid var(--right-bar-left-border);
   padding: 0 0.5rem;
   background-color: var(--filter-bar-background);
 
@@ -405,6 +389,11 @@ main {
     & span {
       font-weight: normal;
       font-style: italic;
+    }
+
+    & #current-filter-modified {
+      display: none;
+      color: var(--advice-color);
     }
   }
 
@@ -421,7 +410,7 @@ main {
       width: 100%;
       text-align: center;
       font-size: 100%;
-      margin: 0;
+      margin: 0.5rem 0 0;
       border: 1px solid var(--filter-bar-section-border);
       padding: 0.25rem 0.5rem;
       border-radius: 5px;
@@ -431,6 +420,10 @@ main {
 
       &:hover {
         cursor: pointer;
+      }
+
+      &#change-filter-modal-button {
+        grid-column: span 2;
       }
     }
   }
@@ -678,13 +671,39 @@ main {
             }
           }
         }
-
-
-
-
-
       }
     }
+  }
+}
+
+main.filter-has-been-modified #filter-controls-panel > h2 span#current-filter-modified {
+  display: inline;
+}
+
+
+#splitter {
+  height: 6px;
+  cursor: row-resize;
+  background: var(--splitter-background);
+
+  &:hover {
+    background: var(--splitter-background-hover);
+  }
+}
+
+#filter-builder-area {
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+
+  & #filter-builder-stack {
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    background-color: var(--filter-bar-section-border);
   }
 }
 

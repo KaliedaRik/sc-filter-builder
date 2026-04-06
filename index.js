@@ -98,7 +98,9 @@ const {
 
 initFormBuilder(scrawl, dom, getCurrentWrappedFilter, actionWrapperLibrary);
 
-initFilterBuilder(scrawl, dom);
+const {
+  checkIfFilterHasChanged,
+} = initFilterBuilder(scrawl, dom);
 
 
 // Show the default canvas display
@@ -131,6 +133,8 @@ const commenceFunction = () => {
     const filter = getCurrentWrappedFilter();
     filter.updateDisplayFilter();
   }
+
+  checkIfFilterHasChanged();
 };
 
 scrawl.makeRender({
@@ -140,9 +144,9 @@ scrawl.makeRender({
   commence: commenceFunction,
 });
 
-
 // ------------------------------------------------------------------------
 // Development 
 // ------------------------------------------------------------------------
+checkIfFilterHasChanged();
 
 console.log(scrawl.library);

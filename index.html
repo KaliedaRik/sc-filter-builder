@@ -116,6 +116,27 @@
         ></canvas>
       </div>
 
+      <!-- Right-side filter controls panel -->
+      <div id="filter-controls-panel">
+
+        <div class="filter-controls-panel-top-buttons">
+          
+          <!-- Import user filter -->
+          <button type="button" id="import-filter-button">Import filter</button>
+
+          <!-- Download current filter -->
+          <button type="button" id="download-filter-button">Download filter</button>
+
+          <!-- Change filter -->
+          <button type="button" id="change-filter-modal-button">Change filter</button>
+
+        </div>
+        
+        <!-- Current filter details -->
+        <h2>Current filter:<br><span id="current-filter-name">[current filter name goes here]</span> <span id="current-filter-modified">(modified)</span></h2>
+
+      </div>
+      
     </div>
 
     <!-- splitter bar -->
@@ -123,24 +144,6 @@
 
     <div id="filter-work">
 
-      <!-- Bottom-left filter controls panel -->
-      <div id="filter-controls-panel">
-
-        <div class="filter-controls-panel-top-buttons">
-          
-          <!-- Change filter -->
-          <button type="button" id="change-filter-modal-button">Change filter</button>
-
-          <!-- Download current filter -->
-          <button type="button" id="download-filter-button">Download filter</button>
-
-        </div>
-        
-        <!-- Current filter details -->
-        <h2>Current filter:<br><span id="current-filter-name">[current filter name goes here]</span></h2>
-
-      </div>
-      
       <!-- Filter building area -->
       <div id="filter-builder-area">
 

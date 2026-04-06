@@ -11,14 +11,30 @@ let currentFilterWrapper = null,
   currentFilterTitleElement = null,
   canvasHandle = null;
 
-const requestStarterFilter = (e) => {
+const mainEl = document.querySelector('main'),
+  filterHasChangedClass = 'filter-has-been-modified';
 
-  // Perform a pre-check
-  // - If user has modified the current filter, give them an opportunity to save/download
+
+// Filter modification
+let filterHasChanged = false;
+
+const checkIfFilterHasChanged = () => {
+
   if (currentFilterInitialValues !== currentFilterWrapper.toString()) {
 
-    console.log('Old filter has been modified. Give user a chance to save/download it');
+    mainEl.classList.add(filterHasChangedClass);
+    filterHasChanged = true;
   }
+  else {
+
+    mainEl.classList.remove(filterHasChangedClass);
+    filterHasChanged = false;
+  }
+
+};
+
+
+const requestStarterFilter = (e) => {
 
   // Find button element
   const target = e.target.closest('button[data-packet]');
@@ -46,6 +62,9 @@ const loadStarterFilter = (starter) => {
       currentFilterWrapper.updateDisplayFilter();
 
       currentFilterTitleElement.textContent = data.readableName;
+
+      filterHasChanged = false;
+      mainEl.classList.remove(filterHasChangedClass);
     }
     else newFilter.kill();
   }
@@ -108,5 +127,7 @@ export const initFilterBuilder = (scrawl = null, dom = null) => {
 
 
   // Return object
-  return {};
+  return {
+    checkIfFilterHasChanged,
+  };
 };
