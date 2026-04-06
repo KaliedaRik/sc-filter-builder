@@ -82,7 +82,7 @@ Create packets for the following filters
 ```
 
 
-## Filter download work
+## User-generated filter import, and download, work
 Work not yet considered, but should be simple to implement.
 
 
@@ -91,6 +91,7 @@ This work will (almost certainly) require changes to the SC library, such as exp
 
 
 ## Image file import and export
-This is a piece of consideration and research work to see if we could support the import and download of image file formats currently not supported by browsers, for example `.tiff`, etc. 
+This is a piece of consideration and research work to see if we could support the import, and download, of image file formats currently not supported by browsers, for example `.tiff`, etc. 
 
-- For this work, I'm willing to use either dedicated JS image conversion libraries, or WASM-enabled libraries (`ffmpeg`?) in non-JS languages, which handle this sort of conversion work well
+- For this work, I'm willing to use either dedicated JS image conversion libraries, or WASM-enabled libraries (like `ffmpeg`, but lighter?) in non-JS languages, which handle this sort of conversion work well.
+- Export should remain limited to browser-native formats unless a clear user need justifies adding specialist encoders.
