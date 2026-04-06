@@ -59,7 +59,7 @@ We define the attributes that an individual action object takes on the actionSch
 const actionSchemas = {
 
   ['alpha-to-channels']: {
-    label: 'Set alpha to channels',
+    label: 'Copy alpha to channels',
     description: 'Copies an input\'s alpha channel value over to each selected channel\'s value or, alternatively, sets that channel\'s value to zero, or leaves the channel\'s value unchanged. Setting the appropriate includeChannel flags will copy the alpha channel value to that channel; when that flag is false, setting the appropriate excludeChannel flag will set that channel\'s value to zero.',
     group: 'Color channel filter',
     action: 'alpha-to-channels',
@@ -112,7 +112,7 @@ const actionSchemas = {
   },
 
   ['alpha-to-luminance']: {
-    label: 'Set alpha to luminance',
+    label: 'Copy alpha to luminance',
     description: '',
     group: 'OK color space filter',
     action: 'alpha-to-luminance',
@@ -420,7 +420,7 @@ const actionSchemas = {
   },
 
   ['channels-to-alpha']: {
-    label: 'Set channels to alpha',
+    label: 'Copy channels to alpha',
     description: 'Calculates an average value from each pixel\'s included channels and applies that value to the pixel\'s alpha channel.',
     group: 'Alpha channel filter',
     action: 'channels-to-alpha',
@@ -1314,7 +1314,7 @@ const actionSchemas = {
   },
 
   ['invert-channels']: {
-    label: 'Invert channels',
+    label: 'Invert colors',
     description: '',
     group: 'Color channel filter',
     action: 'invert-channels',
@@ -2627,7 +2627,7 @@ const actionSchemas = {
   },
 
   ['unsharp']: {
-    label: 'Unsharpen',
+    label: 'Unsharp',
     description: '',
     group: 'OK color space filter',
     action: 'unsharp',
@@ -3100,7 +3100,7 @@ F.presentation = [{
 
 // channels ('modulate-channels' variant)
 F = filterSchemas.channels = structuredClone(actionSchemas['modulate-channels']);
-F.label = 'Channels modulation';
+F.label = 'Modulate channels';
 F.description = '';
 F.presentation = [{
     header: 'Connections',
@@ -3305,7 +3305,7 @@ F.presentation = [{
 
 // cyan ('average-channels' variant)
 F = filterSchemas.cyan = structuredClone(actionSchemas['average-channels']);
-F.label = 'Cyan channels';
+F.label = 'Cyan mix';
 F.description = '';
 F.controls.excludeRed.default = true;
 F.controls.includeGreen.default = true;
@@ -3365,61 +3365,6 @@ F.presentation = [{
     header: 'Connections',
     openOnLoad: false,
     inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Control values',
-    openOnLoad: true,
-    inputs: ['angle', 'strength'],
-  },{
-    header: 'Post-processing',
-    openOnLoad: false,
-    inputs: ['postProcessResults', 'keepOnlyChangedAreas', 'tolerance'],
-  },{
-    header: 'Impact',
-    openOnLoad: true,
-    inputs: ['opacity'],
-}];
-
-// enhancedEmboss ('emboss' variant)
-// - This filter can have 1-3 action objects, thus cannot build in the normal way.
-// - Instead, invoke `scrawl.makeFilter()` with the supplied arguments and extract the action objects it creates and then bring them into alignment with the system
-F = filterSchemas.enhancedEmboss = structuredClone(actionSchemas['emboss']);
-F.label = 'Enhanced emboss';
-F.description = '';
-F.controls.useNaturalGrayscale = {
-  controlType: 'boolean',
-  default: false,
-  key: 'useNaturalGrayscale',
-  label: 'Use natural grayscale',
-  description: 'When true, starts the action sequence by converting input to grayscale; when false, will use the simpler average-channels approach to strip away color',
-};
-F.controls.clamp = {
-  controlType: 'number',
-  default: 0,
-  key: 'clamp',
-  minValue: 0,
-  maxValue: 100,
-  step: 0.01,
-  label: 'Clamp',
-  description: 'Applied as part of the clamp action',
-};
-F.controls.smoothing = {
-  controlType: 'number',
-  default: 0,
-  key: 'smoothing',
-  minValue: 0,
-  maxValue: 12,
-  step: 1,
-  label: 'Smoothing',
-  description: 'Applied as part of the gaussian-blur action',
-};
-F.presentation = [{
-    header: 'Connections',
-    openOnLoad: false,
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Pre-processing',
-    openOnLoad: false,
-    inputs: ['useNaturalGrayscale', 'clamp', 'smoothing'],
   },{
     header: 'Control values',
     openOnLoad: true,
@@ -3563,7 +3508,7 @@ F.presentation = [...defaultPresentation];
 
 // magenta ('average-channels' variant)
 F = filterSchemas.magenta = structuredClone(actionSchemas['average-channels']);
-F.label = 'Magenta channels';
+F.label = 'Magenta mix';
 F.description = '';
 F.controls.includeRed.default = true;
 F.controls.excludeGreen.default = true;
@@ -3664,21 +3609,21 @@ F.presentation = [{
 
 // notblue ('set-channel-to-level' variant)
 F = filterSchemas.notblue = structuredClone(actionSchemas['set-channel-to-level']);
-F.label = 'Remove blue channel';
+F.label = 'Exclude blue channel';
 F.description = '';
 F.controls.includeBlue.default = true;
 F.presentation = [...defaultPresentation];
 
 // notgreen ('set-channel-to-level' variant)
 F = filterSchemas.notgreen = structuredClone(actionSchemas['set-channel-to-level']);
-F.label = 'Remove green channel';
+F.label = 'Exclude green channel';
 F.description = '';
 F.controls.includeGreen.default = true;
 F.presentation = [...defaultPresentation];
 
 // notred ('set-channel-to-level' variant)
 F = filterSchemas.notred = structuredClone(actionSchemas['set-channel-to-level']);
-F.label = 'Remove red channel';
+F.label = 'Exclude red channel';
 F.description = '';
 F.controls.includeRed.default = true;
 F.presentation = [...defaultPresentation];
@@ -3728,7 +3673,7 @@ F.presentation = [{
   },{
     header: 'Alpha controls',
     openOnLoad: false,
-    inputs: ['offsetAlphaX', 'offsetAlphaY', 'useInputAsMask', '', ''],
+    inputs: ['offsetAlphaX', 'offsetAlphaY', 'useInputAsMask'],
   },{
     header: 'Impact',
     openOnLoad: true,
@@ -3875,7 +3820,7 @@ F.presentation = [{
 
 // sepia ('tint' variant)
 F = filterSchemas.sepia = structuredClone(actionSchemas['tint-channels']);
-F.label = 'Sepia';
+F.label = 'Sepia tint';
 F.description = '';
 F.controls.redInRed.default = 0.393;
 F.controls.redInGreen.default = 0.349;
@@ -4162,7 +4107,7 @@ F.presentation = [{
 
 // yellow ('average-channels' variant)
 F = filterSchemas.yellow = structuredClone(actionSchemas['average-channels']);
-F.label = 'Yellow channels';
+F.label = 'Yellow mix';
 F.description = '';
 F.controls.includeRed.default = true;
 F.controls.includeGreen.default = true;

@@ -375,10 +375,15 @@ export const starterFilters = {
   ['SC-starter-filter_glitch']: {
     title: 'Glitch',
     readableName: 'Glitch starter',
-    formSchemaName: 'displace',
-    packet: `["SC-starter-filter_glitch","Filter","filter",{"name":"SC-starter-filter_glitch","actions":[{"action":"displace","lineIn":"","lineOut":"","lineMix":"","opacity":1,"channelX":"red","channelY":"green","offsetX":0,"offsetY":0,"scaleX":1,"scaleY":1,"transparentEdges":false,"useInputAsMask":false}]}]`,
+    formSchemaName: 'glitch',
+    packet: `["SC-starter-filter_glitch","Filter","filter",{"name":"SC-starter-filter_glitch","actions":[{"action":"glitch","lineIn":"","lineOut":"","opacity":1,"useMixedChannel":true,"seed":"default-seed","step":1,"offsetMin":0,"offsetMax":0,"offsetRedMin":0,"offsetRedMax":0,"offsetGreenMin":0,"offsetGreenMax":0,"offsetBlueMin":0,"offsetBlueMax":0,"offsetAlphaMin":0,"offsetAlphaMax":0,"transparentEdges":false,"useInputAsMask":false,"level":0}]}]`,
     imageSource: 'assets/thumb/starter-thumb_glitch.png',
   },
+
+
+
+
+
 
   ['SC-starter-filter_edge-detect']: {
     title: 'Edge detect',
@@ -392,7 +397,7 @@ export const starterFilters = {
     title: 'Emboss',
     readableName: 'Emboss starter',
     formSchemaName: 'emboss',
-    packet: `["SC-starter-filter_emboss","Filter","filter",{"name":"SC-starter-filter_emboss","actions":[{"action":"average-channels","lineIn":"","lineOut":"emboss-work","includeRed":true,"includeGreen":true,"includeBlue":true},{"action":"emboss","lineIn":"emboss-work","lineOut":"","opacity":1,"angle":0,"strength":1,"tolerance":0,"keepOnlyChangedAreas":false,"postProcessResults":true}]}]`,
+    packet: `["SC-starter-filter_emboss","Filter","filter",{"name":"SC-starter-filter_emboss","actions":[{"action":"emboss","lineIn":"","lineOut":"","opacity":1,"angle":0,"strength":1,"tolerance":0,"keepOnlyChangedAreas":false,"postProcessResults":true}]}]`,
     imageSource: 'assets/thumb/starter-thumb_emboss.png',
   },
 
