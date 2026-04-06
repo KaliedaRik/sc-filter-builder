@@ -452,7 +452,7 @@ const actionSchemas = {
   },
 
   ['chroma']: {
-    label: 'Chroma ranges',
+    label: 'Chroma clear by ranges',
     description: 'Produces a chroma key compositing effect across the input, using an array of range arrays to determine whether a pixel\'s values lie entirely within a range\'s values and, if true, sets that pixel\'s alpha channel value to zero.',
     group: 'Alpha channel filter',
     action: 'chroma',
@@ -571,7 +571,7 @@ const actionSchemas = {
   },
 
   ['colors-to-alpha']: {
-    label: 'Chroma key',
+    label: 'Chroma clear by reference',
     description: 'Produces a chroma key compositing effect across the input by determining the alpha channel value for each pixel depending on the closeness to that pixel\'s color channel values to a reference color supplied in the red, green and blue arguments.',
     group: 'Alpha channel filter',
     action: 'colors-to-alpha',
@@ -1346,7 +1346,7 @@ const actionSchemas = {
   },
 
   ['lock-channels-to-levels']: {
-    label: 'Posterize by channel',
+    label: 'Posterize by value',
     description: '',
     group: 'Color channel filter',
     action: 'lock-channels-to-levels',
@@ -1791,7 +1791,7 @@ const actionSchemas = {
   },
 
   ['ok-perceptual-curves']: {
-    label: 'OK perceptual curves',
+    label: 'Tone curve',
     description: '',
     group: 'OK color space filter',
     action: 'ok-perceptual-curves',
@@ -2540,8 +2540,8 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 1,
         step: 0.001,
-        label: 'Red-in-red',
-        description: '',
+        label: 'Red',
+        description: 'Red contribution to red channel',
       },
       redInGreen: {
         controlType: 'number',
@@ -2550,8 +2550,8 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 1,
         step: 0.001,
-        label: 'Red-in-green',
-        description: '',
+        label: 'Red',
+        description: 'Red contribution to green channel',
       },
       redInBlue: {
         controlType: 'number',
@@ -2560,8 +2560,8 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 1,
         step: 0.001,
-        label: 'Red-in-blue',
-        description: '',
+        label: 'Red',
+        description: 'Red contribution to blue channel',
       },
       greenInRed: {
         controlType: 'number',
@@ -2570,8 +2570,8 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 1,
         step: 0.001,
-        label: 'Green-in-red',
-        description: '',
+        label: 'Green',
+        description: 'Green contribution to red channel',
       },
       greenInGreen: {
         controlType: 'number',
@@ -2580,8 +2580,8 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 1,
         step: 0.001,
-        label: 'Green-in-green',
-        description: '',
+        label: 'Green',
+        description: 'Green contribution to green channel',
       },
       greenInBlue: {
         controlType: 'number',
@@ -2590,8 +2590,8 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 1,
         step: 0.001,
-        label: 'Green-in-blue',
-        description: '',
+        label: 'Green',
+        description: 'Green contribution to blue channel',
       },
       blueInRed: {
         controlType: 'number',
@@ -2600,8 +2600,8 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 1,
         step: 0.001,
-        label: 'Blue-in-red',
-        description: '',
+        label: 'Blue',
+        description: 'Blue contribution to red channel',
       },
       blueInGreen: {
         controlType: 'number',
@@ -2610,8 +2610,8 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 1,
         step: 0.001,
-        label: 'Blue-in-green',
-        description: '',
+        label: 'Blue',
+        description: 'Blue contribution to green channel',
       },
       blueInBlue: {
         controlType: 'number',
@@ -2620,8 +2620,8 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 1,
         step: 0.001,
-        label: 'Blue-in-blue',
-        description: '',
+        label: 'Blue',
+        description: 'Blue contribution to blue channel',
       },
     },
   },
@@ -2695,7 +2695,7 @@ const actionSchemas = {
   },
 
   ['vary-channels-by-weights']: {
-    label: 'Vary channels by weights',
+    label: 'Color curve',
     description: '',
     group: 'Color channel filter',
     action: 'vary-channels-by-weights',
@@ -4084,7 +4084,7 @@ F.presentation = [{
 // tint
 F = filterSchemas.tint = structuredClone(actionSchemas['tint-channels']);
 F.controls.redColor = {
-  controlType: 'color',
+  controlType: 'unit-color',
   alternativeControl: true,
   alternativeFor: ['redInRed', 'greenInRed', 'blueInRed'],
   alternativeAction: 'set-color-channels-to-this',
@@ -4095,7 +4095,7 @@ F.controls.redColor = {
   description: 'Color string value of the red colors reference',
 };
 F.controls.greenColor = {
-  controlType: 'color',
+  controlType: 'unit-color',
   alternativeControl: true,
   alternativeFor: ['redInGreen', 'greenInGreen', 'blueInGreen'],
   alternativeAction: 'set-color-channels-to-this',
@@ -4106,7 +4106,7 @@ F.controls.greenColor = {
   description: 'Color string value of the green colors reference',
 };
 F.controls.blueColor = {
-  controlType: 'color',
+  controlType: 'unit-color',
   alternativeControl: true,
   alternativeFor: ['redInBlue', 'greenInBlue', 'blueInBlue'],
   alternativeAction: 'set-color-channels-to-this',

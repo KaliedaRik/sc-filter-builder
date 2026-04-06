@@ -245,8 +245,8 @@ export const starterFilters = {
   },
 
   ['SC-starter-filter_copy-luminance-to-alpha']: {
-    title: 'Copy luminance-to-alpha',
-    readableName: 'Copy luminance-to-alpha starter',
+    title: 'Luminance to alpha',
+    readableName: 'Luminance to alpha starter',
     formSchemaName: 'luminanceToAlpha',
     packet: `["SC-starter-filter_copy-luminance-to-alpha","Filter","filter",{"name":"SC-starter-filter_copy-luminance-to-alpha","actions":[{"action":"luminance-to-alpha","lineIn":"","lineOut":"","opacity":1}]}]`,
     imageSource: 'assets/thumb/starter-thumb_copy-luminance-to-alpha.png',
@@ -339,6 +339,110 @@ export const starterFilters = {
     packet: `["SC-starter-filter_zoom-blur","Filter","filter",{"name":"SC-starter-filter_zoom-blur","actions":[{"action":"zoom-blur","lineIn":"","lineOut":"","opacity":1,"includeRed":true,"includeGreen":true,"includeBlue":true,"includeAlpha":false,"excludeTransparentPixels":true,"startX":"50%","startY":"50%","innerRadius":0,"outerRadius":0,"easing":"linear","premultiply":false,"multiscale":true,"strength":0.35,"angle":0,"seed":"any_random_string_will_do","samples":14,"variation":0}]}]`,
     imageSource: 'assets/thumb/starter-thumb_zoom-blur.png',
   },
+
+  ['SC-starter-filter_corrode']: {
+    title: 'Corrode',
+    readableName: 'Corrode starter',
+    formSchemaName: 'corrode',
+    packet: `["SC-starter-filter_corrode","Filter","filter",{"name":"SC-starter-filter_corrode","actions":[{"action":"corrode","lineIn":"","lineOut":"","width":3,"height":3,"offsetX":1,"offsetY":1,"includeRed":false,"includeGreen":false,"includeBlue":false,"includeAlpha":true,"operation":"mean","opacity":1}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_corrode.png',
+  },
+
+  ['SC-starter-filter_color-curve']: {
+    title: 'Color curve',
+    readableName: 'Color curve starter',
+    formSchemaName: 'curveWeights',
+    packet: `["SC-starter-filter_color-curve","Filter","filter",{"name":"SC-starter-filter_color-curve","actions":[{"action":"vary-channels-by-weights","lineIn":"","lineOut":"","opacity":1,"weights":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"useMixedChannel":true}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_color-curve.png',
+  },
+
+  ['SC-starter-filter_tone-curve']: {
+    title: 'Tone curve',
+    readableName: 'Tone curve starter',
+    formSchemaName: 'okCurveWeights',
+    packet: `["SC-starter-filter_tone-curve","Filter","filter",{"name":"SC-starter-filter_tone-curve","actions":[{"action":"ok-perceptual-curves","lineIn":"","lineOut":"","opacity":1,"curves":{"luminance":[],"chroma":[],"aChannel":[],"bChannel":[]}}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_tone-curve.png',
+  },
+
+  ['SC-starter-filter_deconvolute']: {
+    title: 'Deconvolute',
+    readableName: 'Deconvolute starter',
+    formSchemaName: 'deconvolute',
+    packet: `["SC-starter-filter_deconvolute","Filter","filter",{"name":"SC-starter-filter_deconvolute","actions":[{"action":"deconvolute","lineIn":"","lineOut":"","opacity":1,"strength":0.85,"radius":1.25,"level":0.015,"smoothing":0.015,"clamp":0.08,"passes":8,"deriveMaskFromImage":true,"multiscale":true,"multiscaleFinalPasses":2}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_deconvolute.png',
+  },
+
+  ['SC-starter-filter_glitch']: {
+    title: 'Glitch',
+    readableName: 'Glitch starter',
+    formSchemaName: 'displace',
+    packet: `["SC-starter-filter_glitch","Filter","filter",{"name":"SC-starter-filter_glitch","actions":[{"action":"displace","lineIn":"","lineOut":"","lineMix":"","opacity":1,"channelX":"red","channelY":"green","offsetX":0,"offsetY":0,"scaleX":1,"scaleY":1,"transparentEdges":false,"useInputAsMask":false}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_glitch.png',
+  },
+
+  ['SC-starter-filter_edge-detect']: {
+    title: 'Edge detect',
+    readableName: 'Edge detect starter',
+    formSchemaName: 'edgeDetect',
+    packet: `["SC-starter-filter_edge-detect","Filter","filter",{"name":"SC-starter-filter_edge-detect","actions":[{"action":"matrix","lineIn":"","lineOut":"","opacity":1,"width":3,"height":3,"offsetX":1,"offsetY":1,"includeRed":true,"includeGreen":true,"includeBlue":true,"includeAlpha":false,"weights":[0,1,0,1,-4,1,0,1,0]}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_edge-detect.png',
+  },
+
+  ['SC-starter-filter_emboss']: {
+    title: 'Emboss',
+    readableName: 'Emboss starter',
+    formSchemaName: 'emboss',
+    packet: `["SC-starter-filter_emboss","Filter","filter",{"name":"SC-starter-filter_emboss","actions":[{"action":"average-channels","lineIn":"","lineOut":"emboss-work","includeRed":true,"includeGreen":true,"includeBlue":true},{"action":"emboss","lineIn":"emboss-work","lineOut":"","opacity":1,"angle":0,"strength":1,"tolerance":0,"keepOnlyChangedAreas":false,"postProcessResults":true}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_emboss.png',
+  },
+
+  ['SC-starter-filter_flood']: {
+    title: 'Flood',
+    readableName: 'Flood starter',
+    formSchemaName: 'flood',
+    packet: `["SC-starter-filter_flood","Filter","filter",{"name":"SC-starter-filter_flood","actions":[{"action":"flood","lineIn":"","lineOut":"","opacity":1,"red":0,"green":0,"blue":0,"alpha":255,"excludeAlpha":false}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_flood.png',
+  },
+
+  ['SC-starter-filter_map-to-gradient']: {
+    title: 'Map to gradient',
+    readableName: 'Map to gradient starter',
+    formSchemaName: 'mapToGradient',
+    packet: `["SC-starter-filter_map-to-gradient","Filter","filter",{"name":"SC-starter-filter_map-to-gradient","actions":[{"action":"map-to-gradient","lineIn":"","lineOut":"","opacity":1,"useNaturalGrayscale":false,"gradient":false}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_map-to-gradient.png',
+  },
+
+  ['SC-starter-filter_matrix']: {
+    title: 'Matrix',
+    readableName: 'Matrix starter',
+    formSchemaName: 'matrix',
+    packet: `["SC-starter-filter_matrix","Filter","filter",{"name":"SC-starter-filter_matrix","actions":[{"action":"matrix","lineIn":"","lineOut":"","opacity":1,"width":3,"height":3,"offsetX":1,"offsetY":1,"includeRed":true,"includeGreen":true,"includeBlue":true,"includeAlpha":false,"weights":[0,0,0,0,1,0,0,0,0],"premultiply":false,"useInputAsMask":false}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_matrix.png',
+  },
+
+  ['SC-starter-filter_offset']: {
+    title: 'Offset',
+    readableName: 'Offset starter',
+    formSchemaName: 'offset',
+    packet: `["SC-starter-filter_offset","Filter","filter",{"name":"SC-starter-filter_offset","actions":[{"action":"offset","lineIn":"","lineOut":"","opacity":1,"offsetRedX":0,"offsetRedY":0,"offsetGreenX":0,"offsetGreenY":0,"offsetBlueX":0,"offsetBlueY":0,"offsetAlphaX":0,"offsetAlphaY":0,"useInputAsMask":false}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_offset.png',
+  },
+
+  ['SC-starter-filter_set-channels-to-level']: {
+    title: 'Set channels to level',
+    readableName: 'Set channels to level starter',
+    formSchemaName: 'setChannelsToLevel',
+    packet: `["SC-starter-filter_set-channels-to-level","Filter","filter",{"name":"SC-starter-filter_set-channels-to-level","actions":[{"action":"set-channels-to-level","lineIn":"","lineOut":"","opacity":1,"includeRed":false,"includeGreen":false,"includeBlue":false,"includeAlpha":false,"level":0}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_set-channels-to-level.png',
+  },
+
+  ['SC-starter-filter_tint']: {
+    title: 'Tint',
+    readableName: 'Tint starter',
+    formSchemaName: 'tint',
+    packet: `["SC-starter-filter_tint","Filter","filter",{"name":"SC-starter-filter_tint","actions":[{"action":"tint-channels","lineIn":"","lineOut":"","opacity":1,"redInRed":1,"redInGreen":0,"redInBlue":0,"greenInRed":0,"greenInGreen":1,"greenInBlue":0,"blueInRed":0,"blueInGreen":0,"blueInBlue":1}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_tint.png',
+  },
 };
 
 export const filterGroups = [{
@@ -353,6 +457,8 @@ export const filterGroups = [{
     'SC-starter-filter_sharpen',
     'SC-starter-filter_threshold',
     'SC-starter-filter_rotate-hue',
+    'SC-starter-filter_color-curve',
+    'SC-starter-filter_tone-curve',
   ],
 },{
   id: 'fixOrAdjustImage',
@@ -364,9 +470,17 @@ export const filterGroups = [{
     'SC-starter-filter_modulate-channels',
     'SC-starter-filter_modify-ok-channels',
     'SC-starter-filter_modulate-ok-channels',
+    'SC-starter-filter_color-curve',
+    'SC-starter-filter_tone-curve',
+    'SC-starter-filter_tint',
+    'SC-starter-filter_clamp-channels',
     'SC-starter-filter_gaussian-blur',
+    'SC-starter-filter_box-blur',
     'SC-starter-filter_sharpen',
     'SC-starter-filter_unsharp',
+    'SC-starter-filter_deconvolute',
+    'SC-starter-filter_matrix',
+    'SC-starter-filter_offset',
   ],
 },{
   id: 'extractOrMask',
@@ -381,12 +495,17 @@ export const filterGroups = [{
     'SC-starter-filter_chroma-clear-by-ranges',
     'SC-starter-filter_chroma-clear-by-reference',
     'SC-starter-filter_threshold',
+    'SC-starter-filter_corrode',
+    'SC-starter-filter_flood',
+    'SC-starter-filter_set-channels-to-level',
   ],
 },{
   id: 'reduceAndStylize',
   title: 'Reduce and stylize images',
   openOnLoad: false,
   filters: [
+    'SC-starter-filter_desaturate',
+    'SC-starter-filter_gray-monochrome',
     'SC-starter-filter_pixelate',
     'SC-starter-filter_posterize-by-value',
     'SC-starter-filter_posterize-by-step',
@@ -395,6 +514,11 @@ export const filterGroups = [{
     'SC-starter-filter_tiles',
     'SC-starter-filter_random-noise',
     'SC-starter-filter_zoom-blur',
+    'SC-starter-filter_emboss',
+    'SC-starter-filter_map-to-gradient',
+    'SC-starter-filter_invert-colors',
+    'SC-starter-filter_ok-negative',
+    'SC-starter-filter_glitch',
   ],
 },{
   id: 'inspectChannels',
@@ -411,6 +535,12 @@ export const filterGroups = [{
     'SC-starter-filter_exclude-red-channel',
     'SC-starter-filter_exclude-green-channel',
     'SC-starter-filter_exclude-blue-channel',
+    'SC-starter-filter_copy-alpha-to-channels',
+    'SC-starter-filter_copy-alpha-to-luminance',
+    'SC-starter-filter_copy-channels-to-alpha',
+    'SC-starter-filter_copy-luminance-to-alpha',
+    'SC-starter-filter_threshold',
+    'SC-starter-filter_edge-detect',
   ],
 },{
   id: 'recolorImage',
@@ -425,5 +555,11 @@ export const filterGroups = [{
     'SC-starter-filter_modulate-channels',
     'SC-starter-filter_modify-ok-channels',
     'SC-starter-filter_modulate-ok-channels',
+    'SC-starter-filter_tint',
+    'SC-starter-filter_color-curve',
+    'SC-starter-filter_tone-curve',
+    'SC-starter-filter_map-to-gradient',
+    'SC-starter-filter_flood',
+    'SC-starter-filter_set-channels-to-level',
   ],
 }];
