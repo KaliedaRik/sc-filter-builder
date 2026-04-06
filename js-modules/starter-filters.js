@@ -433,12 +433,12 @@ export const starterFilters = {
     imageSource: 'assets/thumb/starter-thumb_offset.png',
   },
 
-  ['SC-starter-filter_set-channels-to-level']: {
-    title: 'Set channels to level',
-    readableName: 'Set channels to level starter',
-    formSchemaName: 'setChannelsToLevel',
-    packet: `["SC-starter-filter_set-channels-to-level","Filter","filter",{"name":"SC-starter-filter_set-channels-to-level","actions":[{"action":"set-channels-to-level","lineIn":"","lineOut":"","opacity":1,"includeRed":false,"includeGreen":false,"includeBlue":false,"includeAlpha":false,"level":0}]}]`,
-    imageSource: 'assets/thumb/starter-thumb_set-channels-to-level.png',
+  ['SC-starter-filter_set-channel-to-level']: {
+    title: 'Set channel to level',
+    readableName: 'Set channel to level starter',
+    formSchemaName: 'setChannelToLevel',
+    packet: `["SC-starter-filter_set-channel-to-level","Filter","filter",{"name":"SC-starter-filter_set-channel-to-level","actions":[{"action":"set-channel-to-level","lineIn":"","lineOut":"","opacity":1,"includeRed":false,"includeGreen":false,"includeBlue":false,"includeAlpha":false,"level":0}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_set-channel-to-level.png',
   },
 
   ['SC-starter-filter_tint']: {

@@ -130,6 +130,7 @@ const createControl = (data, actionWrapper) => {
 
     case 'color': return createControl_color(data, actionWrapper);
     case 'color-array': return createControl_colorArray(data, actionWrapper);
+    case 'unit-color': return createControl_unitColor(data, actionWrapper);
     case 'line-text': return createControl_lineText(data, actionWrapper);
     case 'number': return createControl_number(data, actionWrapper);
     case 'percentage-number': return createControl_percentageNumber(data, actionWrapper);
@@ -297,6 +298,188 @@ const createControl_color = (data, actionWrapper) => {
         blueValue = parseInt(blueInput.value, 10);
 
       colorInput.value = colorFactory.convertRGBtoHex(redValue, greenValue, blueValue);
+
+      actionWrapper.set({
+        [data.alternativeFor[0]]: redValue,
+        [data.alternativeFor[1]]: greenValue,
+        [data.alternativeFor[2]]: blueValue,
+      });
+
+      const currentFilter = getWrapper();
+
+      currentFilter.updateDisplayFilter();
+      currentFilter.updateHistory();
+    }
+  }, [redInput, greenInput, blueInput]);
+
+  killList.push(colorListener, rgbListener);
+
+  return el;
+};
+
+
+const createControl_unitColor = (data, actionWrapper) => {
+
+  const { formId, formSchema, killList } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`;
+
+  let redVal, greenVal, blueVal, initialVal;
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-color');
+  el.dataset.localId = localId;
+
+  const row1 = document.createElement('div');
+  row1.classList.add('action-control-inputs-for-color-row-1');
+
+  const localId_color = `${localId}_color`;
+
+  const label = document.createElement('label');
+  label.classList.add('action-control-color-input-label');
+  label.textContent = data.label;
+  label.setAttribute('for', localId_color);
+  row1.appendChild(label);
+
+  redVal = actionWrapper.action[data.alternativeFor[0]];
+  greenVal = actionWrapper.action[data.alternativeFor[1]];
+  blueVal = actionWrapper.action[data.alternativeFor[2]];
+
+  initialVal = colorFactory.convertRGBtoHex(
+    Math.floor(redVal * 256), 
+    Math.floor(greenVal * 256), 
+    Math.floor(blueVal * 256),
+  );
+
+  const colorInput = document.createElement('input');
+  colorInput.id = localId_color;
+  colorInput.name = localId_color;
+  colorInput.type = 'color';
+  colorInput.value = initialVal;
+  row1.appendChild(colorInput);
+
+  const row2 = document.createElement('div');
+  row2.classList.add('action-control-inputs-for-color-row-2');
+
+  const localId_redChannel = `${localId}_red-channel`;
+  const row2Red = document.createElement('div');
+  row2Red.classList.add('action-control-inputs-for-color-row-2-item');
+
+  const redLabel = document.createElement('label');
+  redLabel.classList.add('action-control-red-channel-label');
+  redLabel.textContent = formSchema.controls[data.alternativeFor[0]].label;
+  redLabel.setAttribute('for', localId_redChannel);
+  row2Red.appendChild(redLabel);
+
+  const redInput = document.createElement('input');
+  redInput.id = localId_redChannel;
+  redInput.name = localId_redChannel;
+  redInput.type = 'number';
+  redInput.autocomplete = 'new-password';
+  redInput['data-lpignore'] = 'true';
+  redInput.min = 0;
+  redInput.max = 1;
+  redInput.step = 0.001;
+  redInput.value = `${redVal}`;
+  row2Red.appendChild(redInput);
+
+  const localId_greenChannel = `${localId}_green-channel`;
+  const row2Green = document.createElement('div');
+  row2Green.classList.add('action-control-inputs-for-color-row-2-item');
+
+  const greenLabel = document.createElement('label');
+  greenLabel.classList.add('action-control-green-channel-label');
+  greenLabel.textContent = formSchema.controls[data.alternativeFor[1]].label;
+  greenLabel.setAttribute('for', localId_greenChannel);
+  row2Green.appendChild(greenLabel);
+
+  const greenInput = document.createElement('input');
+  greenInput.id = localId_greenChannel;
+  greenInput.name = localId_greenChannel;
+  greenInput.type = 'number';
+  greenInput.autocomplete = 'new-password';
+  greenInput['data-lpignore'] = 'true';
+  greenInput.min = 0;
+  greenInput.max = 1;
+  greenInput.step = 0.001;
+  greenInput.value = `${greenVal}`;
+  row2Green.appendChild(greenInput);
+
+  const localId_blueChannel = `${localId}_blue-channel`;
+  const row2Blue = document.createElement('div');
+  row2Blue.classList.add('action-control-inputs-for-color-row-2-item');
+
+  const blueLabel = document.createElement('label');
+  blueLabel.classList.add('action-control-blue-channel-label');
+  blueLabel.textContent = formSchema.controls[data.alternativeFor[2]].label;
+  blueLabel.setAttribute('for', localId_blueChannel);
+  row2Blue.appendChild(blueLabel);
+
+  const blueInput = document.createElement('input');
+  blueInput.id = localId_blueChannel;
+  blueInput.name = localId_blueChannel;
+  blueInput.type = 'number';
+  blueInput.autocomplete = 'new-password';
+  blueInput['data-lpignore'] = 'true';
+  blueInput.min = 0;
+  blueInput.max = 1;
+  blueInput.step = 0.001;
+  blueInput.value = `${blueVal}`;
+  row2Blue.appendChild(blueInput);
+
+  row2.appendChild(row2Red);
+  row2.appendChild(row2Green);
+  row2.appendChild(row2Blue);
+
+  el.appendChild(row1);
+  el.appendChild(row2);
+
+  const colorListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+    if (e && e.target) {
+
+      e.preventDefault();
+
+      const hexValue = colorInput.value;
+
+      let [redValue, greenValue, blueValue] = colorFactory.extractRGBfromColorString(hexValue);
+
+      redValue = parseInt(redValue, 10) / 256;
+      greenValue = parseInt(greenValue, 10) / 256;
+      blueValue = parseInt(blueValue, 10) / 256;
+
+      redInput.value = redValue.toFixed(3);
+      greenInput.value = greenValue.toFixed(3);
+      blueInput.value = blueValue.toFixed(3);
+
+      actionWrapper.set({
+        [data.alternativeFor[0]]: redValue,
+        [data.alternativeFor[1]]: greenValue,
+        [data.alternativeFor[2]]: blueValue,
+      });
+
+      const currentFilter = getWrapper();
+
+      currentFilter.updateDisplayFilter();
+      currentFilter.updateHistory();
+    }
+  }, colorInput);
+
+  const rgbListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+    if (e && e.target) {
+
+      e.preventDefault();
+
+      const redValue = parseFloat(redInput.value),
+        greenValue = parseFloat(greenInput.value),
+        blueValue = parseFloat(blueInput.value);
+
+      const redValueInt = Math.floor(redVal * 256),
+        greenValueInt = Math.floor(greenValue * 256),
+        blueValueInt = Math.floor(blueValue * 256);
+
+      colorInput.value = colorFactory.convertRGBtoHex(redValueInt, greenValueInt, blueValueInt);
 
       actionWrapper.set({
         [data.alternativeFor[0]]: redValue,

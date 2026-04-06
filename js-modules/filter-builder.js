@@ -49,11 +49,12 @@ const loadStarterFilter = (starter) => {
 
   if (packet) {
 
-    const newFilter = canvasHandle.actionPacket(packet),
-      newFilterWrapper = wrap(newFilter, data.formSchemaName),
-      newFilterInitialValues = newFilterWrapper.toString();
+    const newFilter = canvasHandle.actionPacket(packet);
 
-    if (currentFilterInitialValues !== newFilterInitialValues) {
+    if (newFilter) {
+
+      const newFilterWrapper = wrap(newFilter, data.formSchemaName),
+       newFilterInitialValues = newFilterWrapper.toString();
 
       currentFilterWrapper.kill();
       currentFilterWrapper = newFilterWrapper;
@@ -66,7 +67,6 @@ const loadStarterFilter = (starter) => {
       filterHasChanged = false;
       mainEl.classList.remove(filterHasChangedClass);
     }
-    else newFilter.kill();
   }
 };
 

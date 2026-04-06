@@ -2119,7 +2119,7 @@ const actionSchemas = {
   },
 
   ['set-channel-to-level']: {
-    label: 'Set channels to level',
+    label: 'Set channel to level',
     description: '',
     group: 'Color channel filter',
     action: 'set-channel-to-level',
@@ -2131,28 +2131,28 @@ const actionSchemas = {
         default: false,
         key: 'includeRed',
         label: 'Include red channel',
-        description: '',
+        description: 'Set the red channel to the value of the level attribute',
       },
       includeGreen: {
         controlType: 'boolean',
         default: false,
         key: 'includeGreen',
         label: 'Include green channel',
-        description: '',
+        description: 'Set the green channel to the value of the level attribute',
       },
       includeBlue: {
         controlType: 'boolean',
         default: false,
         key: 'includeBlue',
         label: 'Include blue channel',
-        description: '',
+        description: 'Set the blue channel to the value of the level attribute',
       },
       includeAlpha: {
         controlType: 'boolean',
         default: false,
         key: 'includeAlpha',
         label: 'Include alpha channel',
-        description: '',
+        description: 'Set the alpha channel to the value of the level attribute',
       },
       level: {
         controlType: 'number',
@@ -2162,7 +2162,7 @@ const actionSchemas = {
         maxValue: 255,
         step: 1,
         label: 'Level',
-        description: '',
+        description: 'The value to which any included channel\'s pixel values should be set',
       },
     },
   },
@@ -3834,7 +3834,7 @@ F.controls.blueInBlue.default = 0.131;
 F.presentation = [...defaultPresentation];
 
 // setChannelsToLevel
-F = filterSchemas.setChannelsToLevel = structuredClone(actionSchemas['set-channel-to-level']);
+F = filterSchemas.setChannelToLevel = structuredClone(actionSchemas['set-channel-to-level']);
 F.presentation = [{
     header: 'Connections',
     openOnLoad: false,
