@@ -164,8 +164,24 @@ F.updateDisplayFilter = function () {
         correctDisplayFilterAction_areaAlpha(act, view);
         break;
       }
+      case 'blur': {
+        correctDisplayFilterAction_blur(act, view);
+        break;
+      }
+      case 'gaussian-blur': {
+        correctDisplayFilterAction_gaussianBlur(act, view);
+        break;
+      }
+      case 'newsprint': {
+        correctDisplayFilterAction_newsprint(act, view);
+        break;
+      }
       case 'pixelate': {
         correctDisplayFilterAction_pixelate(act, view);
+        break;
+      }
+      case 'random-noise': {
+        correctDisplayFilterAction_randomNoise(act, view);
         break;
       }
       case 'tiles': {
@@ -212,6 +228,34 @@ const correctDisplayFilterAction_areaAlpha = (action, view) => {
   action.gutterHeight = updatedGutterHeight;
 };
 
+const correctDisplayFilterAction_blur = (action, view) => {
+
+  const { currentScale } = view;
+  const { radiusHorizontal, radiusVertical, stepHorizontal, stepVertical } = action;
+
+  action.radiusHorizontal = radiusHorizontal * currentScale;
+  action.radiusVertical = radiusVertical * currentScale;
+};
+
+const correctDisplayFilterAction_gaussianBlur = (action, view) => {
+
+  const { currentScale } = view;
+  const { radiusHorizontal, radiusVertical } = action;
+
+  action.radiusHorizontal = radiusHorizontal * currentScale;
+  action.radiusVertical = radiusVertical * currentScale;
+  action.stepHorizontal = Math.round(stepHorizontal * currentScale);
+  action.stepVertical = Math.round(stepVertical * currentScale);
+};
+
+const correctDisplayFilterAction_newsprint = (action, view) => {
+
+  const { currentScale } = view;
+  const { width } = action;
+
+  action.width = Math.round(width * currentScale);
+};
+
 const correctDisplayFilterAction_pixelate = (action, view) => {
 
   const { x, y, currentScale } = view;
@@ -233,6 +277,16 @@ const correctDisplayFilterAction_pixelate = (action, view) => {
   action.tileHeight = updatedHeight;
   action.offsetX = updatedOffsetX * currentScale;
   action.offsetY = updatedOffsetY * currentScale;
+};
+
+const correctDisplayFilterAction_randomNoise = (action, view) => {
+
+  const { currentScale } = view;
+  const { width, height, level } = action;
+
+  action.width = width * currentScale;
+  action.height = height * currentScale;
+  action.level = level / currentScale;
 };
 
 const correctDisplayFilterAction_tiles = (action, view) => {
