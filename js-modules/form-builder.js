@@ -131,14 +131,15 @@ const createControl = (data, actionWrapper) => {
     case 'color': return createControl_color(data, actionWrapper);
     case 'color-array': return createControl_colorArray(data, actionWrapper);
     case 'unit-color': return createControl_unitColor(data, actionWrapper);
+    case 'text': return createControl_text(data, actionWrapper);
     case 'line-text': return createControl_lineText(data, actionWrapper);
     case 'number': return createControl_number(data, actionWrapper);
     case 'percentage-number': return createControl_percentageNumber(data, actionWrapper);
     case 'boolean': return createControl_boolean(data, actionWrapper);
-    case 'text': return createControl_text(data, actionWrapper);
     case 'select': return createControl_select(data, actionWrapper);
     case 'bespoke-area-alpha': return createControl_areaAlpha(data, actionWrapper);
     case 'bespoke-chroma-ranges': return createControl_colorRanges(data, actionWrapper);
+    case 'bespoke-reduce-palette': return createControl_reducePalette(data, actionWrapper);
     default:
       const el = document.createElement('div');
       el.textContent = `No function for ${actionWrapper.formId} - ${data.label}`;
@@ -1025,6 +1026,96 @@ const createControl_colorRanges = (data, actionWrapper) => {
 
   const message = document.createElement('div');
   message.innerHTML = 'Add color ranges as an array of 6 integers between 0 and 255 in the form <span class="monospace-font">[lowRed, lowGreen, lowBlue, highRed, highGreen, highBlue]</span> &ndash; each array separated by a comma';
+  message.classList.add('small-field-message');
+  el.appendChild(message);
+
+  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+    if (e && e.target) {
+
+      e.preventDefault();
+
+      const value = getCorrectedValue(e.target.value);
+
+      actionWrapper.set({
+        [data.key]: value,
+      });
+
+      const currentFilter = getWrapper();
+
+      currentFilter.updateDisplayFilter();
+      currentFilter.updateHistory();
+    }
+  }, input);
+
+  killList.push(listener);
+
+  return el;
+};
+
+'rgb(255 0 0),rgb(0 255 0),rgb(0 0 255),rgb(0 0 0), rgb(255 255 255)'
+const createControl_reducePalette = (data, actionWrapper) => {
+
+  const getCorrectedValue = (value) => {
+
+    const defaultValue = 'black-white';
+
+    if (typeof value === 'string') {
+
+      if (['black-white', 'monochrome-4', 'monochrome-8', 'monochrome-16'].includes(value)) return value;
+
+      try {
+
+        const numberValue = parseInt(value, 10);
+        if(!isNaN(numberValue) && Number.isInteger(numberValue)) return numberValue;
+
+        if (Array.isArray(value)) return value;
+
+        const testValue = value.split(',');
+        if (Array.isArray(testValue)) return testValue;
+
+        return defaultValue;
+      }
+      catch (e) { return defaultValue; }
+    }
+
+    if(typeof value === 'number')  return value;
+  };
+
+  const {formId, killList } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`;
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-reduce-palette');
+  el.dataset.localId = localId;
+
+  const label = document.createElement('label');
+  label.textContent = data.label;
+  label.setAttribute('for', localId);
+  el.appendChild(label);
+
+  let value = actionWrapper.action[data.key];
+
+  console.log(value, getCorrectedValue(value), JSON.stringify(getCorrectedValue(value)));
+  value = getCorrectedValue(value);
+
+  const input = document.createElement('input');
+  input.id = localId;
+  input.name = localId;
+  input.type = 'text';
+  input.autocomplete = 'new-password';
+  input['data-lpignore'] = 'true';
+  input.value = (typeof value === 'string') ? value : `${value}`;
+  el.appendChild(input);
+
+  const message = document.createElement('div');
+  message.innerHTML = `Input can be in the form of:
+<ul>
+  <li>A single number value (commonest colors)</li>
+  <li>A series of comma separated CSS color values</li>
+  <li>A preset string: "black-white"; "monochrome-4"; "monochrome-8"; "monochrome-16"</li>
+</ul>`;
   message.classList.add('small-field-message');
   el.appendChild(message);
 
