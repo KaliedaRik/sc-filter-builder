@@ -1126,7 +1126,6 @@ const createControl_reducePalette = (data, actionWrapper) => {
   const copier = scrawlHandle.addNativeListener('click', async () => {
 
     const palette = scrawlHandle.getLastUsedReducePalette();
-    console.log('palette', palette);
 
     try { await navigator.clipboard.writeText(palette); }
     catch (error) { console.log(error.message); }
