@@ -3,6 +3,9 @@
   /* Root font size (rem) */
   font: 16px Arial, sans-serif;
 
+  /* Page minimum width (making it laptop/desktop only) */
+  --minimum-page-width: 1200px;
+
   /* Accessibility variables */
   --outline-width: 3px;
   --outline-color: rgb(0 215 255 / 1);
@@ -160,7 +163,7 @@ body {
 
 main {
   width: 100vw;
-  min-width: 720px;
+  min-width: var(--minimum-page-width);
   height: 100vh;
   display: grid;
   grid-template-rows: var(--image-work-height) var(--splitter-height) 1fr;
@@ -668,6 +671,37 @@ main {
               & input {
                 font-size: 90%;
               }
+            }
+          }
+        }
+
+        /* filter-schema.js - controlType: 'bespoke-chroma-ranges' */
+        & .action-control-inputs-for-color-ranges {
+
+          & label {
+            margin-top: 0.5rem;
+            display: block;
+            width: 100%;
+          }
+
+          & input {
+            margin-top: 0.5rem;
+            display: block;
+            width: calc(100% - 0.5rem);
+            font-family: monospace;
+            font-size: 85%;
+          }
+
+          & .small-field-message {
+            margin: 0.25rem 0 0.5rem;
+             display: block;
+            width: 100%;
+            font-size: 80%;
+            color: var(--advice-color);
+
+            & .monospace-font {
+              font-family: monospace;
+              color: rgb(100 0 0);
             }
           }
         }

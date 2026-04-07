@@ -380,11 +380,6 @@ export const starterFilters = {
     imageSource: 'assets/thumb/starter-thumb_glitch.png',
   },
 
-
-
-
-
-
   ['SC-starter-filter_edge-detect']: {
     title: 'Edge detect',
     readableName: 'Edge detect starter',

@@ -138,6 +138,7 @@ const createControl = (data, actionWrapper) => {
     case 'text': return createControl_text(data, actionWrapper);
     case 'select': return createControl_select(data, actionWrapper);
     case 'bespoke-area-alpha': return createControl_areaAlpha(data, actionWrapper);
+    case 'bespoke-chroma-ranges': return createControl_colorRanges(data, actionWrapper);
     default:
       const el = document.createElement('div');
       el.textContent = `No function for ${actionWrapper.formId} - ${data.label}`;
@@ -935,6 +936,108 @@ const createControl_text = (data, actionWrapper) => {
 
       actionWrapper.set({
         [data.key]: input.value,
+      });
+
+      const currentFilter = getWrapper();
+
+      currentFilter.updateDisplayFilter();
+      currentFilter.updateHistory();
+    }
+  }, input);
+
+  killList.push(listener);
+
+  return el;
+};
+
+
+const createControl_colorRanges = (data, actionWrapper) => {
+
+  const getCorrectedValue = (value) => {
+
+    const defaultValue = [];
+
+    if (typeof value === 'string') {
+
+      try {
+
+        value = JSON.parse(value);
+        if (!Array.isArray(value)) value = defaultValue;
+      }
+      catch (e) { value = defaultValue; }
+    }
+
+    if (!Array.isArray(value)) value = defaultValue;
+
+    const filteredValue = value.filter(item => {
+
+      if (!Array.isArray(item)) return false;
+      if (!item.length === 6) return false;
+
+      let flag = true;
+      for (let i = 0; i < 6; i++) {
+
+        const v = item[i];
+
+        if (typeof v !== 'number') {
+          flag = false;
+          break;
+        }
+        if (!Number.isSafeInteger(v)) {
+          flag = false;
+          break;
+        }
+        if (v < 0 || v > 255) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    });
+
+    return filteredValue;
+  };
+
+  const {formId, killList } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`;
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-color-ranges');
+  el.dataset.localId = localId;
+
+  const label = document.createElement('label');
+  label.textContent = data.label;
+  label.setAttribute('for', localId);
+  el.appendChild(label);
+
+  let value = actionWrapper.action[data.key];
+  value = JSON.stringify(getCorrectedValue(value));
+
+  const input = document.createElement('input');
+  input.id = localId;
+  input.name = localId;
+  input.type = 'text';
+  input.autocomplete = 'new-password';
+  input['data-lpignore'] = 'true';
+  input.value = value;
+  el.appendChild(input);
+
+  const message = document.createElement('div');
+  message.innerHTML = 'Add color ranges as an array of 6 integers between 0 and 255 in the form <span class="monospace-font">[lowRed, lowGreen, lowBlue, highRed, highGreen, highBlue]</span> &ndash; each array separated by a comma';
+  message.classList.add('small-field-message');
+  el.appendChild(message);
+
+  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+    if (e && e.target) {
+
+      e.preventDefault();
+
+      const value = getCorrectedValue(e.target.value);
+
+      actionWrapper.set({
+        [data.key]: value,
       });
 
       const currentFilter = getWrapper();

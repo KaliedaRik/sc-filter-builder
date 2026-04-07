@@ -186,8 +186,6 @@ F.updateDisplayFilter = function () {
 // updateDisplayFilter correction functions
 const correctDisplayFilterAction_areaAlpha = (action, view) => {
 
-  console.log('correctDisplayFilterAction_areaAlpha - action', action, 'view', view)
-
   const { x, y, currentScale } = view;
   const { tileWidth, tileHeight, gutterWidth, gutterHeight, offsetX, offsetY } = action;
 
@@ -216,8 +214,6 @@ const correctDisplayFilterAction_areaAlpha = (action, view) => {
 
 const correctDisplayFilterAction_pixelate = (action, view) => {
 
-  console.log('correctDisplayFilterAction_pixelate - action', action, 'view', view)
-
   const { x, y, currentScale } = view;
   const { tileWidth, tileHeight, offsetX, offsetY } = action;
 
@@ -241,8 +237,6 @@ const correctDisplayFilterAction_pixelate = (action, view) => {
 
 const correctDisplayFilterAction_tiles = (action, view) => {
 
-  console.log('correctDisplayFilterAction_tiles - action', action, 'view', view)
-
   const { x, y, assetWidth, assetHeight, currentScale } = view;
   const { originX, originY, hexRadius, rectWidth, rectHeight } = action;
 
@@ -262,8 +256,6 @@ const correctDisplayFilterAction_tiles = (action, view) => {
 };
 
 const correctDisplayFilterAction_zoomBlur = (action, view) => {
-
-  console.log('correctDisplayFilterAction_zoomBlur - action', action, 'view', view)
 
   const { x, y, assetWidth, assetHeight, currentScale } = view;
   const { startX, startY, innerRadius, outerRadius } = action;
