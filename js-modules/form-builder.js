@@ -1053,7 +1053,6 @@ const createControl_colorRanges = (data, actionWrapper) => {
   return el;
 };
 
-'rgb(255 0 0),rgb(0 255 0),rgb(0 0 255),rgb(0 0 0), rgb(255 255 255)'
 const createControl_reducePalette = (data, actionWrapper) => {
 
   const getCorrectedValue = (value) => {
@@ -1097,7 +1096,6 @@ const createControl_reducePalette = (data, actionWrapper) => {
 
   let value = actionWrapper.action[data.key];
 
-  console.log(value, getCorrectedValue(value), JSON.stringify(getCorrectedValue(value)));
   value = getCorrectedValue(value);
 
   const input = document.createElement('input');
@@ -1112,12 +1110,28 @@ const createControl_reducePalette = (data, actionWrapper) => {
   const message = document.createElement('div');
   message.innerHTML = `Input can be in the form of:
 <ul>
-  <li>A single number value (commonest colors)</li>
+  <li>A single number value (commonest colors &ndash; will vary depending on viewport position)</li>
   <li>A series of comma separated CSS color values</li>
   <li>A preset string: "black-white"; "monochrome-4"; "monochrome-8"; "monochrome-16"</li>
 </ul>`;
   message.classList.add('small-field-message');
   el.appendChild(message);
+
+  const paletteButton = document.createElement('button');
+  paletteButton.type = 'button';
+  paletteButton.textContent = 'Copy current palette CSS color values';
+  paletteButton.classList.add('copy-current-colors');
+  el.appendChild(paletteButton);
+
+  const copier = scrawlHandle.addNativeListener('click', async () => {
+
+    const palette = scrawlHandle.getLastUsedReducePalette();
+    console.log('palette', palette);
+
+    try { await navigator.clipboard.writeText(palette); }
+    catch (error) { console.log(error.message); }
+
+  }, paletteButton);
 
   const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
 
@@ -1138,7 +1152,7 @@ const createControl_reducePalette = (data, actionWrapper) => {
     }
   }, input);
 
-  killList.push(listener);
+  killList.push(copier, listener);
 
   return el;
 };

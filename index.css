@@ -74,6 +74,7 @@
   --range-pin-border-disabled: rgb(220 220 220 / 1);
 
   --advice-color: rgb(220 0 0 / 1);
+  --note-color: rgb(120 120 120 / 1);
 
   /* Filter action button top border colors */
   --group-color-channel-filters: rgb(160 0 0 / 1);
@@ -643,7 +644,7 @@ main {
           }
         }
 
-        /* filter-schema.js - controlType: 'color-array' */
+        /* filter-schema.js - controlType: 'area-alpha' */
         & .action-control-inputs-for-area-alpha {
 
           margin: 0.5rem 0 0;
@@ -734,6 +735,26 @@ main {
               font-family: monospace;
               color: rgb(100 0 0);
             }
+
+            & ul {
+              padding-inline-start: 1rem;
+              margin-top: 0.25rem;
+
+              & li {
+                margin-top: 0.25rem;
+              }
+            }
+          }
+
+          & .copy-current-colors {
+            margin: 0.25rem 0 0.5rem;
+            display: block;
+            width: 100%;
+            font-size: 80%;
+            color: var(--note-color);
+            border-radius: 5px;
+            border: 1px solid var(--note-color);
+            padding: 0.25rem;
           }
         }
       }
