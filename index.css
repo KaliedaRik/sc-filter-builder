@@ -707,6 +707,32 @@ main {
           }
         }
 
+        /* filter-schema.js - controlType: 'bespoke-channel-levels' */
+        & .action-control-inputs-for-channel-levels {
+
+          & label {
+            margin-top: 0.5rem;
+            display: block;
+            width: 100%;
+          }
+
+          & input {
+            margin-top: 0.5rem;
+            display: block;
+            width: calc(100% - 0.5rem);
+            font-family: monospace;
+            font-size: 85%;
+          }
+
+          & .small-field-message {
+            margin: 0.25rem 0 0.5rem;
+            display: block;
+            width: 100%;
+            font-size: 80%;
+            color: var(--advice-color);
+          }
+        }
+
         /* filter-schema.js - controlType: 'bespoke-reduce-palette' */
         & .action-control-inputs-for-reduce-palette {
 
@@ -751,7 +777,6 @@ main {
             display: block;
             width: 100%;
             font-size: 80%;
-            color: var(--note-color);
             border-radius: 5px;
             border: 1px solid var(--note-color);
             padding: 0.25rem;

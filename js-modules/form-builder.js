@@ -140,6 +140,7 @@ const createControl = (data, actionWrapper) => {
     case 'bespoke-area-alpha': return createControl_areaAlpha(data, actionWrapper);
     case 'bespoke-chroma-ranges': return createControl_colorRanges(data, actionWrapper);
     case 'bespoke-reduce-palette': return createControl_reducePalette(data, actionWrapper);
+    case 'bespoke-channel-levels': return createControl_channelLevels(data, actionWrapper);
     default:
       const el = document.createElement('div');
       el.textContent = `No function for ${actionWrapper.formId} - ${data.label}`;
@@ -1053,32 +1054,130 @@ const createControl_colorRanges = (data, actionWrapper) => {
   return el;
 };
 
+const createControl_channelLevels = (data, actionWrapper) => {
+
+  const getCorrectedValue = (value) => {
+
+    const defaultValue = [];
+
+    if (Array.isArray(value)) return value;
+
+    if (typeof value === 'string') {
+
+      if (value[0] === '[') {
+
+        try {
+
+          const testValue = JSON.parse(value)
+
+          if (Array.isArray(testValue)) return testValue;
+          return defaultValue;
+        }
+        catch (e) {
+        
+          return defaultValue;
+        }
+      }
+
+      const testValue = value.split(',');
+
+      if (Array.isArray(testValue)) return testValue;
+      return defaultValue;
+    }
+  };
+
+  const {formId, killList } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`;
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-channel-levels');
+  el.dataset.localId = localId;
+
+  const label = document.createElement('label');
+  label.textContent = data.label;
+  label.setAttribute('for', localId);
+  el.appendChild(label);
+
+  let value = getCorrectedValue(actionWrapper.action[data.key]);
+
+  const input = document.createElement('input');
+  input.id = localId;
+  input.name = localId;
+  input.type = 'text';
+  input.autocomplete = 'new-password';
+  input['data-lpignore'] = 'true';
+  input.value = value.join(',');
+  el.appendChild(input);
+
+  const message = document.createElement('div');
+  message.innerHTML = 'Integer numbers 0-255, separated by commas';
+  message.classList.add('small-field-message');
+  el.appendChild(message);
+
+  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+    if (e && e.target) {
+
+      e.preventDefault();
+
+      const value = getCorrectedValue(e.target.value);
+
+      actionWrapper.set({
+        [data.key]: value,
+      });
+
+      const currentFilter = getWrapper();
+
+      currentFilter.updateDisplayFilter();
+      currentFilter.updateHistory();
+    }
+  }, input);
+
+  killList.push(listener);
+
+  return el;
+};
+
 const createControl_reducePalette = (data, actionWrapper) => {
 
   const getCorrectedValue = (value) => {
 
     const defaultValue = 'black-white';
 
+    if (Array.isArray(value)) return value;
+
+    if(typeof value === 'number') return value;
+
     if (typeof value === 'string') {
 
       if (['black-white', 'monochrome-4', 'monochrome-8', 'monochrome-16'].includes(value)) return value;
 
-      try {
+      const numberValue = parseInt(value, 10);
+      if(!isNaN(numberValue) && Number.isInteger(numberValue)) return numberValue;
 
-        const numberValue = parseInt(value, 10);
-        if(!isNaN(numberValue) && Number.isInteger(numberValue)) return numberValue;
+      if (value[0] === '[') {
 
-        if (Array.isArray(value)) return value;
+        try {
 
-        const testValue = value.split(',');
-        if (Array.isArray(testValue)) return testValue;
+          const testValue = JSON.parse(value)
 
-        return defaultValue;
+          if (Array.isArray(testValue)) return testValue;
+          return defaultValue;
+        }
+        catch (e) {
+        
+          return defaultValue;
+        }
       }
-      catch (e) { return defaultValue; }
+
+      const testValue = value.split(',');
+
+      if (Array.isArray(testValue)) return testValue;
+      return defaultValue;
     }
 
-    if(typeof value === 'number')  return value;
+    return defaultValue;
   };
 
   const {formId, killList } = actionWrapper;
@@ -1094,9 +1193,12 @@ const createControl_reducePalette = (data, actionWrapper) => {
   label.setAttribute('for', localId);
   el.appendChild(label);
 
-  let value = actionWrapper.action[data.key];
-
-  value = getCorrectedValue(value);
+  const value = getCorrectedValue(actionWrapper.action[data.key]),
+    inputValue = (typeof value === 'string') 
+      ? value
+      : (Array.isArray(value))
+        ? value.join(',')
+        : `${value}`;
 
   const input = document.createElement('input');
   input.id = localId;
@@ -1104,7 +1206,7 @@ const createControl_reducePalette = (data, actionWrapper) => {
   input.type = 'text';
   input.autocomplete = 'new-password';
   input['data-lpignore'] = 'true';
-  input.value = (typeof value === 'string') ? value : `${value}`;
+  input.value = inputValue;
   el.appendChild(input);
 
   const message = document.createElement('div');

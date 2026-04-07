@@ -2,9 +2,6 @@
 The list is evolving and I do not commit to doing anything in the current order
 
 ## Starter filters work and form building
-- Posterize by value - channel pin arrays form component
-- Chroma filters - color ranges form component
-- Reduce-palette filter - palette form component
 - Curve filters - curve generation form components
 
 Create packets for the following filters
