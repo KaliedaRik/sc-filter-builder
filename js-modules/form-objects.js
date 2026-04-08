@@ -235,6 +235,8 @@ const correctDisplayFilterAction_blur = (action, view) => {
 
   action.radiusHorizontal = radiusHorizontal * currentScale;
   action.radiusVertical = radiusVertical * currentScale;
+  action.stepHorizontal = Math.round(stepHorizontal * currentScale);
+  action.stepVertical = Math.round(stepVertical * currentScale);
 };
 
 const correctDisplayFilterAction_gaussianBlur = (action, view) => {
@@ -244,8 +246,6 @@ const correctDisplayFilterAction_gaussianBlur = (action, view) => {
 
   action.radiusHorizontal = radiusHorizontal * currentScale;
   action.radiusVertical = radiusVertical * currentScale;
-  action.stepHorizontal = Math.round(stepHorizontal * currentScale);
-  action.stepVertical = Math.round(stepVertical * currentScale);
 };
 
 const correctDisplayFilterAction_newsprint = (action, view) => {

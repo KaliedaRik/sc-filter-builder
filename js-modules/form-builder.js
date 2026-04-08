@@ -141,6 +141,7 @@ const createControl = (data, actionWrapper) => {
     case 'bespoke-chroma-ranges': return createControl_colorRanges(data, actionWrapper);
     case 'bespoke-reduce-palette': return createControl_reducePalette(data, actionWrapper);
     case 'bespoke-channel-levels': return createControl_channelLevels(data, actionWrapper);
+    case 'bespoke-matrix-weights': return createControl_matrixWeights(data, actionWrapper);
     default:
       const el = document.createElement('div');
       el.textContent = `No function for ${actionWrapper.formId} - ${data.label}`;
@@ -952,6 +953,98 @@ const createControl_text = (data, actionWrapper) => {
   return el;
 };
 
+const createControl_matrixWeights = (data, actionWrapper) => {
+
+  const getCorrectedValue = (value) => {
+
+    const defaultValue = [];
+
+    if (Array.isArray(value)) return value;
+
+    if (typeof value === 'string') {
+
+      if (value[0] === '[') {
+
+        try {
+
+          const testValue = JSON.parse(value)
+
+          if (Array.isArray(testValue)) return testValue;
+          return defaultValue;
+        }
+        catch (e) {
+        
+          return defaultValue;
+        }
+      }
+
+      const testValue = value.split(',');
+
+      if (Array.isArray(testValue)) return testValue;
+      return defaultValue;
+    }
+  };
+
+  const {formId, killList } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`;
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-matrix');
+  el.dataset.localId = localId;
+
+  const label = document.createElement('label');
+  label.textContent = data.label;
+  label.setAttribute('for', localId);
+  el.appendChild(label);
+
+  let value = getCorrectedValue(actionWrapper.action[data.key]);
+  if (value == null) value = data.default;
+
+  const input = document.createElement('input');
+  input.id = localId;
+  input.name = localId;
+  input.type = 'text';
+  input.autocomplete = 'new-password';
+  input['data-lpignore'] = 'true';
+  input.value = value.join(',');
+  el.appendChild(input);
+
+  const message = document.createElement('div');
+  message.innerHTML = 'Weight values, separated by commas &ndash; the number of weights must match the area of the matrix';
+  message.classList.add('small-field-message');
+  el.appendChild(message);
+
+  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+    if (e && e.target) {
+
+      e.preventDefault();
+
+      const val = getCorrectedValue(input.value);
+
+      actionWrapper.set({
+        [data.key]: val,
+      });
+
+      const requiredLength = actionWrapper.action.width * actionWrapper.action.height,
+        actualLength = val.length,
+        areAllNumbers = val.every(item => isFinite(parseFloat(item)));
+
+      if (actualLength !== requiredLength || !areAllNumbers) el.classList.add('matrix-incorrect-length');
+      else el.classList.remove('matrix-incorrect-length');
+
+      const currentFilter = getWrapper();
+
+      currentFilter.updateDisplayFilter();
+      currentFilter.updateHistory();
+    }
+  }, input);
+
+  killList.push(listener);
+
+  return el;
+};
 
 const createControl_colorRanges = (data, actionWrapper) => {
 
@@ -1326,7 +1419,12 @@ const createControl_number = (data, actionWrapper) => {
 
   const {formId, killList } = actionWrapper;
 
-  const localId = `${formId}_${data.key}`;
+  const localId = `${formId}_${data.key}`,
+    localId_number = `${localId}_number`,
+    localId_range = `${localId}_range`;
+
+  let value = actionWrapper.action[data.key];
+  if (value == null) value = data.default;
 
   const el = document.createElement('div');
   el.classList.add('action-control-inputs-for-number');
@@ -1335,39 +1433,19 @@ const createControl_number = (data, actionWrapper) => {
   const row1 = document.createElement('div');
   row1.classList.add('action-control-inputs-for-number-row-1');
 
-  const localId_number = `${localId}_number`;
-
   const label = document.createElement('label');
   label.classList.add('action-control-visible-label');
   label.textContent = data.label;
-  label.setAttribute('for', localId_number);
+  label.setAttribute('for', localId_range);
   row1.appendChild(label);
 
-  let value = actionWrapper.action[data.key];
-  if (value == null) value = data.default;
-
-  const numberInput = document.createElement('input');
-  numberInput.id = localId_number;
-  numberInput.name = localId_number;
-  numberInput.type = 'number';
-  numberInput.autocomplete = 'new-password';
-  numberInput['data-lpignore'] = 'true';
-  numberInput.min = `${data.minValue}`;
-  numberInput.max = `${data.maxValue}`;
-  numberInput.step = `${data.step}`;
-  numberInput.value = `${value}`;
-  row1.appendChild(numberInput);
+  const displayedValue = document.createElement('div');
+  displayedValue.id = localId_number;
+  displayedValue.textContent = `${value}`;
+  row1.appendChild(displayedValue);
 
   const row2 = document.createElement('div');
   row2.classList.add('action-control-inputs-for-number-row-2');
-
-  const localId_range = `${localId}_range`;
-
-  const hiddenLabel = document.createElement('label');
-  hiddenLabel.classList.add('action-control-hidden-label');
-  hiddenLabel.textContent = `${data.label} for range input`;
-  hiddenLabel.setAttribute('for', localId_range);
-  row2.appendChild(hiddenLabel);
 
   const rangeInput = document.createElement('input');
   rangeInput.id = localId_range;
@@ -1397,15 +1475,14 @@ const createControl_number = (data, actionWrapper) => {
       }
       else actionWrapper.set({ [data.key]: value });
 
-      numberInput.value = value;
-      rangeInput.value = value;
+      displayedValue.textContent = `${value}`;
 
       const currentFilter = getWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
     }
-  }, [numberInput, rangeInput]);
+  }, rangeInput);
 
   killList.push(listener);
 
@@ -1417,7 +1494,13 @@ const createControl_percentageNumber = (data, actionWrapper) => {
 
   const {formId, killList } = actionWrapper;
 
-  const localId = `${formId}_${data.key}`;
+  const localId = `${formId}_${data.key}`,
+    localId_number = `${localId}_number`,
+    localId_range = `${localId}_range`;
+
+  let value = actionWrapper.action[data.key];
+  if (value == null) value = data.default;
+  value = (typeof value === 'string') ? parseFloat(value) : value;
 
   const el = document.createElement('div');
   el.classList.add('action-control-inputs-for-number');
@@ -1428,38 +1511,17 @@ const createControl_percentageNumber = (data, actionWrapper) => {
 
   const label = document.createElement('label');
   label.classList.add('action-control-visible-label');
-  label.textContent = `${data.label} (%)`;
-  label.setAttribute('for', `${localId}_number`);
+  label.textContent = data.label;
+  label.setAttribute('for', localId_range);
   row1.appendChild(label);
 
-  const localId_number = `${localId}_number`;
-
-  let value = actionWrapper.action[data.key];
-  if (value == null) value = data.default;
-  value = (typeof value === 'string') ? parseFloat(value) : value;
-
-  const numberInput = document.createElement('input');
-  numberInput.id = localId_number;
-  numberInput.name = localId_number;
-  numberInput.type = 'number';
-  numberInput.autocomplete = 'new-password';
-  numberInput['data-lpignore'] = 'true';
-  numberInput.min = `${data.minValue}`;
-  numberInput.max = `${data.maxValue}`;
-  numberInput.step = `${data.step}`;
-  numberInput.value = `${value}`;
-  row1.appendChild(numberInput);
+  const displayedValue = document.createElement('div');
+  displayedValue.id = localId_number;
+  displayedValue.textContent = `${value}%`;
+  row1.appendChild(displayedValue);
 
   const row2 = document.createElement('div');
   row2.classList.add('action-control-inputs-for-number-row-2');
-
-  const hiddenLabel = document.createElement('label');
-  hiddenLabel.classList.add('action-control-hidden-label');
-  hiddenLabel.textContent = `${data.label} for range input`;
-  hiddenLabel.setAttribute('for', `${localId}_range`);
-  row2.appendChild(hiddenLabel);
-
-  const localId_range = `${localId}_range`;
 
   const rangeInput = document.createElement('input');
   rangeInput.id = localId_range;
@@ -1490,15 +1552,14 @@ const createControl_percentageNumber = (data, actionWrapper) => {
       }
       else actionWrapper.set({ [data.key]: `${value}%` });
 
-      numberInput.value = value;
-      rangeInput.value = value;
+      displayedValue.textContent = `${value}%`;
 
       const currentFilter = getWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
     }
-  }, [numberInput, rangeInput]);
+  }, rangeInput);
 
   killList.push(listener);
 

@@ -75,6 +75,7 @@
 
   --advice-color: rgb(220 0 0 / 1);
   --note-color: rgb(120 120 120 / 1);
+  --matrix-warn-background: rgb(220 0 0 / 0.08);
 
   /* Filter action button top border colors */
   --group-color-channel-filters: rgb(160 0 0 / 1);
@@ -730,6 +731,36 @@ main {
             width: 100%;
             font-size: 80%;
             color: var(--advice-color);
+          }
+        }
+
+        /* filter-schema.js - controlType: 'bespoke-matrix-weights' */
+        & .action-control-inputs-for-matrix {
+
+          & label {
+            margin-top: 0.5rem;
+            display: block;
+            width: 100%;
+          }
+
+          & input {
+            margin-top: 0.5rem;
+            display: block;
+            width: calc(100% - 0.5rem);
+            font-family: monospace;
+            font-size: 85%;
+          }
+
+          & .small-field-message {
+            margin: 0.25rem 0 0.5rem;
+            display: block;
+            width: 100%;
+            font-size: 80%;
+            color: var(--advice-color);
+          }
+
+          &.matrix-incorrect-length {
+            background-color: var(--matrix-warn-background);
           }
         }
 
