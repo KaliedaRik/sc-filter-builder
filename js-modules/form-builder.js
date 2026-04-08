@@ -531,7 +531,6 @@ console.log('createControl_colorArray actionWrapper', actionWrapper, 'data', dat
   [redVal, greenVal, blueVal, alphaVal] = actionWrapper.action[data.key];
 
   initialVal = colorFactory.convertRGBtoHex(redVal, greenVal, blueVal);
-console.log('values', redVal, greenVal, blueVal, alphaVal, initialVal);
 
   const colorInput = document.createElement('input');
   colorInput.id = localId_color;
@@ -1001,13 +1000,17 @@ const createControl_matrixWeights = (data, actionWrapper) => {
   let value = getCorrectedValue(actionWrapper.action[data.key]);
   if (value == null) value = data.default;
 
-  const input = document.createElement('input');
+  const input = document.createElement('textarea');
   input.id = localId;
   input.name = localId;
-  input.type = 'text';
-  input.autocomplete = 'new-password';
   input['data-lpignore'] = 'true';
   input.value = value.join(',');
+  input.textContent = value.join(',');
+  input.autocomplete = 'off';
+  input.autocorrect = 'off';
+  input.spellcheck = false;
+  input.wrap = 'soft';
+  input.rows = 3;
   el.appendChild(input);
 
   const message = document.createElement('div');
@@ -1293,13 +1296,17 @@ const createControl_reducePalette = (data, actionWrapper) => {
         ? value.join(',')
         : `${value}`;
 
-  const input = document.createElement('input');
+  const input = document.createElement('textarea');
   input.id = localId;
   input.name = localId;
-  input.type = 'text';
-  input.autocomplete = 'new-password';
-  input['data-lpignore'] = 'true';
   input.value = inputValue;
+  input.textContent = inputValue;
+  input.autocomplete = 'off';
+  input.autocorrect = 'off';
+  input.spellcheck = false;
+  input.wrap = 'soft';
+  input.rows = 3;
+  input['data-lpignore'] = 'true';
   el.appendChild(input);
 
   const message = document.createElement('div');
