@@ -77,6 +77,18 @@ Create packets for the following filters
 ```
 
 
+## Image preview enhancement
+Currently we show a portion of the image in the preview, to which the filter is applied. When moving around the image (via the minimap), or scaling it, this means the filter needs corrections to make what the user sees approximate the effect the filter will have on that area of the image. It also means that filter actions like random noise continue to show single pixel displacements when the user has zoomed in on the image.
+
+We can fix this by having two types of image preview:
+- `basic` - which is what we do now.
+- `advanced` - where instead of grabbing a portion of the image for the preview, we grab the whole image and apply the filter to that; then we can move and scale the filtered Picture entity relative to the main canvas viewport.
+
+The advantages of `advanced` is that we can cut out a lot of the view calculations, and the resulting preview will be "final download" accurate. The disadvantages are that the approach will consume a lot more memory, and we have to apply the filter to a potentially very large image - both of which could damage performance.
+
+Giving users the ability to toggle between the image preview types will allow them to do the majority of their work in `basic` (the default preview), but then switch to `advanced` for more detailed assessment of the filter results, if required.
+
+
 ## User-generated filter import, and download, work
 Work not yet considered, but should be simple to implement.
 
