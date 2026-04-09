@@ -38,18 +38,26 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
     else if (id.includes('end-y')) input['end-y'] = el;
   })
 
-  const groups = {};
+  const groups = {},
+    beziers = {};
 
+
+  // Build out the graphical entitys
   channelNames.forEach(channel => {
 
     const mainName = `${id}_${channel}_pin`;
 
+
+    // Channels each get their own group
     groups[channel] = scrawlHandle.makeGroup({
 
       name: `${mainName}_group`,
       host: canvas.base,
+      visibility: channel === 'combined',
     });
 
+
+    // Each channel gets four draggable pins
     positionsData.forEach(pos => {
 
       const [label, x, y] = pos;
@@ -69,7 +77,10 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
       });
     });
 
-    scrawlHandle.makeBezier({
+
+    // Each channel gets its own bezier curve
+    // - Curve shape determined by the draggable pins
+    beziers[channel] = scrawlHandle.makeBezier({
 
       name: `${id}_${channel}_curve`,
       strokeStyle: channel === 'combined' ? 'black' : channel,
@@ -91,64 +102,129 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
 
       useStartAsControlPoint: true,
       useAsPath: true,
+
+      visibility: channel === 'combined',
     });
   });
 
+
+  // Drag zone function
   let draggedPin = false;
+  let currentPin = false;
 
-  const currentPin = scrawlHandle.makeDragZone({
+  const clampVal = (val) => {
 
-    zone: canvas,
-    collisionGroup: groups['combined'],
-    endOn: ['up', 'leave'],
-    exposeCurrentArtefact: true,
-    preventTouchDefaultWhenDragging: true,
+    val = Math.round(val);
 
-    updateOnStart: () => {
+    if (val < 0) return 0;
+    if (val > 999) return 999;
+    return val;
+  }
 
-      draggedPin = currentPin();
+  const buildDragZone = (channel) => {
 
-      if (typeof draggedPin !== 'boolean' && draggedPin) {
+    if (typeof currentPin === 'function') currentPin(true);
 
-        const pin = draggedPin.artefact,
-          name = pin.name;
+    currentPin = scrawlHandle.makeDragZone({
 
-        if (name.indexOf('start') > 0 || name.indexOf('end') > 0) {
+      zone: canvas,
+      collisionGroup: groups[channel],
+      endOn: ['up', 'leave'],
+      exposeCurrentArtefact: true,
+      preventTouchDefaultWhenDragging: true,
 
-          pin.isBeingDragged = false;
-          pin.set({
-            lockYTo: 'mouse',
-          });
+      updateOnStart: () => {
+
+        draggedPin = currentPin();
+
+        if (typeof draggedPin !== 'boolean' && draggedPin) {
+
+          const pin = draggedPin.artefact,
+            name = pin.name;
+
+          // The start and end pins can only be dragged vertically
+          if (name.indexOf('start') > 0 || name.indexOf('end') > 0) {
+
+            pin.isBeingDragged = false;
+            pin.set({
+              lockYTo: 'mouse',
+            });
+          }
         }
-      }
-    },
+      },
 
-    updateWhileMoving: () => recalculateWeights(),
+      updateWhileMoving: () => {
 
-    updateOnEnd: () => {
+          const pin = draggedPin.artefact,
+            name = pin.name;
 
-      if (typeof draggedPin !== 'boolean' && draggedPin) {
+        let [x, y] = pin.get('position');
 
-        const pin = draggedPin.artefact,
-          name = pin.name;
+        x = clampVal(x);
+        y = clampVal(y);
 
-        if (name.indexOf('start') > 0 || name.indexOf('end') > 0) {
-
-          pin.set({
-            start: pin.get('position'),
-            lockYTo: 'start',
-          });
+        if (name.indexOf('start') > 0) input['start-y'].value = y;
+        else if (name.indexOf('first-control') > 0) {
+          
+          input['start-control-x'].value = x;
+          input['start-control-y'].value = y;
         }
-      }
-      draggedPin = false;
+        else if (name.indexOf('second-control') > 0) {
+          
+          input['end-control-x'].value = x;
+          input['end-control-y'].value = y;
+        }
+        else if (name.indexOf('end') >0) input['end-y'].value = y;
 
-      recalculateWeights();
-    },
-  });
+        recalculateWeights();
+      },
 
+      updateOnEnd: () => {
+
+        if (typeof draggedPin !== 'boolean' && draggedPin) {
+
+          const pin = draggedPin.artefact,
+            name = pin.name;
+
+          // The start and end pins can only be dragged vertically
+          if (name.indexOf('start') > 0 || name.indexOf('end') > 0) {
+
+            pin.set({
+              start: pin.get('position'),
+              lockYTo: 'start',
+            });
+          }
+
+          let [x, y] = pin.get('position');
+
+          x = clampVal(x);
+          y = clampVal(y);
+
+          if (name.indexOf('start') > 0) input['start-y'].value = y;
+          else if (name.indexOf('first-control') > 0) {
+            
+            input['start-control-x'].value = x;
+            input['start-control-y'].value = y;
+          }
+          else if (name.indexOf('second-control') > 0) {
+            
+            input['end-control-x'].value = x;
+            input['end-control-y'].value = y;
+          }
+          else if (name.indexOf('end') >0) input['end-y'].value = y;
+        }
+        draggedPin = false;
+
+        recalculateWeights();
+      },
+    });
+  };
+
+
+  // Get the recalculateWeights function
   const recalculateWeights = recalculateColorWeights(actionWrapper, weights);
 
-  actionWrapper.killList.push(currentPin);
+  buildDragZone('combined');
 
   const animation = scrawlHandle.makeRender({
 
@@ -156,10 +232,136 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
     target: canvas,
   });
 
-  actionWrapper.killList.push(animation);
+
+  // Form event listeners 
+  let currentChannel = 'combined';
+
+  const channelSelector = scrawlHandle.addNativeListener('change', (e) => {
+
+    if (e) e.preventDefault();
+
+    currentChannel = selector.value;
+
+    if ('combined' === currentChannel) {
+
+      groups.combined.set({ visibility: true, order: 0 });
+      groups.red.set({ visibility: false, order: 0 });
+      groups.green.set({ visibility: false, order: 0 });
+      groups.blue.set({ visibility: false, order: 0 });
+
+      beziers.combined.set({ visibility: true, order: 0 });
+      beziers.red.set({ visibility: false, order: 0 });
+      beziers.green.set({ visibility: false, order: 0 });
+      beziers.blue.set({ visibility: false, order: 0 });
+    }
+    else {
+
+      groups.combined.set({ visibility: false, order: 0 });
+      groups.red.set({ visibility: true, order: 0 });
+      groups.green.set({ visibility: true, order: 0 });
+      groups.blue.set({ visibility: true, order: 0 });
+
+      beziers.combined.set({ visibility: false, order: 0 });
+      beziers.red.set({ visibility: true, order: 0 });
+      beziers.green.set({ visibility: true, order: 0 });
+      beziers.blue.set({ visibility: true, order: 0 });
+    }
+
+    groups[currentChannel].set({ order: 1 });
+    beziers[currentChannel].set({ order: 1 });
+
+    buildDragZone(currentChannel);
+
+    let pin, x, y;
+
+    pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_start`);
+    [x, y] = pin.get('position');
+
+    y = clampVal(y);
+    input['start-y'].value = y;
+
+    pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_first-control`);
+    [x, y] = pin.get('position');
+
+    x = clampVal(x);
+    input['start-control-x'].value = x;
+
+    y = clampVal(y);
+    input['start-control-y'].value = y;
+
+    pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_second-control`);
+    [x, y] = pin.get('position');
+
+    x = clampVal(x);
+    input['end-control-x'].value = x;
+
+    y = clampVal(y);
+    input['end-control-y'].value = y;
+
+    pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_end`);
+    [x, y] = pin.get('position');
+
+    y = clampVal(y);
+    input['end-y'].value = y;
+
+  }, selector);
+
+  const inputSelectors = scrawlHandle.addNativeListener(['input', 'change'], (e) => {
+
+    if (e && e.target && e.target.id.indexOf(id) > 0) {
+
+      e.preventDefault();
+
+      const input = e.target,
+        name = e.target.id;
+
+      let pin,
+        val = clampVal(parseInt(input.value, 10));
+
+      if (name.indexOf('start-y') > 0) {
+
+        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_start`);
+        pin.set({ startY: val });
+      }
+      else if (name.indexOf('start-control-x') > 0) {
+        
+        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_first-control`);
+        pin.set({ startX: val });
+      }
+      else if (name.indexOf('start-control-y') > 0) {
+        
+        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_first-control`);
+        pin.set({ startY: val });
+      }
+      else if (name.indexOf('end-control-x') > 0) {
+        
+        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_second-control`);
+        pin.set({ startX: val });
+      }
+      else if (name.indexOf('end-control-y') > 0) {
+        
+        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_second-control`);
+        pin.set({ startY: val });
+      }
+      else if (name.indexOf('end-y') > 0) {
+        
+        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_end`);
+        pin.set({ startY: val });
+      }
+
+      recalculateWeights();
+    }
+  }, '.channel-input');
+
+
+  // Clean up
+  actionWrapper.killList.push(() => {if (typeof currentPin === 'function') currentPin(true)});
+  actionWrapper.killList.push(animation, channelSelector, inputSelectors);
+  actionWrapper.killList.push(() => scrawlHandle.purge(id));
 };
 
-// Filter weights recalculation
+
+// Color weights recalculation function
 const recalculateColorWeights = function (actionWrapper, weights) {
 
   const { id } = actionWrapper;
