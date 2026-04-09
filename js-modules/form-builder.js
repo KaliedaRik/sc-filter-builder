@@ -5,7 +5,10 @@
 
 // Imports
 // ------------------------------------------------------------------------
-
+import {
+  buildColorCurveComponent,
+  buildToneCurveComponent,
+} from './curve-components.js'
 
 // Module-scoped Handles and variables
 // ------------------------------------------------------------------------
@@ -142,6 +145,7 @@ const createControl = (data, actionWrapper) => {
     case 'bespoke-reduce-palette': return createControl_reducePalette(data, actionWrapper);
     case 'bespoke-channel-levels': return createControl_channelLevels(data, actionWrapper);
     case 'bespoke-matrix-weights': return createControl_matrixWeights(data, actionWrapper);
+    case 'bespoke-vary-channel-by-weights': return createControl_channelWeights(data, actionWrapper);
     default:
       const el = document.createElement('div');
       el.textContent = `No function for ${actionWrapper.formId} - ${data.label}`;
@@ -1634,6 +1638,550 @@ const createControl_select = (data, actionWrapper) => {
   return el;
 };
 
+const createControl_channelWeights = (data, actionWrapper) => {
+
+  const {formId, killList } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`,
+    canvasId = `${localId}_canvas`,
+    listenId = getListenId(formId);
+
+  let value = actionWrapper.action[data.key];
+  if (value == null) value = data.default;
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-color-curve-weights');
+  el.dataset.localId = localId;
+
+  const canvasEl = document.createElement('canvas');
+  canvasEl.id = canvasId;
+  canvasEl.name = canvasId;
+  canvasEl.width = '250';
+  canvasEl.height = '250';
+  canvasEl.setAttribute('data-scrawl-canvas', '');
+  canvasEl.setAttribute('data-base-background-color', 'beige');
+  canvasEl.setAttribute('data-canvas-color-space', 'display-p3');
+  canvasEl.setAttribute('data-base-width', '1000');
+  canvasEl.setAttribute('data-base-height', '1000');
+  canvasEl.setAttribute('data-is-responsive', 'true');
+  canvasEl.setAttribute('data-fit', 'contain');
+  canvasEl.setAttribute('data-label', 'Channel weights graphical input tool');
+  canvasEl.classList.add('color-curve-weights-ui');
+  el.appendChild(canvasEl);
+
+  const controlWrapper = document.createElement('div');
+  controlWrapper.classList.add('color-curve-weights-control-wrapper');
+
+  const channelSelectorLabel = document.createElement('label');
+  channelSelectorLabel.classList.add('hidden-label');
+  channelSelectorLabel.textContent = 'Select channel to manipulate';
+  channelSelectorLabel.setAttribute('for', `${localId}_channel-selector`);
+  el.appendChild(channelSelectorLabel);
+
+  const channelSelector = document.createElement('select');
+  channelSelector.id = `${localId}_channel-selector`;
+  channelSelector.name = `${localId}_channel-selector`;
+  channelSelector.classList.add('channel-selector');
+
+  const channels = ['Combined', 'Red', 'Green', 'Blue'];
+  channels.forEach(channel => {
+    const option = document.createElement('option');
+    option.value = channel.toLowerCase();
+    option.textContent = channel;
+    channelSelector.appendChild(option);
+  });
+
+  channelSelector.value = 'combined';
+  controlWrapper.appendChild(channelSelector);
+
+  const labelX = document.createElement('div');
+  labelX.textContent = 'X coord';
+  controlWrapper.appendChild(labelX);
+
+  const labelY = document.createElement('div');
+  labelY.textContent = 'Y coord';
+  controlWrapper.appendChild(labelY);
+
+  const labelStart = document.createElement('div');
+  labelStart.textContent = 'Start pin';
+  controlWrapper.appendChild(labelStart);
+
+  const inputStartXLabel = document.createElement('label');
+  inputStartXLabel.classList.add('hidden-label');
+  inputStartXLabel.textContent = 'Start pin X coordinate';
+  inputStartXLabel.setAttribute('for', `${localId}_start-x`);
+  el.appendChild(inputStartXLabel);
+
+  const inputStartX = document.createElement('input');
+  inputStartX.id = `${localId}_start-x`;
+  inputStartX.name = `${localId}_start-x`;
+  inputStartX.type = 'number';
+  inputStartX.min = 0;
+  inputStartX.max = 999;
+  inputStartX.step = 1;
+  inputStartX.value = 0;
+  inputStartX.setAttribute('disabled', '');
+  controlWrapper.appendChild(inputStartX);
+
+  const inputStartYLabel = document.createElement('label');
+  inputStartYLabel.classList.add('hidden-label');
+  inputStartYLabel.textContent = 'Start pin Y coordinate';
+  inputStartYLabel.setAttribute('for', `${localId}_start-y`);
+  el.appendChild(inputStartYLabel);
+
+  const inputStartY = document.createElement('input');
+  inputStartY.id = `${localId}_start-y`;
+  inputStartY.name = `${localId}_start-y`;
+  inputStartY.type = 'number';
+  inputStartY.min = 0;
+  inputStartY.max = 999;
+  inputStartY.step = 1;
+  inputStartY.value = 999;
+  inputStartY.classList.add('channel-input');
+  controlWrapper.appendChild(inputStartY);
+
+  const labelStartControl = document.createElement('div');
+  labelStartControl.textContent = 'Start control pin';
+  controlWrapper.appendChild(labelStartControl);
+
+  const inputStartControlXLabel = document.createElement('label');
+  inputStartControlXLabel.classList.add('hidden-label');
+  inputStartControlXLabel.textContent = 'Start control pin X coordinate';
+  inputStartControlXLabel.setAttribute('for', `${localId}_start-control-x`);
+  el.appendChild(inputStartControlXLabel);
+
+  const inputStartControlX = document.createElement('input');
+  inputStartControlX.id = `${localId}_start-control-x`;
+  inputStartControlX.name = `${localId}_start-control-x`;
+  inputStartControlX.type = 'number';
+  inputStartControlX.min = 0;
+  inputStartControlX.max = 999;
+  inputStartControlX.step = 1;
+  inputStartControlX.value = 333;
+  inputStartControlX.classList.add('channel-input');
+  controlWrapper.appendChild(inputStartControlX);
+
+  const inputStartControlYLabel = document.createElement('label');
+  inputStartControlYLabel.classList.add('hidden-label');
+  inputStartControlYLabel.textContent = 'Start control pin Y coordinate';
+  inputStartControlYLabel.setAttribute('for', `${localId}_start-control-y`);
+  el.appendChild(inputStartControlYLabel);
+
+  const inputStartControlY = document.createElement('input');
+  inputStartControlY.id = `${localId}_start-control-y`;
+  inputStartControlY.name = `${localId}_start-control-y`;
+  inputStartControlY.type = 'number';
+  inputStartControlY.min = 0;
+  inputStartControlY.max = 999;
+  inputStartControlY.step = 1;
+  inputStartControlY.value = 666;
+  inputStartControlY.classList.add('channel-input');
+  controlWrapper.appendChild(inputStartControlY);
+
+  const labelEndControl = document.createElement('div');
+  labelEndControl.textContent = 'End control pin';
+  controlWrapper.appendChild(labelEndControl);
+
+  const inputEndControlXLabel = document.createElement('label');
+  inputEndControlXLabel.classList.add('hidden-label');
+  inputEndControlXLabel.textContent = 'End control pin X coordinate';
+  inputEndControlXLabel.setAttribute('for', `${localId}_end-control-x`);
+  el.appendChild(inputEndControlXLabel);
+
+  const inputEndControlX = document.createElement('input');
+  inputEndControlX.id = `${localId}_end-control-x`;
+  inputEndControlX.name = `${localId}_end-control-x`;
+  inputEndControlX.type = 'number';
+  inputEndControlX.min = 0;
+  inputEndControlX.max = 999;
+  inputEndControlX.step = 1;
+  inputEndControlX.value = 666;
+  inputEndControlX.classList.add('channel-input');
+  controlWrapper.appendChild(inputEndControlX);
+
+  const inputEndControlYLabel = document.createElement('label');
+  inputEndControlYLabel.classList.add('hidden-label');
+  inputEndControlYLabel.textContent = 'End control pin Y coordinate';
+  inputEndControlYLabel.setAttribute('for', `${localId}_end-control-y`);
+  el.appendChild(inputEndControlYLabel);
+
+  const inputEndControlY = document.createElement('input');
+  inputEndControlY.id = `${localId}_end-control-y`;
+  inputEndControlY.name = `${localId}_end-control-y`;
+  inputEndControlY.type = 'number';
+  inputEndControlY.min = 0;
+  inputEndControlY.max = 999;
+  inputEndControlY.step = 1;
+  inputEndControlY.value = 333;
+  inputEndControlY.classList.add('channel-input');
+  controlWrapper.appendChild(inputEndControlY);
+
+  const labelEnd = document.createElement('div');
+  labelEnd.textContent = 'End pin';
+  controlWrapper.appendChild(labelEnd);
+
+  const inputEndXLabel = document.createElement('label');
+  inputEndXLabel.classList.add('hidden-label');
+  inputEndXLabel.textContent = 'End pin X coordinate';
+  inputEndXLabel.setAttribute('for', `${localId}_end-x`);
+  el.appendChild(inputEndXLabel);
+
+  const inputEndX = document.createElement('input');
+  inputEndX.id = `${localId}_end-x`;
+  inputEndX.name = `${localId}_end-x`;
+  inputEndX.type = 'number';
+  inputEndX.min = 0;
+  inputEndX.max = 999;
+  inputEndX.step = 1;
+  inputEndX.value = 999;
+  inputEndX.setAttribute('disabled', '');
+  controlWrapper.appendChild(inputEndX);
+
+  const inputEndYLabel = document.createElement('label');
+  inputEndYLabel.classList.add('hidden-label');
+  inputEndYLabel.textContent = 'End pin Y coordinate';
+  inputEndYLabel.setAttribute('for', `${localId}_end-y`);
+  el.appendChild(inputEndYLabel);
+
+  const inputEndY = document.createElement('input');
+  inputEndY.id = `${localId}_end-y`;
+  inputEndY.name = `${localId}_end-y`;
+  inputEndY.type = 'number';
+  inputEndY.min = 0;
+  inputEndY.max = 999;
+  inputEndY.step = 1;
+  inputEndY.value = 0;
+  inputEndY.classList.add('channel-input');
+  controlWrapper.appendChild(inputEndY);
+
+  el.appendChild(controlWrapper);
+
+  return el;
+};
+
+
+// // Build out specific canvas-based user inputs
+// const buildColorCurveComponent = (actionWrapper, canvas) => {
+
+//   // Build out pins
+//   const channelNames = ['composite', 'red', 'green', 'blue'];
+//   const positionsData = [
+//     ['start', 0, 999],
+//     ['first-control', 333, 666],
+//     ['second-control', 666, 333],
+//     ['end', 999, 0],
+//   ];
+
+//   const { id, formElement } = actionWrapper;
+
+//   const selector = formElement.querySelector('.channel-selector');
+//   const inputElements = formElement.querySelectorAll('.channel-input');
+//   const input = {};
+
+//   [...inputElements].forEach(el => {
+
+//     const id = el.id;
+//     if (id.includes('start-y')) input['start-y'] = el;
+//     else if (id.includes('start-control-x')) input['start-control-x'] = el;
+//     else if (id.includes('start-control-y')) input['start-control-y'] = el;
+//     else if (id.includes('end-control-x')) input['end-control-x'] = el;
+//     else if (id.includes('end-control-y')) input['end-control-y'] = el;
+//     else if (id.includes('end-y')) input['end-y'] = el;
+//   })
+
+//   console.log(selector, inputElements, input);
+
+//   const groups = {};
+
+//   channelNames.forEach(channel => {
+
+//     const mainName = `${id}_${channel}_pin`;
+
+//     groups[channel] = scrawlHandle.makeGroup({
+
+//       name: `${mainName}_group`,
+//       host: canvas.base,
+//     });
+
+//     positionsData.forEach(pos => {
+
+//       const [label, x, y] = pos;
+
+//       const instanceName = `${mainName}_${label}`;
+
+//       scrawlHandle.makeWheel({
+
+//         name: instanceName,
+//         group: groups[channel],
+//         start: [x, y],
+//         handle: ['center', 'center'],
+//         fillStyle: channel === 'composite' ? 'black' : channel,
+//         strokeStyle: 'gold',
+//         method: 'fillThenDraw',
+//         radius: 40,
+//       });
+//     });
+
+//     scrawlHandle.makeBezier({
+
+//       name: `${id}_${channel}_curve`,
+//       strokeStyle: channel === 'composite' ? 'black' : channel,
+//       lineWidth: 6,
+//       method: 'draw',
+//       order: 3,
+
+//       pivot: `${mainName}_start`,
+//       lockTo: 'pivot',
+
+//       startControlPivot: `${mainName}_first-control`,
+//       startControlLockTo: 'pivot',
+
+//       endControlPivot: `${mainName}_second-control`,
+//       endControlLockTo: 'pivot',
+
+//       endPivot: `${mainName}_end`,
+//       endLockTo: 'pivot',
+
+//       useStartAsControlPoint: true,
+//       useAsPath: true,
+//     });
+//   });
+
+//   let draggedPin = false;
+
+//   const weights = [];
+
+//   const currentPin = scrawlHandle.makeDragZone({
+
+//     zone: canvas,
+//     collisionGroup: groups['black'],
+//     endOn: ['up', 'leave'],
+//     exposeCurrentArtefact: true,
+//     preventTouchDefaultWhenDragging: true,
+
+//     updateOnStart: () => {
+
+//       draggedPin = currentPin();
+
+//       if (typeof draggedPin !== 'boolean' && draggedPin) {
+
+//         const pin = draggedPin.artefact,
+//           name = pin.name;
+
+//         if (name.indexOf('start') > 0 || name.indexOf('end') > 0) {
+
+//           pin.isBeingDragged = false;
+//           pin.set({
+//             lockYTo: 'mouse',
+//           });
+//         }
+//       }
+//     },
+
+//     updateWhileMoving: () => recalculateWeights(),
+
+//     updateOnEnd: () => {
+
+//       if (typeof draggedPin !== 'boolean' && draggedPin) {
+
+//         const pin = draggedPin.artefact,
+//           name = pin.name;
+
+//         if (name.indexOf('start') > 0 || name.indexOf('end') > 0) {
+
+//           pin.set({
+//             start: pin.get('position'),
+//             lockYTo: 'start',
+//           });
+//         }
+//       }
+//       draggedPin = false;
+
+//       recalculateWeights();
+//     },
+//   });
+
+//   actionWrapper.killList.push(currentPin);
+
+//   const animation = scrawlHandle.makeRender({
+
+//     name: `${canvas.name}_animation`,
+//     target: canvas,
+//   });
+
+//   actionWrapper.killList.push(animation);
+
+//   // Filter weights recalculation
+//   const recalculateWeights = function () {
+
+//     const allCurve = scrawlHandle.findEntity(`${id}_black_curve`),
+//       redCurve = scrawlHandle.findEntity(`${id}_red_curve`),
+//       greenCurve = scrawlHandle.findEntity(`${id}_green_curve`),
+//       blueCurve = scrawlHandle.findEntity(`${id}_blue_curve`);
+
+//     const inverseStep = 256 / 1000;
+
+//     return function () {
+
+//       const [startAllX] = allCurve.get('position');
+//       const [endAllX] = allCurve.get('endPosition');
+
+//       const [startRedX] = redCurve.get('position');
+//       const [endRedX] = redCurve.get('endPosition');
+
+//       const [startGreenX] = greenCurve.get('position');
+//       const [endGreenX] = greenCurve.get('endPosition');
+
+//       const [startBlueX] = blueCurve.get('position');
+//       const [endBlueX] = blueCurve.get('endPosition');
+
+//       const redArray = [],
+//           greenArray = [],
+//           blueArray = [],
+//           allArray = [];
+
+//       for (let i = 0; i < 1; i += 0.001) {
+
+//           const r = redCurve.getPathPositionData(i),
+//             g = greenCurve.getPathPositionData(i),
+//             b = blueCurve.getPathPositionData(i),
+//             a = allCurve.getPathPositionData(i);
+
+//           let {x:xr, y:yr} = r;
+//           let {x:xg, y:yg} = g;
+//           let {x:xb, y:yb} = b;
+//           let {x:xa, y:ya} = a;
+
+//           xr = Math.floor(xr * inverseStep);
+//           xg = Math.floor(xg * inverseStep);
+//           xb = Math.floor(xb * inverseStep);
+//           xa = Math.floor(xa * inverseStep);
+
+//           yr = 256 - (yr * inverseStep);
+//           yg = 256 - (yg * inverseStep);
+//           yb = 256 - (yb * inverseStep);
+//           ya = 256 - (ya * inverseStep);
+
+//           if (!redArray[xr]) redArray[xr] = [];
+//           redArray[xr].push(yr);
+
+//           if (!greenArray[xg]) greenArray[xg] = [];
+//           greenArray[xg].push(yg);
+
+//           if (!blueArray[xb]) blueArray[xb] = [];
+//           blueArray[xb].push(yb);
+
+//           if (!allArray[xa]) allArray[xa] = [];
+//           allArray[xa].push(ya);
+//       }
+
+//       let temp, tempLen, res;
+
+//       for (let i = 0, cursor = 0; i < 256; i++) {
+
+//         if (!redArray[i]) redArray[i] = [];
+//         tempLen = redArray[i].length;
+
+//         if (!tempLen) {
+//           if (startRedX < endRedX) {
+//             if (i < startRedX) weights[cursor] = -i;
+//             else weights[cursor] = 255 - i;
+//           }
+//           else {
+//             if (i > startRedX) weights[cursor] = -i;
+//             else weights[cursor] = 255 - i;
+//           }
+//         }
+//         else {
+//           temp = [...redArray[i]];
+//           res = Math.round(temp.reduce((acc, val) => acc + val, 0) / tempLen);
+//           weights[cursor] = res - i;
+//         }
+//         cursor++;
+
+//         if (!greenArray[i]) greenArray[i] = [];
+//         tempLen = greenArray[i].length;
+//         if (!tempLen) {
+//           if (startGreenX < endGreenX) {
+//             if (i < startGreenX) weights[cursor] = -i;
+//             else weights[cursor] = 255 - i;
+//           }
+//           else {
+//             if (i > startGreenX) weights[cursor] = -i;
+//             else weights[cursor] = 255 - i;
+//           }
+//         }
+//         else {
+//           temp = [...greenArray[i]];
+//           res = Math.round(temp.reduce((acc, val) => acc + val, 0) / tempLen);
+//           weights[cursor] = res - i;
+//         }
+//         cursor++;
+
+//         if (!blueArray[i]) blueArray[i] = [];
+//         tempLen = blueArray[i].length;
+//         if (!tempLen) {
+//           if (startBlueX < endBlueX) {
+//             if (i < startBlueX) weights[cursor] = -i;
+//             else weights[cursor] = 255 - i;
+//           }
+//           else {
+//             if (i > startBlueX) weights[cursor] = -i;
+//             else weights[cursor] = 255 - i;
+//           }
+//         }
+//         else {
+//           temp = [...blueArray[i]];
+//           res = Math.round(temp.reduce((acc, val) => acc + val, 0) / tempLen);
+//           weights[cursor] = res - i;
+//         }
+//         cursor++;
+
+//         if (!allArray[i]) allArray[i] = [];
+//         tempLen = allArray[i].length;
+//         if (!tempLen) {
+//           if (startAllX < endAllX) {
+//             if (i < startAllX) weights[cursor] = -i;
+//             else weights[cursor] = 255 - i;
+//           }
+//           else {
+//             if (i > startAllX) weights[cursor] = -i;
+//             else weights[cursor] = 255 - i;
+//           }
+//         }
+//         else {
+//           temp = [...allArray[i]];
+//           res = Math.round(temp.reduce((acc, val) => acc + val, 0) / tempLen);
+//           weights[cursor] = res - i;
+//         }
+//         cursor++;
+//       }
+
+//       actionWrapper.set({
+//         weights: [...weights],
+//       });
+
+//       const currentFilter = getWrapper();
+
+//       currentFilter.updateDisplayFilter();
+//       currentFilter.updateHistory();
+
+
+//     }
+//   }();
+// };
+
+// const buildToneCurveComponent = (actionWrapper, canvas) => {
+
+//   const animation = scrawlHandle.makeRender({
+
+//     name: `${canvas.name}_animation`,
+//     target: canvas,
+//   });
+
+//   actionWrapper.killList.push(animation);
+// };
+
 
 // Export for initialization 
 // ------------------------------------------------------------------------
@@ -1718,12 +2266,41 @@ export const initFormBuilder = (
                 actionWrapper.buttonElement = el.domElement;
               }
             }
+
+            // Import filter form canvas elements into SC
+            else if (mutation.target.id === 'filter-controls-panel') {
+
+              // Only process the element once
+              if (!node.dataset.scAdopted) {
+
+                node.dataset.scAdopted = '1';
+
+                const canvasEl = node.querySelector('canvas');
+
+                if (canvasEl != null) {
+
+                  const formCanvas = scrawl.getCanvas(canvasEl.id);
+
+                  if (formCanvas != null) {
+
+                    actionWrapper.killList.push(formCanvas);
+
+                    const classes = canvasEl.className.split(' ');
+
+                    if (classes.includes('color-curve-weights-ui')) buildColorCurveComponent(actionWrapper, formCanvas);
+
+                    else if (classes.includes('tone-curve-weights-ui')) buildToneCurveComponent(actionWrapper, formCanvas);
+                  }
+                }
+              }
+            }
           }
         });
       }
     }
   });
   multiObserver.observe(filterBuilderAreaHold, { childList: true });
+  multiObserver.observe(filterControlsPanel, { childList: true });
 
 
   // Return object

@@ -32,6 +32,7 @@
   --filter-bar-section-background: rgb(230 220 220 / 1);;
   --filter-bar-input-background: rgb(255 252 255 / 1);
   --right-bar-left-border: rgb(60 60 60 / 1);
+  --filter-bar-canvas-border: rgb(80 80 80 / 1);
 
   /* Central area app constants - values without measurement units are ratios */
   --minimum-image-work-ratio: 0.3;
@@ -811,6 +812,45 @@ main {
             border-radius: 5px;
             border: 1px solid var(--note-color);
             padding: 0.25rem;
+          }
+        }
+
+        /* filter-schema.js - controlType: 'bespoke-vary-channel-by-weights' */
+        & .action-control-inputs-for-color-curve-weights {
+
+          & canvas {
+            margin: 0.5rem auto 1rem auto;
+            box-shadow: 0px 0px 0px 1px var(--filter-bar-canvas-border);
+            background-color: var(--filter-bar-canvas-border);
+          }
+
+          & .color-curve-weights-control-wrapper {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 2px;
+            font-size: 85%;
+
+            & div {
+              margin: 0;
+              padding: 0;
+            }
+
+            & input {
+              margin: 0;
+              padding: 0;
+              font-size: 100%;
+              font-family: monospace;
+            }
+
+            & select {
+              width: 90%;
+              margin-bottom: 0.25rem;
+            }
+          }
+
+          & .hidden-label {
+            position: absolute;
+            left: -2000px;
           }
         }
       }

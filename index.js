@@ -16,6 +16,7 @@ import { initModalManagement } from './js-modules/modal-management.js';
 import { initImageImport } from './js-modules/image-import.js';
 import { initImageDisplay } from './js-modules/image-display.js';
 import { initFilterBuilder } from './js-modules/filter-builder.js';
+import { initCurveComponents } from './js-modules/curve-components.js';
 import { initFormBuilder } from './js-modules/form-builder.js';
 import { initFormObjects } from './js-modules/form-objects.js';
 
@@ -96,6 +97,8 @@ const {
   actionWrapperLibrary,
 } = initFormObjects(scrawl, getImageDisplayViews);
 
+initCurveComponents(scrawl, getCurrentWrappedFilter);
+
 initFormBuilder(scrawl, dom, getCurrentWrappedFilter, actionWrapperLibrary);
 
 const {
@@ -143,6 +146,7 @@ scrawl.makeRender({
   target: mainCanvas,
   commence: commenceFunction,
 });
+
 
 // ------------------------------------------------------------------------
 // Development 
