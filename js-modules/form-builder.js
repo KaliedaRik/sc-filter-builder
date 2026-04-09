@@ -146,6 +146,7 @@ const createControl = (data, actionWrapper) => {
     case 'bespoke-channel-levels': return createControl_channelLevels(data, actionWrapper);
     case 'bespoke-matrix-weights': return createControl_matrixWeights(data, actionWrapper);
     case 'bespoke-vary-channel-by-weights': return createControl_channelWeights(data, actionWrapper);
+    case 'bespoke-ok-perceptual-curves': return createControl_toneWeights(data, actionWrapper);
     default:
       const el = document.createElement('div');
       el.textContent = `No function for ${actionWrapper.formId} - ${data.label}`;
@@ -1640,11 +1641,10 @@ const createControl_select = (data, actionWrapper) => {
 
 const createControl_channelWeights = (data, actionWrapper) => {
 
-  const {formId, killList } = actionWrapper;
+  const {formId } = actionWrapper;
 
   const localId = `${formId}_${data.key}`,
-    canvasId = `${localId}_canvas`,
-    listenId = getListenId(formId);
+    canvasId = `${localId}_canvas`;
 
   let value = actionWrapper.action[data.key];
   if (value == null) value = data.default;
@@ -1692,6 +1692,231 @@ const createControl_channelWeights = (data, actionWrapper) => {
   });
 
   channelSelector.value = 'combined';
+  controlWrapper.appendChild(channelSelector);
+
+  const labelX = document.createElement('div');
+  labelX.textContent = 'X coord';
+  controlWrapper.appendChild(labelX);
+
+  const labelY = document.createElement('div');
+  labelY.textContent = 'Y coord';
+  controlWrapper.appendChild(labelY);
+
+  const labelStart = document.createElement('div');
+  labelStart.textContent = 'Start pin';
+  controlWrapper.appendChild(labelStart);
+
+  const inputStartXLabel = document.createElement('label');
+  inputStartXLabel.classList.add('hidden-label');
+  inputStartXLabel.textContent = 'Start pin X coordinate';
+  inputStartXLabel.setAttribute('for', `${localId}_start-x`);
+  el.appendChild(inputStartXLabel);
+
+  const inputStartX = document.createElement('input');
+  inputStartX.id = `${localId}_start-x`;
+  inputStartX.name = `${localId}_start-x`;
+  inputStartX.type = 'number';
+  inputStartX.min = 0;
+  inputStartX.max = 999;
+  inputStartX.step = 1;
+  inputStartX.value = 0;
+  inputStartX.setAttribute('disabled', '');
+  controlWrapper.appendChild(inputStartX);
+
+  const inputStartYLabel = document.createElement('label');
+  inputStartYLabel.classList.add('hidden-label');
+  inputStartYLabel.textContent = 'Start pin Y coordinate';
+  inputStartYLabel.setAttribute('for', `${localId}_start-y`);
+  el.appendChild(inputStartYLabel);
+
+  const inputStartY = document.createElement('input');
+  inputStartY.id = `${localId}_start-y`;
+  inputStartY.name = `${localId}_start-y`;
+  inputStartY.type = 'number';
+  inputStartY.min = 0;
+  inputStartY.max = 999;
+  inputStartY.step = 1;
+  inputStartY.value = 999;
+  inputStartY.classList.add('channel-input');
+  controlWrapper.appendChild(inputStartY);
+
+  const labelStartControl = document.createElement('div');
+  labelStartControl.textContent = 'Start control pin';
+  controlWrapper.appendChild(labelStartControl);
+
+  const inputStartControlXLabel = document.createElement('label');
+  inputStartControlXLabel.classList.add('hidden-label');
+  inputStartControlXLabel.textContent = 'Start control pin X coordinate';
+  inputStartControlXLabel.setAttribute('for', `${localId}_start-control-x`);
+  el.appendChild(inputStartControlXLabel);
+
+  const inputStartControlX = document.createElement('input');
+  inputStartControlX.id = `${localId}_start-control-x`;
+  inputStartControlX.name = `${localId}_start-control-x`;
+  inputStartControlX.type = 'number';
+  inputStartControlX.min = 0;
+  inputStartControlX.max = 999;
+  inputStartControlX.step = 1;
+  inputStartControlX.value = 333;
+  inputStartControlX.classList.add('channel-input');
+  controlWrapper.appendChild(inputStartControlX);
+
+  const inputStartControlYLabel = document.createElement('label');
+  inputStartControlYLabel.classList.add('hidden-label');
+  inputStartControlYLabel.textContent = 'Start control pin Y coordinate';
+  inputStartControlYLabel.setAttribute('for', `${localId}_start-control-y`);
+  el.appendChild(inputStartControlYLabel);
+
+  const inputStartControlY = document.createElement('input');
+  inputStartControlY.id = `${localId}_start-control-y`;
+  inputStartControlY.name = `${localId}_start-control-y`;
+  inputStartControlY.type = 'number';
+  inputStartControlY.min = 0;
+  inputStartControlY.max = 999;
+  inputStartControlY.step = 1;
+  inputStartControlY.value = 666;
+  inputStartControlY.classList.add('channel-input');
+  controlWrapper.appendChild(inputStartControlY);
+
+  const labelEndControl = document.createElement('div');
+  labelEndControl.textContent = 'End control pin';
+  controlWrapper.appendChild(labelEndControl);
+
+  const inputEndControlXLabel = document.createElement('label');
+  inputEndControlXLabel.classList.add('hidden-label');
+  inputEndControlXLabel.textContent = 'End control pin X coordinate';
+  inputEndControlXLabel.setAttribute('for', `${localId}_end-control-x`);
+  el.appendChild(inputEndControlXLabel);
+
+  const inputEndControlX = document.createElement('input');
+  inputEndControlX.id = `${localId}_end-control-x`;
+  inputEndControlX.name = `${localId}_end-control-x`;
+  inputEndControlX.type = 'number';
+  inputEndControlX.min = 0;
+  inputEndControlX.max = 999;
+  inputEndControlX.step = 1;
+  inputEndControlX.value = 666;
+  inputEndControlX.classList.add('channel-input');
+  controlWrapper.appendChild(inputEndControlX);
+
+  const inputEndControlYLabel = document.createElement('label');
+  inputEndControlYLabel.classList.add('hidden-label');
+  inputEndControlYLabel.textContent = 'End control pin Y coordinate';
+  inputEndControlYLabel.setAttribute('for', `${localId}_end-control-y`);
+  el.appendChild(inputEndControlYLabel);
+
+  const inputEndControlY = document.createElement('input');
+  inputEndControlY.id = `${localId}_end-control-y`;
+  inputEndControlY.name = `${localId}_end-control-y`;
+  inputEndControlY.type = 'number';
+  inputEndControlY.min = 0;
+  inputEndControlY.max = 999;
+  inputEndControlY.step = 1;
+  inputEndControlY.value = 333;
+  inputEndControlY.classList.add('channel-input');
+  controlWrapper.appendChild(inputEndControlY);
+
+  const labelEnd = document.createElement('div');
+  labelEnd.textContent = 'End pin';
+  controlWrapper.appendChild(labelEnd);
+
+  const inputEndXLabel = document.createElement('label');
+  inputEndXLabel.classList.add('hidden-label');
+  inputEndXLabel.textContent = 'End pin X coordinate';
+  inputEndXLabel.setAttribute('for', `${localId}_end-x`);
+  el.appendChild(inputEndXLabel);
+
+  const inputEndX = document.createElement('input');
+  inputEndX.id = `${localId}_end-x`;
+  inputEndX.name = `${localId}_end-x`;
+  inputEndX.type = 'number';
+  inputEndX.min = 0;
+  inputEndX.max = 999;
+  inputEndX.step = 1;
+  inputEndX.value = 999;
+  inputEndX.setAttribute('disabled', '');
+  controlWrapper.appendChild(inputEndX);
+
+  const inputEndYLabel = document.createElement('label');
+  inputEndYLabel.classList.add('hidden-label');
+  inputEndYLabel.textContent = 'End pin Y coordinate';
+  inputEndYLabel.setAttribute('for', `${localId}_end-y`);
+  el.appendChild(inputEndYLabel);
+
+  const inputEndY = document.createElement('input');
+  inputEndY.id = `${localId}_end-y`;
+  inputEndY.name = `${localId}_end-y`;
+  inputEndY.type = 'number';
+  inputEndY.min = 0;
+  inputEndY.max = 999;
+  inputEndY.step = 1;
+  inputEndY.value = 0;
+  inputEndY.classList.add('channel-input');
+  controlWrapper.appendChild(inputEndY);
+
+  el.appendChild(controlWrapper);
+
+  return el;
+};
+
+const createControl_toneWeights = (data, actionWrapper) => {
+
+  const {formId } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`,
+    canvasId = `${localId}_canvas`;
+
+  let value = actionWrapper.action[data.key];
+  if (value == null) value = data.default;
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-tone-curve-weights');
+  el.dataset.localId = localId;
+
+  const canvasEl = document.createElement('canvas');
+  canvasEl.id = canvasId;
+  canvasEl.name = canvasId;
+  canvasEl.width = '250';
+  canvasEl.height = '250';
+  canvasEl.setAttribute('data-scrawl-canvas', '');
+  canvasEl.setAttribute('data-base-background-color', 'beige');
+  canvasEl.setAttribute('data-canvas-color-space', 'display-p3');
+  canvasEl.setAttribute('data-base-width', '1000');
+  canvasEl.setAttribute('data-base-height', '1000');
+  canvasEl.setAttribute('data-is-responsive', 'true');
+  canvasEl.setAttribute('data-fit', 'contain');
+  canvasEl.setAttribute('data-label', 'Tone curve weights graphical input tool');
+  canvasEl.classList.add('tone-curve-weights-ui');
+  el.appendChild(canvasEl);
+
+  const controlWrapper = document.createElement('div');
+  controlWrapper.classList.add('tone-curve-weights-control-wrapper');
+
+  const channelSelectorLabel = document.createElement('label');
+  channelSelectorLabel.classList.add('hidden-label');
+  channelSelectorLabel.textContent = 'Select channel to manipulate';
+  channelSelectorLabel.setAttribute('for', `${localId}_channel-selector`);
+  el.appendChild(channelSelectorLabel);
+
+  const channelSelector = document.createElement('select');
+  channelSelector.id = `${localId}_channel-selector`;
+  channelSelector.name = `${localId}_channel-selector`;
+  channelSelector.classList.add('channel-selector');
+
+  const channels = [
+    ['Luminance', 'luminance'],
+    ['Chroma', 'chroma'],
+    ['Red ↔ green', 'aChannel'],
+    ['Blue ↔ yellow', 'bChannel']
+  ];
+  channels.forEach(channel => {
+    const option = document.createElement('option');
+    option.value = channel[1];
+    option.textContent = channel[0];
+    channelSelector.appendChild(option);
+  });
+
+  channelSelector.value = 'luminance';
   controlWrapper.appendChild(channelSelector);
 
   const labelX = document.createElement('div');
