@@ -543,6 +543,8 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
     ['end', 999, 0],
   ];
 
+  let currentChannel = 'luminance';
+
   const { id, formElement } = actionWrapper;
 
   const selector = formElement.querySelector('.channel-selector');
@@ -575,8 +577,7 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
 
       name: `${mainName}_group`,
       host: canvas.base,
-      visibility: channel !== 'chroma',
-      order: channel === 'luminance' ? 1 : 0,
+      order: channel === currentChannel ? 1 : 0,
     });
 
 
@@ -610,17 +611,13 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
       strokeStyle: channelColors[channel],
       lineWidth: 6,
       method: 'draw',
-      order: 3,
 
       pivot: `${mainName}_start`,
       lockTo: 'pivot',
-
       startControlPivot: `${mainName}_first-control`,
       startControlLockTo: 'pivot',
-
       endControlPivot: `${mainName}_second-control`,
       endControlLockTo: 'pivot',
-
       endPivot: `${mainName}_end`,
       endLockTo: 'pivot',
 
@@ -628,7 +625,7 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
       useAsPath: true,
       precision: 1,
 
-      order: channel === 'luminance' ? 1 : 0,
+      order: channel === currentChannel ? 1 : 0,
     });
   });
 
@@ -701,7 +698,7 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
         }
         else if (name.indexOf('end') >0) input['end-y'].value = y;
 
-        recalculateCurves();
+        recalculateCurves(currentChannel);
       },
 
       updateOnEnd: () => {
@@ -740,10 +737,18 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
         }
         draggedPin = false;
 
-        recalculateCurves();
+        recalculateCurves(currentChannel);
       },
     });
   };
+
+
+  // Animation
+  const animation = scrawlHandle.makeRender({
+
+    name: `${canvas.name}_animation`,
+    target: canvas,
+  });
 
 
   // Get the recalculateCurves function
@@ -751,54 +756,19 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
 
   buildDragZone('luminance');
 
-  const animation = scrawlHandle.makeRender({
-
-    name: `${canvas.name}_animation`,
-    target: canvas,
-    afterCreated: () => {
-      groups.chroma.set({ visibility: false, order: 0 });
-      beziers.chroma.set({ visibility: false, order: 0 });
-      recalculateCurves();
-    }
-  });
-
 
   // Form event listeners 
-  let currentChannel = 'luminance';
-
   const channelSelector = scrawlHandle.addNativeListener('change', (e) => {
 
     if (e) e.preventDefault();
 
     currentChannel = selector.value;
 
-    if ('chroma' === currentChannel) {
+    channelNames.forEach(n => {
 
-      groups.luminance.set({ visibility: true, order: 0 });
-      groups.chroma.set({ visibility: true, order: 0 });
-      groups.aChannel.set({ visibility: false, order: 0 });
-      groups.bChannel.set({ visibility: false, order: 0 });
-
-      beziers.luminance.set({ visibility: true, order: 0 });
-      beziers.chroma.set({ visibility: true, order: 0 });
-      beziers.aChannel.set({ visibility: false, order: 0 });
-      beziers.bChannel.set({ visibility: false, order: 0 });
-    }
-    else {
-
-      groups.luminance.set({ visibility: true, order: 0 });
-      groups.chroma.set({ visibility: false, order: 0 });
-      groups.aChannel.set({ visibility: true, order: 0 });
-      groups.bChannel.set({ visibility: true, order: 0 });
-
-      beziers.luminance.set({ visibility: true, order: 0 });
-      beziers.chroma.set({ visibility: false, order: 0 });
-      beziers.aChannel.set({ visibility: true, order: 0 });
-      beziers.bChannel.set({ visibility: true, order: 0 });
-    }
-
-    groups[currentChannel].set({ order: 1 });
-    beziers[currentChannel].set({ order: 1 });
+      groups[n].set({ order: n === currentChannel ? 1: 0 });
+      beziers[n].set({ order: n === currentChannel ? 1: 0 });
+    });
 
     buildDragZone(currentChannel);
 
@@ -879,7 +849,7 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
         pin.set({ startY: val });
       }
 
-      recalculateCurves();
+      recalculateCurves(currentChannel);
     }
   }, '.channel-input');
 
@@ -922,7 +892,7 @@ const recalculateToneCurves = function (actionWrapper) {
 
     const STEPS = 1000;
 
-    for (let t = 1 / STEPS; t <= 1; t += 1 / STEPS) {
+    for (let t = 0, dt = 1 / STEPS; t <= 1; t += dt) {
 
       const pos = curveEntity.getPathPositionData(t);
       if (!pos) continue;
@@ -1002,21 +972,53 @@ const recalculateToneCurves = function (actionWrapper) {
     return out;
   };
 
-  return function () {
+  return function (currentChannel) {
 
     // Build new *absolute* curves from the Bezier paths (UI resolution)
-    const luminance = sampleBezierToCurve(lumCurve, UI_L_SAMPLES);
-    const chroma = sampleBezierToCurve(chromaCurve, UI_C_SAMPLES);
-    const aChannel = sampleBezierToCurve(aCurve, UI_AB_SAMPLES);
-    const bChannel = sampleBezierToCurve(bCurve, UI_AB_SAMPLES);
 
-    // Convert to engine delta curves (offsets)
-    const curvesForFilter = {
-      luminance: buildDeltaCurve(luminance, L_WEIGHTS_SIZE),
-      chroma: buildDeltaCurve(chroma, C_WEIGHTS_SIZE),
-      aChannel: buildDeltaCurve(aChannel, AB_WEIGHTS_SIZE),
-      bChannel: buildDeltaCurve(bChannel, AB_WEIGHTS_SIZE),
-    };
+    let luminance, chroma, aChannel, bChannel, curvesForFilter;
+
+    if ('chroma' === currentChannel) {
+
+      luminance = sampleBezierToCurve(lumCurve, UI_L_SAMPLES);
+      chroma = sampleBezierToCurve(chromaCurve, UI_C_SAMPLES);
+
+      curvesForFilter = {
+        luminance: buildDeltaCurve(luminance, L_WEIGHTS_SIZE),
+        chroma: buildDeltaCurve(chroma, C_WEIGHTS_SIZE),
+        aChannel: [],
+        bChannel: [],
+      };
+    }
+
+    else if ('luminance' === currentChannel) {
+
+      luminance = sampleBezierToCurve(lumCurve, UI_L_SAMPLES);
+      chroma = sampleBezierToCurve(chromaCurve, UI_C_SAMPLES);
+      aChannel = sampleBezierToCurve(aCurve, UI_AB_SAMPLES);
+      bChannel = sampleBezierToCurve(bCurve, UI_AB_SAMPLES);
+
+      curvesForFilter = {
+        luminance: buildDeltaCurve(luminance, L_WEIGHTS_SIZE),
+        chroma: buildDeltaCurve(chroma, C_WEIGHTS_SIZE),
+        aChannel: buildDeltaCurve(aChannel, AB_WEIGHTS_SIZE),
+        bChannel: buildDeltaCurve(bChannel, AB_WEIGHTS_SIZE),
+      };
+    }
+
+    else {
+
+      luminance = sampleBezierToCurve(lumCurve, UI_L_SAMPLES);
+      aChannel = sampleBezierToCurve(aCurve, UI_AB_SAMPLES);
+      bChannel = sampleBezierToCurve(bCurve, UI_AB_SAMPLES);
+
+      curvesForFilter = {
+        luminance: buildDeltaCurve(luminance, L_WEIGHTS_SIZE),
+        chroma: [],
+        aChannel: buildDeltaCurve(aChannel, AB_WEIGHTS_SIZE),
+        bChannel: buildDeltaCurve(bChannel, AB_WEIGHTS_SIZE),
+      };
+    }
 
     actionWrapper.set({ curves: curvesForFilter });
 
@@ -1024,8 +1026,6 @@ const recalculateToneCurves = function (actionWrapper) {
 
     currentFilter.updateDisplayFilter();
     currentFilter.updateHistory();
-
-    console.log(curvesForFilter);
   }
 };
 
