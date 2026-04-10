@@ -8,7 +8,9 @@
 import {
   buildColorCurveComponent,
   buildToneCurveComponent,
-} from './curve-components.js'
+  buildGradientComponent,
+} from './canvas-ui-components.js'
+
 
 // Module-scoped Handles and variables
 // ------------------------------------------------------------------------
@@ -147,6 +149,7 @@ const createControl = (data, actionWrapper) => {
     case 'bespoke-matrix-weights': return createControl_matrixWeights(data, actionWrapper);
     case 'bespoke-vary-channel-by-weights': return createControl_channelWeights(data, actionWrapper);
     case 'bespoke-ok-perceptual-curves': return createControl_toneWeights(data, actionWrapper);
+    case 'bespoke-map-to-gradient': return createControl_gradient(data, actionWrapper);
     default:
       const el = document.createElement('div');
       el.textContent = `No function for ${actionWrapper.formId} - ${data.label}`;
@@ -1660,7 +1663,6 @@ const createControl_channelWeights = (data, actionWrapper) => {
   canvasEl.height = '250';
   canvasEl.setAttribute('data-scrawl-canvas', '');
   canvasEl.setAttribute('data-base-background-color', 'beige');
-  canvasEl.setAttribute('data-canvas-color-space', 'display-p3');
   canvasEl.setAttribute('data-base-width', '1000');
   canvasEl.setAttribute('data-base-height', '1000');
   canvasEl.setAttribute('data-is-responsive', 'true');
@@ -1880,7 +1882,6 @@ const createControl_toneWeights = (data, actionWrapper) => {
   canvasEl.height = '250';
   canvasEl.setAttribute('data-scrawl-canvas', '');
   canvasEl.setAttribute('data-base-background-color', 'beige');
-  canvasEl.setAttribute('data-canvas-color-space', 'display-p3');
   canvasEl.setAttribute('data-base-width', '1000');
   canvasEl.setAttribute('data-base-height', '1000');
   canvasEl.setAttribute('data-is-responsive', 'true');
@@ -2084,6 +2085,51 @@ const createControl_toneWeights = (data, actionWrapper) => {
   return el;
 };
 
+const createControl_gradient = (data, actionWrapper) => {
+
+console.log('actionWrapper', actionWrapper)
+
+  const {formId } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`,
+    canvasId = `${localId}_canvas`,
+    wrapperId = `${localId}_wrapper`;
+
+  let value = actionWrapper.action[data.key];
+  if (value == null) value = data.default;
+
+  let gradientName = actionWrapper.action.gradient;
+  if(typeof gradientName !== 'string') gradientName = gradientName.name || '';
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-map-to-gradient');
+  el.dataset.localId = localId;
+
+  const canvasEl = document.createElement('canvas');
+  canvasEl.id = canvasId;
+  canvasEl.name = canvasId;
+  canvasEl.width = '250';
+  canvasEl.height = '50';
+  canvasEl.setAttribute('data-scrawl-canvas', '');
+  canvasEl.setAttribute('data-base-background-color', 'beige');
+  canvasEl.setAttribute('data-base-width', '1000');
+  canvasEl.setAttribute('data-base-height', '200');
+  canvasEl.setAttribute('data-is-responsive', 'true');
+  canvasEl.setAttribute('data-fit', 'contain');
+  canvasEl.setAttribute('data-label', 'Gradient graphical input tool');
+  canvasEl.setAttribute('data-gradient', gradientName);
+  canvasEl.classList.add('gradient-ui');
+  el.appendChild(canvasEl);
+
+  const controlWrapper = document.createElement('div');
+  controlWrapper.id = wrapperId;
+  controlWrapper.classList.add('gradient-controls-wrapper');
+
+  el.appendChild(controlWrapper);
+
+  return el;
+};
+
 
 // Export for initialization 
 // ------------------------------------------------------------------------
@@ -2192,6 +2238,8 @@ export const initFormBuilder = (
                     if (classes.includes('color-curve-weights-ui')) buildColorCurveComponent(actionWrapper, formCanvas);
 
                     else if (classes.includes('tone-curve-weights-ui')) buildToneCurveComponent(actionWrapper, formCanvas);
+
+                    else if (classes.includes('gradient-ui')) buildGradientComponent(actionWrapper, formCanvas, colorFactory);
                   }
                 }
               }

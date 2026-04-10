@@ -408,7 +408,7 @@ export const starterFilters = {
     title: 'Map to gradient',
     readableName: 'Map to gradient starter',
     formSchemaName: 'mapToGradient',
-    packet: `["SC-starter-filter_map-to-gradient","Filter","filter",{"name":"SC-starter-filter_map-to-gradient","actions":[{"action":"map-to-gradient","lineIn":"","lineOut":"","opacity":1,"useNaturalGrayscale":false,"gradient":false}]}]`,
+    packet: `["SC-starter-filter_map-to-gradient_gradient","Gradient","styles",{"name":"SC-starter-filter_map-to-gradient_gradient","start":[0,0],"end":["100%",0],"colors":[[0,"rgb(255 0 0 / 1)"],[999,"rgb(0 0 255 / 1)"]],"easing":"linear","precision":1,"colorSpace":"oklab","returnColorAs":"rgb"}]§§["SC-starter-filter_map-to-gradient","Filter","filter",{"name":"SC-starter-filter_map-to-gradient","actions":[{"action":"map-to-gradient","lineIn":"","lineOut":"","opacity":1,"useNaturalGrayscale":false,"gradient":"SC-starter-filter_map-to-gradient_gradient"}]}]`,
     imageSource: 'assets/thumb/starter-thumb_map-to-gradient.png',
   },
 

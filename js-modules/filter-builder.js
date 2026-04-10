@@ -9,7 +9,8 @@ import { wrap } from './form-objects.js';
 let currentFilterWrapper = null,
   currentFilterInitialValues = null,
   currentFilterTitleElement = null,
-  canvasHandle = null;
+  canvasHandle = null,
+  scrawlHandle = null;
 
 const mainEl = document.querySelector('main'),
   filterHasChangedClass = 'filter-has-been-modified';
@@ -49,24 +50,33 @@ const loadStarterFilter = (starter) => {
 
   if (packet) {
 
-    const newFilter = canvasHandle.actionPacket(packet);
+    const packets = packet.split('§§');
 
-    if (newFilter) {
+    packets.forEach(p => {
 
-      const newFilterWrapper = wrap(newFilter, data.formSchemaName),
-       newFilterInitialValues = newFilterWrapper.toString();
+      if (p.includes('"Filter","filter"')) {
 
-      currentFilterWrapper.kill();
-      currentFilterWrapper = newFilterWrapper;
-      currentFilterInitialValues = newFilterInitialValues;
+        const newFilter = canvasHandle.actionPacket(p);
 
-      currentFilterWrapper.updateDisplayFilter();
+        if (newFilter) {
 
-      currentFilterTitleElement.textContent = data.readableName;
+          const newFilterWrapper = wrap(newFilter, data.formSchemaName),
+            newFilterInitialValues = newFilterWrapper.toString();
 
-      filterHasChanged = false;
-      mainEl.classList.remove(filterHasChangedClass);
-    }
+          currentFilterWrapper.kill();
+          currentFilterWrapper = newFilterWrapper;
+          currentFilterInitialValues = newFilterInitialValues;
+
+          currentFilterWrapper.updateDisplayFilter();
+
+          currentFilterTitleElement.textContent = data.readableName;
+
+          filterHasChanged = false;
+          mainEl.classList.remove(filterHasChangedClass);
+        }
+      }
+      else canvasHandle.actionPacket(p);
+    });
   }
 };
 
@@ -80,6 +90,7 @@ export const initFilterBuilder = (scrawl = null, dom = null) => {
 
   const canvas = scrawl.findCanvas('filter-builder-canvas');
 
+  scrawlHandle = scrawl;
   canvasHandle = canvas;
 
 

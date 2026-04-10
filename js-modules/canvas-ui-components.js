@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------
-// Curve components - canvas-based UI controls
+// Canvas-based UI components
 // ------------------------------------------------------------------------
 
 
@@ -7,7 +7,104 @@ let scrawlHandle = null,
   getWrapper = null;
 
 
+// Gradient builder canvas UI
+// ==============================================
+export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
+
+  const { id, formElement, formId, killList } = actionWrapper;
+  const groupName = canvas.base.name;
+
+  const gradientName = canvas.domElement.dataset.gradient,
+    gradientStyle = scrawlHandle.findStyles(gradientName);
+
+console.log(actionWrapper);
+
+  // Gradient bar (top part)
+  const gradientBar = scrawlHandle.makeBlock({
+
+    name: `${id}-gradient-bar`,
+    group: groupName,
+    dimensions: ['90%', '25%'],
+    start: ['center', '35%'],
+    handle: ['center', 'top'],
+    fillStyle: gradientStyle,
+  });
+
+  scrawlHandle.makeLabel({
+
+    name: `${id}_label-for-0`,
+    group: groupName,
+    text: '0',
+    start: ['5%', '12%'],
+    handle: ['center', 'top'],
+    fontString: '36px monospace',
+
+  }).clone({
+
+    name: `${id}_label-for-499`,
+    text: '499',
+    start: ['50%', '12%'],
+
+  }).clone({
+
+    name: `${id}_label-for-999`,
+    text: '999',
+    start: ['95%', '12%'],
+  });
+
+
+  // Generate color stops visuals and inputs
+  const colorTriangelGroup = scrawlHandle.makeGroup({
+    name: `${id}_color-stops-group`,
+    host: canvas.base,
+  });
+
+  const stopsWrapper = formElement.querySelector(`#${formId}_gradient_wrapper`);
+
+
+  const updateColorStops = () => {
+
+    const colors = gradientStyle.get('colors');
+
+console.log('stopsWrapper', stopsWrapper)
+console.log('colorTriangelGroup', colorTriangelGroup)
+console.log('colors', colors);
+
+    for (const [key, color] of Object.entries(colors)) {
+      console.log(typeof key, `${key}: ${color}`);
+      console.log(colorFactory.buildColorStringFromData(color));
+
+      scrawlHandle.makeShape({
+
+        name: `${id}_stop-at_${key}`,
+        group: colorTriangelGroup,
+        pathDefinition: 'm0,0 20,60 -40,0z',
+        fillStyle: colorFactory.buildColorStringFromData(color),
+        strokeStyle: 'black',
+        lineWidth: 2,
+        method: 'fillThenDraw',
+        start: [`${5 + (parseInt(key, 10) * 0.9) * 0.1}%`, '60%'],
+        handle: ['center', 'top'],
+      })
+    }
+  };
+
+  updateColorStops();
+
+  // Animation
+  scrawlHandle.makeRender({
+
+    name: `${id}_animation`,
+    target: canvas,
+  });
+
+  killList.push(() => scrawlHandle.purge(id));
+};
+
+
+
 // Color curve filter canvas UI
+// ==============================================
 export const buildColorCurveComponent = (actionWrapper, canvas) => {
 
   // Build out pins
@@ -26,6 +123,8 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
   const selector = formElement.querySelector('.channel-selector');
   const inputElements = formElement.querySelectorAll('.channel-input');
   const input = {};
+
+  const groupName = canvas.base.name;
 
   [...inputElements].forEach(el => {
 
@@ -84,6 +183,7 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
     beziers[channel] = scrawlHandle.makeBezier({
 
       name: `${id}_${channel}_curve`,
+      group: groupName,
       strokeStyle: channel === 'combined' ? 'black' : channel,
       lineWidth: 6,
       method: 'draw',
@@ -523,7 +623,9 @@ const recalculateColorWeights = function (actionWrapper, weights) {
 };
 
 
+
 // Tone curve filter canvas UI
+// ==============================================
 export const buildToneCurveComponent = (actionWrapper, canvas) => {
 
   // Build out pins
@@ -1032,7 +1134,7 @@ const recalculateToneCurves = function (actionWrapper) {
 
 // Export for initialization 
 // ------------------------------------------------------------------------
-export const initCurveComponents = (
+export const initCanvasComponents = (
   scrawl = null,
   getCurrentWrappedFilter = null,
 ) => {
