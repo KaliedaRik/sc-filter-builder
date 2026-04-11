@@ -2087,8 +2087,6 @@ const createControl_toneWeights = (data, actionWrapper) => {
 
 const createControl_gradient = (data, actionWrapper) => {
 
-console.log('actionWrapper', actionWrapper)
-
   const {formId } = actionWrapper;
 
   const localId = `${formId}_${data.key}`,

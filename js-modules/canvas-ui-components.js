@@ -3,13 +3,22 @@
 // ------------------------------------------------------------------------
 
 
+// Imports
+import { generateUniqueString } from './utilities.js';
+
+
+// Module variables
 let scrawlHandle = null,
-  getWrapper = null;
+  getWrapper = null,
+  monochromeGrayGradient = null,
+  picture = null;
 
 
 // Gradient builder canvas UI
 // ==============================================
 export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
+
+  console.log(actionWrapper)
 
   const { id, formElement, formId, killList } = actionWrapper;
   const groupName = canvas.base.name;
@@ -20,7 +29,17 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
 console.log(actionWrapper);
 
   // Gradient bar (top part)
-  const gradientBar = scrawlHandle.makeBlock({
+  scrawlHandle.makeBlock({
+
+    name: `${id}-gradient-bar-background`,
+    group: groupName,
+    dimensions: ['90%', '25%'],
+    start: ['center', '35%'],
+    handle: ['center', 'top'],
+    fillStyle: 'main-canvas-checkerboard-background-cell',
+    method: 'fill',
+  });
+  scrawlHandle.makeBlock({
 
     name: `${id}-gradient-bar`,
     group: groupName,
@@ -28,6 +47,19 @@ console.log(actionWrapper);
     start: ['center', '35%'],
     handle: ['center', 'top'],
     fillStyle: gradientStyle,
+    lockFillStyleToEntity: true,
+    method: 'fillThenDraw',
+  });
+  scrawlHandle.makeBlock({
+
+    name: `${id}-monochrome-gradient-bar`,
+    group: groupName,
+    dimensions: ['90%', '10%'],
+    start: ['center', '35%'],
+    handle: ['center', 'top'],
+    fillStyle: monochromeGrayGradient,
+    lockFillStyleToEntity: true,
+    method: 'fill',
   });
 
   scrawlHandle.makeLabel({
@@ -59,37 +91,189 @@ console.log(actionWrapper);
     host: canvas.base,
   });
 
-  const stopsWrapper = formElement.querySelector(`#${formId}_gradient_wrapper`);
+  const gradientWrapper = formElement.querySelector(`#${formId}_gradient_wrapper`);
+
+  const gradientState = {},
+    stopsState = {};
+
+  const updateGradient = () => {
+
+    const colors = [];
+
+    Object.values(stopsState).forEach(item => colors.push([item.currentKey, item.colorValue]));
+
+    const { colorSpace, easing, precision } = gradientState;
+
+    gradientStyle.set({
+      colorSpace,
+      easing,
+      precision,
+      colors,
+    });
+
+    picture.set({ dimensions: picture.get('dimensions') });
+  };
+
+  const createGeneralGradientControls = () => {
+
+    const colorSpace = gradientState.colorSpace = gradientStyle.get('colorSpace');
+    const precision = gradientState.precision = gradientStyle.get('precision');
+    const easing = gradientState.easing = gradientStyle.get('easing');
+
+    const localId = `${id}_gradient`;
+
+    const el = document.createElement('div');
+    el.classList.add('action-control-inputs-for-gradient');
+
+    const colorSpaceId = `${localId}_color-space`;
+
+    const colorSpaceLabel = document.createElement('label');
+    colorSpaceLabel.classList.add('action-control-gradient-color-space-input-label');
+    colorSpaceLabel.textContent = 'Gradient color space';
+    colorSpaceLabel.setAttribute('for', colorSpaceId);
+    el.appendChild(colorSpaceLabel);
+
+    const colorSpaceInput = document.createElement('select');
+    colorSpaceInput.id = colorSpaceId;
+    colorSpaceInput.name = colorSpaceId;
+
+    ['rgb', 'hsl', 'hwb', 'xyz', 'lab', 'lch', 'oklab', 'oklch'].forEach(val => {
+
+      const option = document.createElement('option');
+      option.value = val;
+      option.textContent = val.toUpperCase();
+      colorSpaceInput.appendChild(option);
+    });
+
+    colorSpaceInput.value = colorSpace;
+
+    el.appendChild(colorSpaceInput);
+
+    const precisionId = `${localId}_precision`;
+
+    const precisionLabel = document.createElement('label');
+    precisionLabel.classList.add('action-control-gradient-precision-input-label');
+    precisionLabel.textContent = 'Gradient precision';
+    precisionLabel.setAttribute('for', precisionId);
+    el.appendChild(precisionLabel);
+
+    const precisionInput = document.createElement('input');
+    precisionInput.id = precisionId;
+    precisionInput.name = precisionId;
+    precisionInput.type = 'number';
+    precisionInput.autocomplete = 'new-password';
+    precisionInput['data-lpignore'] = 'true';
+    precisionInput.min = 1;
+    precisionInput.max = 50;
+    precisionInput.step = 1;
+    precisionInput.value = precision;
+
+    el.appendChild(precisionInput);
+
+    const easingId = `${localId}_color-space`;
+
+    const easingLabel = document.createElement('label');
+    easingLabel.classList.add('action-control-gradient-easing-input-label');
+    easingLabel.textContent = 'Gradient easing';
+    easingLabel.setAttribute('for', easingId);
+    el.appendChild(easingLabel);
+
+    const easingInput = document.createElement('select');
+    easingInput.id = easingId;
+    easingInput.name = easingId;
+
+    ['linear', 'easeOut', 'easeOutIn', 'easeInOut', 'easeIn'].forEach(val => {
+
+      const option = document.createElement('option');
+      option.value = val;
+      option.textContent = val;
+      easingInput.appendChild(option);
+    });
+
+    easingInput.value = easing;
+
+    el.appendChild(easingInput);
+
+    gradientWrapper.appendChild(el);
+
+    const colorSpaceListener = scrawlHandle.addNativeListener('change', (e) => {
+
+      if (e && e.target) {
+
+        e.preventDefault();
+        gradientState.colorSpace = e.target.value;
+        updateGradient();
+      }
+    }, colorSpaceInput);
+
+    const precisionListener = scrawlHandle.addNativeListener('change', (e) => {
+
+      if (e && e.target) {
+
+        e.preventDefault();
+        gradientState.precision = parseInt(e.target.value, 10);
+        updateGradient();
+      }
+    }, precisionInput);
+
+    const easingListener = scrawlHandle.addNativeListener('change', (e) => {
+
+      if (e && e.target) {
+
+        e.preventDefault();
+        gradientState.easing = e.target.value;
+        updateGradient();
+      }
+    }, easingInput);
+
+    killList.push(colorSpaceListener, precisionListener, easingListener);
+  };
 
 
-  const updateColorStops = () => {
+  const createColorStopsControls = () => {
 
     const colors = gradientStyle.get('colors');
 
-console.log('stopsWrapper', stopsWrapper)
-console.log('colorTriangelGroup', colorTriangelGroup)
-console.log('colors', colors);
-
     for (const [key, color] of Object.entries(colors)) {
-      console.log(typeof key, `${key}: ${color}`);
-      console.log(colorFactory.buildColorStringFromData(color));
 
-      scrawlHandle.makeShape({
+      const stopId = generateUniqueString(),
+        stopData = {};
 
-        name: `${id}_stop-at_${key}`,
+      stopData.componentId = id;
+      stopData.stopId = stopId;
+
+      const keyNumber = parseInt(key, 10),
+        keyStartX = ((keyNumber / 10) * 0.9) + 5;
+
+      stopData.currentKey = keyNumber;
+      stopData.colorSpace = color[0];
+      stopData.redValue = color[1];
+      stopData.greenValue = color[2];
+      stopData.blueValue = color[3];
+      stopData.alphaValue = color[4];
+      stopData.colorValue = colorFactory.buildColorStringFromData(color);
+
+      stopData.entity = scrawlHandle.makeShape({
+
+        name: `${id}_${stopId}`,
         group: colorTriangelGroup,
-        pathDefinition: 'm0,0 20,60 -40,0z',
-        fillStyle: colorFactory.buildColorStringFromData(color),
+        pathDefinition: 'm0,0 25,60 -50,0z',
+        fillStyle: stopData.colorValue,
         strokeStyle: 'black',
         lineWidth: 2,
         method: 'fillThenDraw',
-        start: [`${5 + (parseInt(key, 10) * 0.9) * 0.1}%`, '60%'],
+        start: [`${keyStartX}%`, '60%'],
         handle: ['center', 'top'],
-      })
+      });
+
+      createControl_colorStop(gradientWrapper, stopData, colorFactory, updateGradient, killList);
+
+      stopsState[stopId] = stopData;
     }
   };
 
-  updateColorStops();
+  createGeneralGradientControls();
+  createColorStopsControls();
 
   // Animation
   scrawlHandle.makeRender({
@@ -99,6 +283,277 @@ console.log('colors', colors);
   });
 
   killList.push(() => scrawlHandle.purge(id));
+};
+
+// We build HTML input color stop controls here rather than in form-builder.js because they are ephemeral
+const createControl_colorStop = (wrapper, data, factory, update, kill) => {
+
+  const { 
+    componentId, stopId, currentKey, 
+    redValue, greenValue, blueValue, alphaValue, 
+  } = data;
+
+  const localId = `${componentId}_${stopId}`;
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-color-stop');
+  el.dataset.localId = localId;
+
+  const row1 = document.createElement('div');
+  row1.classList.add('action-control-inputs-for-color-stop-row-1');
+
+  const localId_position = `${localId}_position`;
+  const row1Position = document.createElement('div');
+  row1Position.classList.add('action-control-inputs-for-color-stop-row-1-item');
+
+  const stopPositionLabel = document.createElement('label');
+  stopPositionLabel.classList.add('action-control-stop-position-input-label');
+  stopPositionLabel.textContent = 'Stop';
+  stopPositionLabel.setAttribute('for', localId_position);
+  row1Position.appendChild(stopPositionLabel);
+
+  const stopInput = document.createElement('input');
+  stopInput.id = localId_position;
+  stopInput.name = localId_position;
+  stopInput.type = 'number';
+  stopInput.autocomplete = 'new-password';
+  stopInput['data-lpignore'] = 'true';
+  stopInput.min = 0;
+  stopInput.max = 999;
+  stopInput.step = 1;
+  stopInput.value = currentKey;
+  row1Position.appendChild(stopInput);
+
+  const localId_color = `${localId}_color`;
+  const row1Color = document.createElement('div');
+  row1Color.classList.add('action-control-inputs-for-color-stop-row-1-item');
+
+  const colorLabel = document.createElement('label');
+  colorLabel.classList.add('action-control-color-stop-input-label');
+  colorLabel.textContent = 'Color';
+  colorLabel.setAttribute('for', localId_color);
+  row1Color.appendChild(colorLabel);
+
+  const hexValue = factory.convertRGBtoHex(redValue, greenValue, blueValue);
+
+  const colorInput = document.createElement('input');
+  colorInput.id = localId_color;
+  colorInput.name = localId_color;
+  colorInput.type = 'color';
+  colorInput.value = hexValue;
+  row1Color.appendChild(colorInput);
+
+  const localId_delete = `${localId}_delete`;
+  const deleteButton = document.createElement('button');
+  deleteButton.id = localId_delete;
+  deleteButton.name = localId_delete;
+  deleteButton.textContent = 'Delete';
+  deleteButton.type = 'button';
+
+  row1.appendChild(row1Position);
+  row1.appendChild(row1Color);
+  row1.appendChild(deleteButton);
+
+  const row2 = document.createElement('div');
+  row2.classList.add('action-control-inputs-for-color-stop-row-2');
+
+  const localId_red = `${localId}_red`;
+  const row2Red = document.createElement('div');
+  row2Red.classList.add('action-control-inputs-for-color-stop-row-2-item');
+
+  const redLabel = document.createElement('label');
+  redLabel.classList.add('action-control-red-channel-label');
+  redLabel.textContent = 'Red';
+  redLabel.setAttribute('for', localId_red);
+  row2Red.appendChild(redLabel);
+
+  const redInput = document.createElement('input');
+  redInput.id = localId_red;
+  redInput.name = localId_red;
+  redInput.type = 'number';
+  redInput.autocomplete = 'new-password';
+  redInput['data-lpignore'] = 'true';
+  redInput.min = 0;
+  redInput.max = 255;
+  redInput.step = 1;
+  redInput.value = `${redValue}`;
+  row2Red.appendChild(redInput);
+
+  const localId_green = `${localId}_green`;
+  const row2Green = document.createElement('div');
+  row2Green.classList.add('action-control-inputs-for-color-stop-row-2-item');
+
+  const greenLabel = document.createElement('label');
+  greenLabel.classList.add('action-control-green-channel-label');
+  greenLabel.textContent = 'Green';
+  greenLabel.setAttribute('for', localId_green);
+  row2Green.appendChild(greenLabel);
+
+  const greenInput = document.createElement('input');
+  greenInput.id = localId_green;
+  greenInput.name = localId_green;
+  greenInput.type = 'number';
+  greenInput.autocomplete = 'new-password';
+  greenInput['data-lpignore'] = 'true';
+  greenInput.min = 0;
+  greenInput.max = 255;
+  greenInput.step = 1;
+  greenInput.value = `${greenValue}`;
+  row2Green.appendChild(greenInput);
+
+  const localId_blue = `${localId}_blue`;
+  const row2Blue = document.createElement('div');
+  row2Blue.classList.add('action-control-inputs-for-color-stop-row-2-item');
+
+  const blueLabel = document.createElement('label');
+  blueLabel.classList.add('action-control-blue-channel-label');
+  blueLabel.textContent = 'Blue';
+  blueLabel.setAttribute('for', localId_blue);
+  row2Blue.appendChild(blueLabel);
+
+  const blueInput = document.createElement('input');
+  blueInput.id = localId_blue;
+  blueInput.name = localId_blue;
+  blueInput.type = 'number';
+  blueInput.autocomplete = 'new-password';
+  blueInput['data-lpignore'] = 'true';
+  blueInput.min = 0;
+  blueInput.max = 255;
+  blueInput.step = 1;
+  blueInput.value = `${blueValue}`;
+  row2Blue.appendChild(blueInput);
+
+  const localId_alpha = `${localId}_alpha`;
+  const row2Alpha = document.createElement('div');
+  row2Alpha.classList.add('action-control-inputs-for-color-stop-row-2-item');
+
+  const alphaLabel = document.createElement('label');
+  alphaLabel.classList.add('action-control-alpha-channel-label');
+  alphaLabel.textContent = 'Alpha';
+  alphaLabel.setAttribute('for', localId_alpha);
+  row2Alpha.appendChild(alphaLabel);
+
+  const alphaInput = document.createElement('input');
+  alphaInput.id = localId_alpha;
+  alphaInput.name = localId_alpha;
+  alphaInput.type = 'number';
+  alphaInput.autocomplete = 'new-password';
+  alphaInput['data-lpignore'] = 'true';
+  alphaInput.min = 0;
+  alphaInput.max = 1;
+  alphaInput.step = 0.01;
+  alphaInput.value = `${alphaValue}`;
+  row2Alpha.appendChild(alphaInput);
+
+  row2.appendChild(row2Red);
+  row2.appendChild(row2Green);
+  row2.appendChild(row2Blue);
+  row2.appendChild(row2Alpha);
+
+  el.appendChild(row1);
+  el.appendChild(row2);
+
+  wrapper.appendChild(el);
+
+  data.element = el;
+
+  const colorListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+    if (e && e.target) {
+
+      e.preventDefault();
+
+      const hexValue = colorInput.value;
+
+      const [red, green, blue] = factory.extractRGBfromColorString(hexValue);
+      const alpha = parseFloat(alphaInput.value);
+
+      redInput.value = data.redValue = red;
+      greenInput.value = data.greenValue = green;
+      blueInput.value = data.blueValue = blue;
+
+      data.colorValue = factory.buildColorStringFromData([data.colorSpace, red, green, blue, alpha]);
+
+      data.entity.set({
+        fillStyle: data.colorValue,
+      });
+
+      update();
+    }
+  }, colorInput);
+
+  data.colorListener = colorListener;
+
+  const rgbaListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+    if (e && e.target) {
+
+      e.preventDefault();
+
+      const red = parseInt(redInput.value, 10),
+        green = parseInt(greenInput.value, 10),
+        blue = parseInt(blueInput.value, 10),
+        alpha = parseFloat(alphaInput.value);
+
+      colorInput.value = factory.convertRGBtoHex(red, green, blue);
+      data.colorValue = factory.buildColorStringFromData([data.colorSpace, red, green, blue, alpha]);
+
+      data.redValue = red;
+      data.greenValue = green;
+      data.blueValue = blue;
+      data.alphaValue = alpha;
+
+      data.entity.set({ fillStyle: data.colorValue });
+
+      update();
+    }
+  }, [redInput, greenInput, blueInput, alphaInput]);
+
+  data.rgbaListener = rgbaListener;
+
+  const stopIndexListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+    if (e && e.target) {
+
+      e.preventDefault();
+
+      const index = parseInt(stopInput.value, 10);
+      const startX = `${((index / 10) * 0.9) + 5}%`;
+
+      data.currentKey = index;
+      data.entity.set({ startX });
+
+      update();
+    }
+  }, stopInput);
+
+  data.stopIndexListener = stopIndexListener;
+
+  const deleteListener = scrawlHandle.addNativeListener('click', (e) => {
+
+    if (e && e.target) {
+
+      e.preventDefault();
+
+      data.colorListener();
+      data.rgbaListener();
+      data.stopIndexListener();
+      data.deleteListener();
+
+      data.entity.kill();
+      data.element.remove();
+
+      delete data[data.stopId];
+
+      update();
+    }
+  }, deleteButton);
+
+  data.deleteListener = deleteListener;
+
+  kill.push(colorListener, rgbaListener, stopIndexListener, deleteListener);
+
+  return el;
 };
 
 
@@ -1144,6 +1599,20 @@ export const initCanvasComponents = (
 
   scrawlHandle = scrawl;
   getWrapper = getCurrentWrappedFilter;
+
+  // We need access to the Picture entity to get around SC aggressive caching
+  picture = scrawl.findEntity('live-view');
+
+  monochromeGrayGradient = scrawl.makeGradient({
+
+    name: 'monochrome-gray-gradient',
+    colors: [
+      [0, 'black'],
+      [999, 'white'],
+    ],
+    endX: '100%',
+  });
+
 
   return {};
 };
