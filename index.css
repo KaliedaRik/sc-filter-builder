@@ -945,6 +945,8 @@ main {
               height: 1.5rem;
               justify-self: end;
               align-self: center;
+              border-radius: 5px;
+              border: 1px solid var(--filter-bar-canvas-border);
             }
 
             & .action-control-inputs-for-color-stop-row-1 {
@@ -958,6 +960,13 @@ main {
               grid-template-columns: 1fr 1fr 1fr 1fr;
               gap: 2px;
               margin-top: 0.3rem;
+            }
+
+            & .add-new-color-stop-button {
+              width: 100%;
+              margin-top: 1rem;
+              border-radius: 5px;
+              border: 1px solid var(--filter-bar-canvas-border);
             }
           }
         }

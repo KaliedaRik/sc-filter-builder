@@ -96,9 +96,11 @@ console.log(actionWrapper);
   const gradientState = {},
     stopsState = {};
 
-  const updateGradient = () => {
+  const updateGradient = (deletion = null) => {
 
     const colors = [];
+
+    if (deletion) delete stopsState[deletion];
 
     Object.values(stopsState).forEach(item => colors.push([item.currentKey, item.colorValue]));
 
@@ -270,6 +272,63 @@ console.log(actionWrapper);
 
       stopsState[stopId] = stopData;
     }
+
+    const localId_add = `${id}_gradient_add-color-stop`;
+
+    const addButton = document.createElement('button');
+    addButton.id = localId_add;
+    addButton.name = localId_add;
+    addButton.textContent = 'Add color stop';
+    addButton.type = 'button';
+    addButton.classList.add('add-new-color-stop-button');
+
+    gradientWrapper.appendChild(addButton);
+
+    const addButtonListener = scrawlHandle.addNativeListener('click', (e) => {
+
+      if (e && e.target) {
+
+        e.preventDefault();
+
+        const stopId = generateUniqueString(),
+          stopData = {};
+
+        stopData.componentId = id;
+        stopData.stopId = stopId;
+
+        const keyNumber = Math.floor((Math.random() * 600) + 200),
+          keyStartX = ((keyNumber / 10) * 0.9) + 5;
+
+        stopData.currentKey = keyNumber;
+        stopData.colorSpace = 'rgb';
+        stopData.redValue = 0;
+        stopData.greenValue = 0;
+        stopData.blueValue = 0;
+        stopData.alphaValue = 1;
+        stopData.colorValue = 'rgb(0 0 0 /1)';
+
+        stopData.entity = scrawlHandle.makeShape({
+
+          name: `${id}_${stopId}`,
+          group: colorTriangelGroup,
+          pathDefinition: 'm0,0 25,60 -50,0z',
+          fillStyle: stopData.colorValue,
+          strokeStyle: 'black',
+          lineWidth: 2,
+          method: 'fillThenDraw',
+          start: [`${keyStartX}%`, '60%'],
+          handle: ['center', 'top'],
+        });
+
+        createControl_colorStop(gradientWrapper, stopData, colorFactory, updateGradient, killList);
+
+        stopsState[stopId] = stopData;
+
+        updateGradient();
+      }
+    }, addButton);
+
+    killList.push(addButtonListener);
   };
 
   createGeneralGradientControls();
@@ -287,6 +346,26 @@ console.log(actionWrapper);
 
 // We build HTML input color stop controls here rather than in form-builder.js because they are ephemeral
 const createControl_colorStop = (wrapper, data, factory, update, kill) => {
+
+  console.log('data', data);
+
+/*
+componentId
+stopId
+currentKey
+redValue
+greenValue
+blueValue
+alphaValue
+colorListener
+colorSpace
+colorValue
+deleteListener
+element
+entity
+rgbaListener
+stopIndexListener
+*/
 
   const { 
     componentId, stopId, currentKey, 
@@ -543,9 +622,7 @@ const createControl_colorStop = (wrapper, data, factory, update, kill) => {
       data.entity.kill();
       data.element.remove();
 
-      delete data[data.stopId];
-
-      update();
+      update(data.stopId);
     }
   }, deleteButton);
 

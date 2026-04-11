@@ -5,7 +5,7 @@
 
 // Imports
 // ------------------------------------------------------------------------
-import { getFilterSchema, getActionSchema, getFilterSchemas } from './filter-schemas.js';
+import { getFilterSchema, getActionSchema } from './filter-schemas.js';
 import { generateButtonHtml, generateFormHtml } from './form-builder.js';
 import { generateUuid } from './utilities.js';
 
@@ -375,7 +375,7 @@ A.kill = function () {
 // Set function
 A.set = function (items) {
 
-  let i, key, val, fn;
+  let i, key, val;
 
   const keys = Object.keys(items),
     keysLen = keys.length;
@@ -430,8 +430,3 @@ export const initFormObjects = (scrawl = null, getImageDisplayViews = null) => {
     actionWrapperLibrary,
   };
 };
-
-
-// Development
-// ------------------------------------------------------------------------
-console.log(getFilterSchemas());
