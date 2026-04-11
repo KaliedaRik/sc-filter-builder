@@ -2,9 +2,6 @@
 The list is evolving and I do not commit to doing anything in the current order
 
 ## Starter filters work and form building
-- Curve filters - curve generation form components
-- mapToGradient - gradient builder
-
 Create packets for the following filters
 [] - filterSchemas.blend
 [] - filterSchemas.compose
