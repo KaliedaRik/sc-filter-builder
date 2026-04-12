@@ -65,6 +65,12 @@
   --row-not-selected-background: rgb(240 240 240 / 1);
   --row-is-selected-background: rgb(255 255 200 / 1);
 
+  /* Change filter dialogue */
+  --details-background: rgb(240 240 250 / 1);
+  --summary-background: rgb(210 210 240 / 1);
+  --summary-text: rgb(20 20 120 / 1);
+  --filter-card-background: rgb(230 230 255 / 1);
+
   /* Range input control variables */
   --range-track: rgb(100 100 100 / 1);
   --range-pin-background: rgb(200 200 200 / 1);
@@ -79,8 +85,9 @@
   --matrix-warn-background: rgb(220 0 0 / 0.08);
 
   /* Filter action button top border colors */
-  --group-color-channel-filters: rgb(160 0 0 / 1);
-  --group-convolution-filters: rgb(0 160 0 / 1);
+  --viewport-good-color: rgb(0 0 200 / 1);
+  --viewport-reasonable-color: rgb(220 140 0 / 1);
+  --viewport-poor-color: rgb(200 0 0 / 1);
 }
 
 *:focus {
@@ -1027,11 +1034,14 @@ main.filter-has-been-modified #filter-controls-panel > h2 span#current-filter-mo
     font-size: 90%;
   }
 
-  &.group-color-channel-filters {
-    border-top-color: var(--group-color-channel-filters);
+  &.viewport-good-marker {
+    border-top-color: var(--viewport-good-color);
   }
-  &.group-convolution-filters {
-    border-top-color: var(--group-convolution-filters);
+  &.viewport-reasonable-marker {
+    border-top-color: var(--viewport-reasonable-color);
+  }
+  &.viewport-poor-marker {
+    border-top-color: var(--viewport-poor-color);
   }
 }
 
@@ -1203,31 +1213,49 @@ dialog {
     border-bottom: 1px dashed var(--dialog-border);
   }
 
-  & #starters-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: start;
-    align-items: stretch;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    gap: 1rem;
+  & #starter-filters-area {
 
-    & button {
-      padding: 0.5rem;
-      border-radius: 8px;
-      border: 1px solid var(--dialog-button-border);
-      background-color: var(background);
-      width: calc(120px + 1rem);
-      min-width: calc(120px + 1rem);
-      max-width: calc(120px + 1rem);
-    }
+    & details {
+      margin-bottom: 1rem;
+    
+      & summary {
+        color: var(--summary-text);
+        background-color: var(--summary-background);
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+      }
 
-    & img {
-      width: 100%;
-      border-radius: 5px;
-    }
+      & .filter-button-grid {
 
-    & p {
-      margin: 0.5rem 0 0;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: start;
+        align-items: stretch;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        gap: 1rem;
+        background-color: var(--details-background);
+        padding: 1rem;
+        border-radius: 5px;
+
+        & button {
+          padding: 0.5rem;
+          border-radius: 8px;
+          border: 1px solid var(--dialog-button-border);
+          background-color: var(--filter-card-background);
+          width: calc(120px + 1rem);
+          min-width: calc(120px + 1rem);
+          max-width: calc(120px + 1rem);
+        }
+
+        & img {
+          width: 100%;
+          border-radius: 5px;
+        }
+
+        & p {
+          margin: 0.5rem 0 0;
+        }
+      }
     }
   }
 }

@@ -3,14 +3,13 @@
 // ------------------------------------------------------------------------
 
 // Imports
-import { starterFilters } from './starter-filters.js';
+import { starterFilters, filterGroups } from './starter-filters.js';
 import { wrap } from './form-objects.js';
 
 let currentFilterWrapper = null,
   currentFilterInitialValues = null,
   currentFilterTitleElement = null,
-  canvasHandle = null,
-  scrawlHandle = null;
+  canvasHandle = null;
 
 const mainEl = document.querySelector('main'),
   filterHasChangedClass = 'filter-has-been-modified';
@@ -90,37 +89,49 @@ export const initFilterBuilder = (scrawl = null, dom = null) => {
 
   const canvas = scrawl.findCanvas('filter-builder-canvas');
 
-  scrawlHandle = scrawl;
   canvasHandle = canvas;
 
+  const frag = new DocumentFragment(),
+    starterFiltersArea = dom['starter-filters-area'];
 
-  // Build out the related modal, populating with starter-filter data
-  const starterKeys = Object.keys(starterFilters),
-    frag = new DocumentFragment(),
-    starterGrid = dom['starters-grid'];
+  filterGroups.forEach(grp => {
 
-  starterKeys.forEach(key => {
+    const details = document.createElement('details'),
+      summary = document.createElement('summary');
 
-    const obj = starterFilters[key];
+    summary.textContent = grp.title;
+    details.appendChild(summary);
 
-    const btn = document.createElement('button');
-    btn.setAttribute('data-packet', key);
-    btn.type = 'button';
+    const grid = document.createElement('div');
+    grid.classList.add('filter-button-grid');
 
-    const img = document.createElement('img');
-    img.src = obj.imageSource;
+    grp.filters.forEach(key => {
 
-    const label = document.createElement('p');
-    label.textContent = obj.title;
+      const obj = starterFilters[key];
 
-    btn.appendChild(img);
-    btn.appendChild(label);
-    frag.appendChild(btn);
+      const btn = document.createElement('button');
+      btn.setAttribute('data-packet', key);
+      btn.type = 'button';
 
-    scrawl.addNativeListener('click', requestStarterFilter, btn);
+      const img = document.createElement('img');
+      img.src = obj.imageSource;
+
+      const label = document.createElement('p');
+      label.textContent = obj.title;
+
+      btn.appendChild(img);
+      btn.appendChild(label);
+      grid.appendChild(btn);
+
+      scrawl.addNativeListener('click', requestStarterFilter, btn);
+    });
+
+    if (grp.openOnLoad) details.setAttribute('open', '');
+    details.appendChild(grid);
+    frag.appendChild(details);
   });
 
-  starterGrid.replaceChildren(frag);
+  starterFiltersArea.replaceChildren(frag);
 
 
   // We always start with the desaturate (grayscale) filter on page load

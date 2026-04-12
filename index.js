@@ -61,7 +61,7 @@ const dom = scrawl.initializeDomInputs([
   ['by-id', 'change-filter-modal'],
   ['by-id', 'change-filter-warning-message'],
   ['button', 'load-filter-action', 'Import filter packet'],
-  ['by-id', 'starters-grid'],
+  ['by-id', 'starter-filters-area'],
   ['by-id', 'current-filter-name'],
 
   // Capture handles to the minimap HTML elements

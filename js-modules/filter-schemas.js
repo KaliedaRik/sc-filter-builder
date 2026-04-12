@@ -61,8 +61,8 @@ const actionSchemas = {
   ['alpha-to-channels']: {
     label: 'Copy alpha to channels',
     description: 'Copies an input\'s alpha channel value over to each selected channel\'s value or, alternatively, sets that channel\'s value to zero, or leaves the channel\'s value unchanged. Setting the appropriate includeChannel flags will copy the alpha channel value to that channel; when that flag is false, setting the appropriate excludeChannel flag will set that channel\'s value to zero.',
-    group: 'Color channel filter',
     action: 'alpha-to-channels',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -114,8 +114,8 @@ const actionSchemas = {
   ['alpha-to-luminance']: {
     label: 'Copy alpha to luminance',
     description: '',
-    group: 'OK color space filter',
     action: 'alpha-to-luminance',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -125,8 +125,8 @@ const actionSchemas = {
   ['area-alpha']: {
     label: 'Area alpha',
     description: 'Places a tile schema across the input, quarters each tile and then sets the alpha channels of the pixels in selected quarters of each tile to the appropriate value specified in the areaAlphaLevels attribute.',
-    group: 'Alpha channel filter',
     action: 'area-alpha',
+    viewportAccuracy: 'poor',
     hasOrigin: true,
     controls: {
       ...requiredControls,
@@ -203,8 +203,8 @@ const actionSchemas = {
   ['average-channels']: {
     label: 'Average channels',
     description: 'Calculates an average value from each pixel\'s included channels and applies that value to all channels that have not been specifically excluded; excluded channels have their values set to 0.',
-    group: 'Color channel filter',
     action: 'average-channels',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -256,8 +256,8 @@ const actionSchemas = {
   ['blend']: {
     label: 'Blend operations',
     description: '',
-    group: 'Composition filter',
     action: 'blend',
+    viewportAccuracy: 'poor',
     hasOrigin: true,
     controls: {
       ...requiredControls,
@@ -302,8 +302,8 @@ const actionSchemas = {
   ['blur']: {
     label: 'Box blur',
     description: '',
-    group: 'Convolution filter',
     action: 'blur',
+    viewportAccuracy: 'reasonable',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -422,8 +422,8 @@ const actionSchemas = {
   ['channels-to-alpha']: {
     label: 'Copy channels to alpha',
     description: 'Calculates an average value from each pixel\'s included channels and applies that value to the pixel\'s alpha channel.',
-    group: 'Alpha channel filter',
     action: 'channels-to-alpha',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -454,8 +454,8 @@ const actionSchemas = {
   ['chroma']: {
     label: 'Chroma clear by ranges',
     description: 'Produces a chroma key compositing effect across the input, using an array of range arrays to determine whether a pixel\'s values lie entirely within a range\'s values and, if true, sets that pixel\'s alpha channel value to zero.',
-    group: 'Alpha channel filter',
     action: 'chroma',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -502,8 +502,8 @@ const actionSchemas = {
   ['clamp-channels']: {
     label: 'Clamp channels',
     description: 'Clamp each color channel to a range determined by a set of low and high channel values.',
-    group: 'Color channel filter',
     action: 'clamp-channels',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -573,8 +573,8 @@ const actionSchemas = {
   ['colors-to-alpha']: {
     label: 'Chroma clear by reference',
     description: 'Produces a chroma key compositing effect across the input by determining the alpha channel value for each pixel depending on the closeness to that pixel\'s color channel values to a reference color supplied in the red, green and blue arguments.',
-    group: 'Alpha channel filter',
     action: 'colors-to-alpha',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -634,8 +634,8 @@ const actionSchemas = {
   ['compose']: {
     label: 'Composition operations',
     description: '',
-    group: 'Composition filter',
     action: 'compose',
+    viewportAccuracy: 'poor',
     hasOrigin: true,
     controls: {
       ...requiredControls,
@@ -680,8 +680,8 @@ const actionSchemas = {
   ['corrode']: {
     label: 'Corrode',
     description: '',
-    group: 'Convolution filter',
     action: 'corrode',
+    viewportAccuracy: 'reasonable',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -767,8 +767,8 @@ const actionSchemas = {
   ['deconvolute']: {
     label: 'Deconvolute',
     description: '',
-    group: 'OK color space filter',
     action: 'deconvolute',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -862,8 +862,8 @@ const actionSchemas = {
   ['displace']: {
     label: 'Displace',
     description: '',
-    group: 'Displacement filter',
     action: 'displace',
+    viewportAccuracy: 'poor',
     hasOrigin: true,
     controls: {
       ...requiredControls,
@@ -950,8 +950,8 @@ const actionSchemas = {
   ['emboss']: {
     label: 'Emboss',
     description: '',
-    group: 'Convolution filter',
     action: 'emboss',
+    viewportAccuracy: 'reasonable',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1005,8 +1005,8 @@ const actionSchemas = {
   ['flood']: {
     label: 'Flood',
     description: 'Creates a uniform sheet of the required color, which can then be used by other filter actions.',
-    group: 'Color channel filter',
     action: 'flood',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1063,8 +1063,8 @@ const actionSchemas = {
   ['gaussian-blur']: {
     label: 'Gaussian blur',
     description: '',
-    group: 'Convolution filter',
     action: 'gaussian-blur',
+    viewportAccuracy: 'poor',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1146,8 +1146,8 @@ const actionSchemas = {
   ['glitch']: {
     label: 'Glitch',
     description: '',
-    group: 'Displacement filter',
     action: 'glitch',
+    viewportAccuracy: 'poor',
     hasOrigin: true,
     controls: {
       ...requiredControls,
@@ -1305,8 +1305,8 @@ const actionSchemas = {
   ['grayscale']: {
     label: 'Desaturate',
     description: '',
-    group: 'Color channel filter',
     action: 'grayscale',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1316,8 +1316,8 @@ const actionSchemas = {
   ['invert-channels']: {
     label: 'Invert colors',
     description: '',
-    group: 'Color channel filter',
     action: 'invert-channels',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1348,8 +1348,8 @@ const actionSchemas = {
   ['lock-channels-to-levels']: {
     label: 'Posterize by value',
     description: '',
-    group: 'Color channel filter',
     action: 'lock-channels-to-levels',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1385,10 +1385,10 @@ const actionSchemas = {
   },
 
   ['luminance-to-alpha']: {
-    label: 'Luminance to alpha',
+    label: 'Copy luminance to alpha',
     description: '',
-    group: 'OK color space filter',
     action: 'luminance-to-alpha',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1398,8 +1398,8 @@ const actionSchemas = {
   ['map-to-gradient']: {
     label: 'Map to gradient',
     description: '',
-    group: 'Color channel filter',
     action: 'map-to-gradient',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1415,7 +1415,7 @@ const actionSchemas = {
         default: null,
         key: 'gradient',
         label: 'Gradient',
-        description: 'Expects to receive a Scrawl-canvas LinearGradient object, or the name value of the object. We need to create a gradient builder mini-tool before we can use this filter in the main tool',
+        description: '',
       },
     },
   },
@@ -1423,8 +1423,8 @@ const actionSchemas = {
   ['matrix']: {
     label: 'Matrix',
     description: '',
-    group: 'Convolution filter',
     action: 'matrix',
+    viewportAccuracy: 'poor',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1523,8 +1523,8 @@ const actionSchemas = {
   ['modify-ok-channels']: {
     label: 'Modify OK channels',
     description: '',
-    group: 'OK color space filter',
     action: 'modify-ok-channels',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1564,8 +1564,8 @@ const actionSchemas = {
   ['modulate-channels']: {
     label: 'Modulate channels',
     description: '',
-    group: 'Color channel filter',
     action: 'modulate-channels',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1622,8 +1622,8 @@ const actionSchemas = {
   ['modulate-ok-channels']: {
     label: 'Modulate OK channels',
     description: '',
-    group: 'OK color space filter',
     action: 'modulate-ok-channels',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1663,8 +1663,8 @@ const actionSchemas = {
   ['negative']: {
     label: 'OK Negative',
     description: 'Invert OKLab channel colors',
-    group: 'OK color space filter',
     action: 'negative',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1674,8 +1674,8 @@ const actionSchemas = {
   ['newsprint']: {
     label: 'Newsprint',
     description: '',
-    group: 'Convolution filter',
     action: 'newsprint',
+    viewportAccuracy: 'poor',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1695,8 +1695,8 @@ const actionSchemas = {
   ['offset']: {
     label: 'Offset',
     description: '',
-    group: 'Displacement filter',
     action: 'offset',
+    viewportAccuracy: 'poor',
     hasOrigin: true,
     controls: {
       ...requiredControls,
@@ -1793,8 +1793,8 @@ const actionSchemas = {
   ['ok-perceptual-curves']: {
     label: 'Tone curve',
     description: '',
-    group: 'OK color space filter',
     action: 'ok-perceptual-curves',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1816,8 +1816,8 @@ const actionSchemas = {
   ['pixelate']: {
     label: 'Pixelate',
     description: '',
-    group: 'Convolution filter',
     action: 'pixelate',
+    viewportAccuracy: 'reasonable',
     hasOrigin: true,
     controls: {
       ...requiredControls,
@@ -1895,8 +1895,8 @@ const actionSchemas = {
   ['process-image']: {
     label: 'Image asset',
     description: 'Upload an image asset for use in other actions.',
-    group: 'Asset',
     action: 'process-image',
+    viewportAccuracy: 'poor',
     hasOrigin: true,
     controls: {
       lineOut: {
@@ -1959,8 +1959,8 @@ const actionSchemas = {
   ['random-noise']: {
     label: 'Random noise',
     description: '',
-    group: 'Displacement filter',
     action: 'random-noise',
+    viewportAccuracy: 'poor',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -2057,8 +2057,8 @@ const actionSchemas = {
   ['reduce-palette']: {
     label: 'Reduce palette',
     description: '',
-    group: 'OK color space filter',
     action: 'reduce-palette',
+    viewportAccuracy: 'reasonable',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -2100,8 +2100,8 @@ const actionSchemas = {
   ['rotate-hue']: {
     label: 'Rotate hue',
     description: '',
-    group: 'OK color space filter',
     action: 'rotate-hue',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -2121,8 +2121,8 @@ const actionSchemas = {
   ['set-channel-to-level']: {
     label: 'Set channel to level',
     description: '',
-    group: 'Color channel filter',
     action: 'set-channel-to-level',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -2168,10 +2168,10 @@ const actionSchemas = {
   },
 
   ['step-channels']: {
-    label: 'Channel step',
+    label: 'Posterize by step',
     description: '',
-    group: 'Color channel filter',
     action: 'step-channels',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -2224,8 +2224,8 @@ const actionSchemas = {
   ['swirl']: {
     label: 'Swirl',
     description: '',
-    group: 'Displacement filter',
     action: 'swirl',
+    viewportAccuracy: 'poor',
     hasOrigin: true,
     controls: {
       ...requiredControls,
@@ -2256,8 +2256,8 @@ const actionSchemas = {
   ['threshold']: {
     label: 'Threshold',
     description: '',
-    group: 'Color channel filter',
     action: 'threshold',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -2372,8 +2372,8 @@ const actionSchemas = {
   ['tiles']: {
     label: 'Tiles',
     description: '',
-    group: 'Convolution filter',
     action: 'tiles',
+    viewportAccuracy: 'poor',
     hasOrigin: true,
     controls: {
       ...requiredControls,
@@ -2385,7 +2385,6 @@ const actionSchemas = {
         label: 'Tile mode',
         description: '',
       },
-// Check to see if originX/originY can take % values - if not, update filter to make this happen
       originX: {
         controlType: 'percentage-number',
         default: 50,
@@ -2528,8 +2527,8 @@ const actionSchemas = {
   ['tint-channels']: {
     label: 'Tint',
     description: '',
-    group: 'Color channel filter',
     action: 'tint-channels',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -2629,8 +2628,8 @@ const actionSchemas = {
   ['unsharp']: {
     label: 'Unsharp',
     description: '',
-    group: 'OK color space filter',
     action: 'unsharp',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -2697,8 +2696,8 @@ const actionSchemas = {
   ['vary-channels-by-weights']: {
     label: 'Color curve',
     description: '',
-    group: 'Color channel filter',
     action: 'vary-channels-by-weights',
+    viewportAccuracy: 'good',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -2722,8 +2721,8 @@ const actionSchemas = {
   ['zoom-blur']: {
     label: 'Zoom blur',
     description: '',
-    group: 'Convolution filter',
     action: 'zoom-blur',
+    viewportAccuracy: 'reasonable',
     hasOrigin: true,
     controls: {
       ...requiredControls,
@@ -2971,6 +2970,7 @@ F.presentation = [{
 // blue ('average-channels' variant)
 F = filterSchemas.blue = structuredClone(actionSchemas['average-channels']);
 F.label = 'Blue channel';
+F.viewportAccuracy = 'good';
 F.description = '';
 F.controls.excludeRed.default = true;
 F.controls.excludeGreen.default = true;
@@ -2980,10 +2980,7 @@ F.presentation = [...defaultPresentation];
 F = filterSchemas.blur = structuredClone(actionSchemas['blur']);
 F.controls.radius = {
   controlType: 'number',
-  alternativeControl: true,
   alternativeFor: ['radiusHorizontal', 'radiusVertical'],
-  alternativeAction: 'set-alternatives-to-this',
-  sync: 'down-only',
   default: 1,
   minValue: 0,
   maxValue: 60,
@@ -2994,10 +2991,7 @@ F.controls.radius = {
 };
 F.controls.step = {
   controlType: 'number',
-  alternativeControl: true,
   alternativeFor: ['stepHorizontal', 'stepVertical'],
-  alternativeAction: 'set-alternatives-to-this',
-  sync: 'down-only',
   default: 1,
   minValue: 0,
   maxValue: 20,
@@ -3008,10 +3002,7 @@ F.controls.step = {
 };
 F.controls.passes = {
   controlType: 'number',
-  alternativeControl: true,
   alternativeFor: ['passesHorizontal', 'passesVertical'],
-  alternativeAction: 'set-alternatives-to-this',
-  sync: 'down-only',
   default: 1,
   minValue: 0,
   maxValue: 10,
@@ -3053,13 +3044,11 @@ F.presentation = [{
 // brightness ('modulate-channels' variant)
 F = filterSchemas.brightness = structuredClone(actionSchemas['modulate-channels']);
 F.label = 'Brightness';
+F.viewportAccuracy = 'good';
 F.description = '';
 F.controls.level = {
   controlType: 'number',
-  alternativeControl: true,
   alternativeFor: ['red', 'green', 'blue'],
-  alternativeAction: 'set-alternatives-to-this',
-  sync: 'down-only',
   default: 1,
   key: 'level',
   minValue: 0,
@@ -3101,6 +3090,7 @@ F.presentation = [{
 // channels ('modulate-channels' variant)
 F = filterSchemas.channels = structuredClone(actionSchemas['modulate-channels']);
 F.label = 'Modulate channels';
+F.viewportAccuracy = 'good';
 F.description = '';
 F.presentation = [{
     header: 'Connections',
@@ -3140,10 +3130,7 @@ F.presentation = [...defaultPresentation];
 F = filterSchemas.chroma = structuredClone(actionSchemas['chroma']);
 F.controls.feather = {
   controlType: 'number',
-  alternativeControl: true,
   alternativeFor: ['featherRed', 'featherGreen', 'featherBlue'],
-  alternativeAction: 'set-alternatives-to-this',
-  sync: 'down-only',
   default: 0,
   key: 'feather',
   minValue: 0,
@@ -3174,10 +3161,7 @@ F.presentation = [{
 F = filterSchemas.chromakey = structuredClone(actionSchemas['colors-to-alpha']);
 F.controls.reference = {
   controlType: 'color',
-  alternativeControl: true,
   alternativeFor: ['red', 'green', 'blue'],
-  alternativeAction: 'set-color-channels-to-this',
-  sync: 'down-and-up',
   default: 'rgb(0 255 0)',
   key: 'reference',
   label: 'Reference color',
@@ -3205,10 +3189,7 @@ F.presentation = [{
 F = filterSchemas.clampChannels = structuredClone(actionSchemas['clamp-channels']);
 F.controls.lowColor = {
   controlType: 'color',
-  alternativeControl: true,
   alternativeFor: ['lowRed', 'lowGreen', 'lowBlue'],
-  alternativeAction: 'set-color-channels-to-this',
-  sync: 'down-and-up',
   default: 'rgb(0 0 0)',
   key: 'lowColor',
   label: 'Low color',
@@ -3216,10 +3197,7 @@ F.controls.lowColor = {
 };
 F.controls.highColor = {
   controlType: 'color',
-  alternativeControl: true,
   alternativeFor: ['highRed', 'highGreen', 'highBlue'],
-  alternativeAction: 'set-color-channels-to-this',
-  sync: 'down-and-up',
   default: 'rgb(255 255 255)',
   key: 'highColor',
   label: 'High color',
@@ -3306,6 +3284,7 @@ F.presentation = [{
 // cyan ('average-channels' variant)
 F = filterSchemas.cyan = structuredClone(actionSchemas['average-channels']);
 F.label = 'Cyan mix';
+F.viewportAccuracy = 'good';
 F.description = '';
 F.controls.excludeRed.default = true;
 F.controls.includeGreen.default = true;
@@ -3355,6 +3334,7 @@ F.presentation = [{
 // edgeDetect ('matrix' variant)
 F = filterSchemas.edgeDetect = structuredClone(actionSchemas['matrix']);
 F.label = 'Edge detect';
+F.viewportAccuracy = 'reasonable';
 F.description = '';
 F.controls.weights.default = [0, 1, 0, 1, -4, 1, 0, 1, 0];
 F.presentation = [...defaultPresentation];
@@ -3383,10 +3363,7 @@ F.presentation = [{
 F = filterSchemas.flood = structuredClone(actionSchemas['flood']);
 F.controls.reference = {
   controlType: 'color',
-  alternativeControl: true,
   alternativeFor: ['red', 'green', 'blue', 'alpha'],
-  alternativeAction: 'set-color-channels-to-this',
-  sync: 'down-and-up',
   default: 'rgb(0 0 0 / 255)',
   key: 'reference',
   label: 'Reference color',
@@ -3461,6 +3438,7 @@ F.presentation = [{
 // gray ('average-channels' variant)
 F = filterSchemas.gray = structuredClone(actionSchemas['average-channels']);
 F.label = 'Gray monochrome';
+F.viewportAccuracy = 'good';
 F.description = '';
 F.controls.includeRed.default = true;
 F.controls.includeGreen.default = true;
@@ -3474,6 +3452,7 @@ F.presentation = [...defaultPresentation];
 // green ('average-channels' variant)
 F = filterSchemas.green = structuredClone(actionSchemas['average-channels']);
 F.label = 'Green channel';
+F.viewportAccuracy = 'good';
 F.description = '';
 F.controls.excludeRed.default = true;
 F.controls.excludeBlue.default = true;
@@ -3509,6 +3488,7 @@ F.presentation = [...defaultPresentation];
 // magenta ('average-channels' variant)
 F = filterSchemas.magenta = structuredClone(actionSchemas['average-channels']);
 F.label = 'Magenta mix';
+F.viewportAccuracy = 'good';
 F.description = '';
 F.controls.includeRed.default = true;
 F.controls.excludeGreen.default = true;
@@ -3610,6 +3590,7 @@ F.presentation = [{
 // notblue ('set-channel-to-level' variant)
 F = filterSchemas.notblue = structuredClone(actionSchemas['set-channel-to-level']);
 F.label = 'Exclude blue channel';
+F.viewportAccuracy = 'good';
 F.description = '';
 F.controls.includeBlue.default = true;
 F.presentation = [...defaultPresentation];
@@ -3617,6 +3598,7 @@ F.presentation = [...defaultPresentation];
 // notgreen ('set-channel-to-level' variant)
 F = filterSchemas.notgreen = structuredClone(actionSchemas['set-channel-to-level']);
 F.label = 'Exclude green channel';
+F.viewportAccuracy = 'good';
 F.description = '';
 F.controls.includeGreen.default = true;
 F.presentation = [...defaultPresentation];
@@ -3624,6 +3606,7 @@ F.presentation = [...defaultPresentation];
 // notred ('set-channel-to-level' variant)
 F = filterSchemas.notred = structuredClone(actionSchemas['set-channel-to-level']);
 F.label = 'Exclude red channel';
+F.viewportAccuracy = 'good';
 F.description = '';
 F.controls.includeRed.default = true;
 F.presentation = [...defaultPresentation];
@@ -3632,10 +3615,7 @@ F.presentation = [...defaultPresentation];
 F = filterSchemas.offset = structuredClone(actionSchemas['offset']);
 F.controls.offsetX = {
   controlType: 'number',
-  alternativeControl: true,
   alternativeFor: ['offsetRedX', 'offsetGreenX', 'offsetBlueX', 'offsetAlphaX'],
-  alternativeAction: 'set-alternatives-to-this',
-  sync: 'down-only',
   default: 0,
   key: 'offsetX',
   minValue: -500,
@@ -3646,10 +3626,7 @@ F.controls.offsetX = {
 };
 F.controls.offsetY = {
   controlType: 'number',
-  alternativeControl: true,
   alternativeFor: ['offsetRedY', 'offsetGreenY', 'offsetBlueY', 'offsetAlphaY'],
-  alternativeAction: 'set-alternatives-to-this',
-  sync: 'down-only',
   default: 0,
   key: 'offsetY',
   minValue: -500,
@@ -3748,6 +3725,7 @@ F.presentation = [{
 // red ('average-channels' variant)
 F = filterSchemas.red = structuredClone(actionSchemas['average-channels']);
 F.label = 'Red channel';
+F.viewportAccuracy = 'good';
 F.description = '';
 F.controls.excludeGreen.default = true;
 F.controls.excludeBlue.default = true;
@@ -3788,14 +3766,12 @@ F.presentation = [{
 // saturation  ('modulate-channels' variant)
 F = filterSchemas.saturation = structuredClone(actionSchemas['modulate-channels']);
 F.label = 'Saturation';
+F.viewportAccuracy = 'good';
 F.description = '';
 F.controls.saturation.default = true;
 F.controls.level = {
   controlType: 'number',
-  alternativeControl: true,
   alternativeFor: ['red', 'green', 'blue'],
-  alternativeAction: 'set-alternatives-to-this',
-  sync: 'down-only',
   default: 1,
   key: 'level',
   minValue: 0,
@@ -3821,6 +3797,7 @@ F.presentation = [{
 // sepia ('tint' variant)
 F = filterSchemas.sepia = structuredClone(actionSchemas['tint-channels']);
 F.label = 'Sepia tint';
+F.viewportAccuracy = 'good';
 F.description = '';
 F.controls.redInRed.default = 0.393;
 F.controls.redInGreen.default = 0.349;
@@ -3856,6 +3833,7 @@ F.presentation = [{
 // sharpen ('matrix' variant)
 F = filterSchemas.sharpen = structuredClone(actionSchemas['matrix']);
 F.label = 'Sharpen';
+F.viewportAccuracy = 'good';
 F.description = '';
 F.controls.weights.default = [0, -1, 0, -1, 5, -1, 0, -1, 0];
 F.presentation = [...defaultPresentation];
@@ -3947,10 +3925,7 @@ F.presentation = [{
 F = filterSchemas.threshold = structuredClone(actionSchemas['threshold']);
 F.controls.referenceColor = {
   controlType: 'color',
-  alternativeControl: true,
   alternativeFor: ['red', 'green', 'blue'],
-  alternativeAction: 'set-color-channels-to-this',
-  sync: 'down-and-up',
   default: 'rgb(127 127 127 / 1)',
   key: 'referenceColor',
   label: 'Reference',
@@ -4030,10 +4005,7 @@ F.presentation = [{
 F = filterSchemas.tint = structuredClone(actionSchemas['tint-channels']);
 F.controls.redColor = {
   controlType: 'unit-color',
-  alternativeControl: true,
   alternativeFor: ['redInRed', 'greenInRed', 'blueInRed'],
-  alternativeAction: 'set-color-channels-to-this',
-  sync: 'down-and-up',
   default: 'rgb(255 0 0)',
   key: 'redColor',
   label: 'Red color',
@@ -4041,10 +4013,7 @@ F.controls.redColor = {
 };
 F.controls.greenColor = {
   controlType: 'unit-color',
-  alternativeControl: true,
   alternativeFor: ['redInGreen', 'greenInGreen', 'blueInGreen'],
-  alternativeAction: 'set-color-channels-to-this',
-  sync: 'down-and-up',
   default: 'rgb(0 255 0)',
   key: 'greenColor',
   label: 'Green color',
@@ -4052,10 +4021,7 @@ F.controls.greenColor = {
 };
 F.controls.blueColor = {
   controlType: 'unit-color',
-  alternativeControl: true,
   alternativeFor: ['redInBlue', 'greenInBlue', 'blueInBlue'],
-  alternativeAction: 'set-color-channels-to-this',
-  sync: 'down-and-up',
   default: 'rgb(0 0 255)',
   key: 'blueColor',
   label: 'Blue color',
@@ -4108,6 +4074,7 @@ F.presentation = [{
 // yellow ('average-channels' variant)
 F = filterSchemas.yellow = structuredClone(actionSchemas['average-channels']);
 F.label = 'Yellow mix';
+F.viewportAccuracy = 'good';
 F.description = '';
 F.controls.includeRed.default = true;
 F.controls.includeGreen.default = true;
@@ -4159,6 +4126,3 @@ export const getActionSchema = (name) => {
   if (actionSchemas[name]) return structuredClone(actionSchemas[name]);
   return null;
 };
-
-// Temporary, just to test there's no code mistakes in the schemas while developing them
-export const getFilterSchemas = () => JSON.parse(JSON.stringify(filterSchemas));

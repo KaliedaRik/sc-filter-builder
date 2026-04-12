@@ -24,8 +24,9 @@ let scrawlHandle = null,
 // CSS considerations
 // ------------------------------------------------------------------------
 const actionGroupCSS = {
-  ['Color channel filter']: 'group-color-channel-filters',
-  ['Convolution filter']: 'group-convolution-filters',
+  good: 'viewport-good-marker',
+  reasonable: 'viewport-reasonable-marker',
+  poor: 'viewport-poor-marker'
 };
 
 
@@ -36,7 +37,7 @@ export const generateButtonHtml = (actionWrapper) => {
   const button = document.createElement('button');
   button.id = `button_${actionWrapper.id}`;
   button.classList.add('graph-action-button');
-  button.classList.add(actionGroupCSS[actionWrapper.formSchema.group]);
+  button.classList.add(actionGroupCSS[actionWrapper.formSchema.viewportAccuracy]);
   button.setAttribute('data-action-wrapper', actionWrapper.id);
 
   const title = document.createElement('h2');
@@ -514,8 +515,7 @@ const createControl_unitColor = (data, actionWrapper) => {
 
 const createControl_colorArray = (data, actionWrapper) => {
 
-console.log('createControl_colorArray actionWrapper', actionWrapper, 'data', data);
-  const { formId, formSchema, killList } = actionWrapper;
+  const { formId, killList } = actionWrapper;
 
   const localId = `${formId}_${data.key}`;
 
@@ -1484,7 +1484,7 @@ const createControl_number = (data, actionWrapper) => {
       const target = e.target;
       const value = (data.step < 1) ? parseFloat(target.value) : parseInt(target.value, 10);
 
-      if (data.alternativeControl) {
+      if (data.alternativeFor && Array.isArray(data.alternativeFor)) {
 
         data.alternativeFor.forEach(alt => actionWrapper.set({ [alt]: value }));
       }
@@ -1561,7 +1561,7 @@ const createControl_percentageNumber = (data, actionWrapper) => {
 
       const value = (data.step < 1) ? parseFloat(target.value) : parseInt(target.value, 10);
 
-      if (data.alternativeControl) {
+      if (data.alternativeFor && Array.isArray(data.alternativeFor)) {
 
         data.alternativeFor.forEach(alt => actionWrapper.set({ [alt]: `${value}%` }));
       }
