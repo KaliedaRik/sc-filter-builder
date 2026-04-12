@@ -379,46 +379,16 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
 
         const pin = draggedStop.artefact;
 
-        if (pin && draggedStopState && draggedStopInput) {
-
-          const [x, y] = pin.get('position');
-
-          if (x < 51 || x > 949) currentStop('exit');
-          else {
-
-            let pos = Math.floor((x - 50) * 1.1111);
-
-            if (pos < 3) pos = 0;
-            else if (pos > 996) pos = 999;
-
-            draggedStopState.currentKey = pos;
-            draggedStopInput.value = pos;
-
-            updateGradient();
-          }
-        }
-      }
-    },
-
-    updateOnPrematureExit: () => {
-
-      if (typeof draggedStop !== 'boolean' && draggedStop.artefact) {
-
-        const pin = draggedStop.artefact;
-
         if (pin) {
 
           let [x, y] = pin.get('position');
-          if (x < 51) x = 51;
-          else if (x > 949) x = 949;
+          if (x < 50) x = 50;
+          else if (x > 950) x = 950;
 
-          pin.set({
-            start: [x, y],
-            lockXTo: 'start',
-          });
+          pin.set({ startX: x });
 
           if (draggedStopState && draggedStopInput) {
-
+            
             let pos = Math.floor((x - 50) * 1.1111);
 
             if (pos < 3) pos = 0;
@@ -431,9 +401,6 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
           }
         }
       }
-      draggedStop = false;
-      draggedStopState = null;
-      draggedStopInput = null;
     },
 
     updateOnEnd: () => {
@@ -445,8 +412,8 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
         if (pin) {
 
           let [x, y] = pin.get('position');
-          if (x < 51) x = 51;
-          else if (x > 949) x = 949;
+          if (x < 50) x = 50;
+          else if (x > 950) x = 950;
 
           pin.set({
             start: [x, y],
