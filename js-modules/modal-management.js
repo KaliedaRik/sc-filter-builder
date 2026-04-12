@@ -37,15 +37,15 @@ const closeModal = (fn = null) => {
 
   if (m) m.close();
 
-  if (fn) fn();
+  if (fn && typeof fn === 'function') fn();
 };
 
 
 // Export for initialization 
 export const initModalManagement = (scrawl = null, dom = null) => {
 
-  if (!scrawl) throw new Error('Scrawl library not passed to initImageImport function');
-  if (!dom) throw new Error('DOM mappings not passed to initImageImport function');
+  if (!scrawl) throw new Error('Scrawl library not passed to initModalManagement function');
+  if (!dom) throw new Error('DOM mappings not passed to initModalManagement function');
 
   // Setup: instructions modal
   const instructionsModal = dom['instructions-modal'],
@@ -75,6 +75,15 @@ export const initModalManagement = (scrawl = null, dom = null) => {
   scrawl.addNativeListener('click', () => openModal(downloadsModal), downloadsButton);
   scrawl.addNativeListener('click', closeModal, downloadsCloseButton);
   scrawl.addNativeListener('close', closeModal, downloadsModal);
+
+  // Setup: instructions modal
+  const changeFiltersModal = dom['change-filter-modal'],
+    changeFiltersButton = dom['change-filter-modal-button'],
+    changeFiltersCloseButton = dom['change-filter-modal-close'];
+
+  scrawl.addNativeListener('click', () => openModal(changeFiltersModal), changeFiltersButton);
+  scrawl.addNativeListener('click', closeModal, changeFiltersCloseButton);
+  scrawl.addNativeListener('close', closeModal, changeFiltersModal);
 
   return {};
 };

@@ -1,1 +1,0 @@
-["pixelate-starter-filter","Filter","filter",{"name":"pixelate-starter-filter","actions":[{"action":"pixelate","lineIn":"","lineOut":"","opacity":1,"tileWidth":10,"tileHeight":10,"offsetX":0,"offsetY":0,"includeRed":true,"includeGreen":true,"includeBlue":true,"includeAlpha":false}]}]

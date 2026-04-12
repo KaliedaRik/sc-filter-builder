@@ -263,11 +263,12 @@ export const closeImageModalList = () => {
 
 
 // Export for initialization
-export const initImageImport = (scrawl = null, dom = null, canvas = null) => {
+export const initImageImport = (scrawl = null, dom = null) => {
 
   if (!scrawl) throw new Error('Scrawl library not passed to initImageImport function');
   if (!dom) throw new Error('DOM mappings not passed to initImageImport function');
-  if (!canvas) throw new Error('Canvas element not passed to initImageImport function');
+
+  const canvas = scrawl.findCanvas('main-canvas');
 
   // Make scrawl available to module functions
   scrawlHandle = scrawl;

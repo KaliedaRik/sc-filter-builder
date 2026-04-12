@@ -15,6 +15,10 @@ import { initSplitter } from './js-modules/dom-layout-ui.js';
 import { initModalManagement } from './js-modules/modal-management.js';
 import { initImageImport } from './js-modules/image-import.js';
 import { initImageDisplay } from './js-modules/image-display.js';
+import { initFilterBuilder } from './js-modules/filter-builder.js';
+import { initCanvasComponents } from './js-modules/canvas-ui-components.js';
+import { initFormBuilder } from './js-modules/form-builder.js';
+import { initFormObjects } from './js-modules/form-objects.js';
 
 
 // ------------------------------------------------------------------------
@@ -22,8 +26,10 @@ import { initImageDisplay } from './js-modules/image-display.js';
 // ------------------------------------------------------------------------
 const dom = scrawl.initializeDomInputs([
 
-  // Capture handle to splitter
+  // Capture handle to key parts of page
   ['by-id', 'splitter'],
+  ['by-id', 'filter-controls-panel'],
+  ['by-id', 'filter-builder-area-hold'],
 
   // Capture handles for the instructions modal
   ['button', 'instructions-modal-button', 'Instructions'],
@@ -49,6 +55,15 @@ const dom = scrawl.initializeDomInputs([
   ['by-id', 'downloads-modal'],
   ['button', 'process-and-download-action', 'Process and download images'],
 
+  // Capture handles for the change-filter functionality
+  ['button', 'change-filter-modal-button', 'Change filter'],
+  ['button', 'change-filter-modal-close', 'Close'],
+  ['by-id', 'change-filter-modal'],
+  ['by-id', 'change-filter-warning-message'],
+  ['button', 'load-filter-action', 'Import filter packet'],
+  ['by-id', 'starter-filters-area'],
+  ['by-id', 'current-filter-name'],
+
   // Capture handles to the minimap HTML elements
   ['input', 'minimap-horizontal', '50'],
   ['input', 'minimap-vertical', '50'],
@@ -65,14 +80,30 @@ const dom = scrawl.initializeDomInputs([
 // Start the page running
 // ------------------------------------------------------------------------
 initSplitter(scrawl, dom);
+
 initModalManagement(scrawl, dom);
-initImageImport(scrawl, dom, mainCanvas);
+
+initImageImport(scrawl, dom);
 
 const {
   displayDefaultScreen,
-  liveView,
   checkLiveView,
-} = initImageDisplay(scrawl, dom, mainCanvas);
+  getImageDisplayViews,
+  displayFilterFlag,
+} = initImageDisplay(scrawl, dom);
+
+const {
+  getCurrentWrappedFilter,
+  actionWrapperLibrary,
+} = initFormObjects(scrawl, getImageDisplayViews);
+
+initCanvasComponents(scrawl, getCurrentWrappedFilter);
+
+initFormBuilder(scrawl, dom, getCurrentWrappedFilter, actionWrapperLibrary);
+
+const {
+  checkIfFilterHasChanged,
+} = initFilterBuilder(scrawl, dom);
 
 
 // Show the default canvas display
@@ -94,93 +125,32 @@ scrawl.makeRender({
   target: builderCanvas,
 });
 
+const commenceFunction = () => {
+
+  checkLiveView();
+
+  if (displayFilterFlag.flag) {
+
+    displayFilterFlag.flag = false;
+
+    const filter = getCurrentWrappedFilter();
+    filter.updateDisplayFilter();
+  }
+
+  checkIfFilterHasChanged();
+};
+
 scrawl.makeRender({
 
   name: 'main-canvas-render',
   target: mainCanvas,
-  commence: checkLiveView,
+  commence: commenceFunction,
 });
 
 
 // ------------------------------------------------------------------------
 // Development 
-// - temporary artefacts used while developing functionality
-// - affects both this repo and required changes in Scrawl-canvas repo
 // ------------------------------------------------------------------------
-
-scrawl.makeLabel({
-
-  name: 'temp-label',
-  group: builderCanvas.get('baseGroup'),
-  text: 'Filter builder area',
-  start: ['center', 'center'],
-  handle: ['center', 'center'],
-  fontString: '2rem Arial, sans-serif',
-})
-
-const el = scrawl.findElement('my-test-element');
-
-el.set({
-  start: ['center', 10],
-  handle: ['center', 0],
-  width: '40%',
-  height: 'auto',
-  css: {
-    border: '1px dotted black',
-    backgroundColor: 'rgb(255 255 0 / 0.5)',
-    padding: '0.5rem 1rem',
-  },
-});
-
-scrawl.makeWheel({
-
-  name: 'temp-wheel-1',
-  group: builderCanvas.get('baseGroup'),
-  radius: 10,
-  fillStyle: 'red',
-  handle: ['center', 'center'],
-  pivot: 'my-test-element',
-  lockTo: 'pivot',
-
-}).clone({
-
-  name: 'temp-wheel-2',
-  fillStyle: 'green',
-  pivotCorner: 'topLeft',
-  offsetY: 10,
-
-}).clone({
-
-  name: 'temp-wheel-3',
-  fillStyle: 'blue',
-  pivotCorner: 'topRight',
-
-}).clone({
-
-  name: 'temp-wheel-4',
-  fillStyle: 'yellow',
-  pivotCorner: 'bottomRight',
-  offsetY: -10,
-
-}).clone({
-
-  name: 'temp-wheel-5',
-  fillStyle: 'lightgreen',
-  pivotCorner: 'bottomLeft',
-});
-
-const stackDragGroup = scrawl.makeGroup({ name: 'stack-drag-group' });
-stackDragGroup.addArtefacts('my-test-element');
-
-scrawl.makeDragZone({
-  zone: builderStack,
-  collisionGroup: stackDragGroup,
-  endOn: ['up', 'leave'],
-  preventTouchDefaultWhenDragging: true,
-  processingOrder: 2,
-});
+checkIfFilterHasChanged();
 
 console.log(scrawl.library);
-
-import { getFilterSchemas } from './js-modules/filter-schemas.js';
-console.log(getFilterSchemas());

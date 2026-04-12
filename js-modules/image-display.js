@@ -47,16 +47,27 @@ let minimapWidth = 200,
 
 const maxMinimapCoverage = 0.4;
 
-// liveView vars
-let assetWidth = 1,
-  assetHeight = 1,
-  currentScale = 1;
+const view = {
+  x: 0,
+  y: 0,
+  width: 1,
+  height: 1,
+  assetWidth: 1,
+  assetHeight: 1,
+  currentScale: 1,
+};
 
-// Canonical view rectangle (IMAGE space)
-let viewX = 0,
-  viewY = 0,
-  viewWidth = 1,
-  viewHeight = 1;
+
+const displayFilterFlag = {
+  flag: true,
+  // reset: () => displayFilterFlag.flag = false,
+  // get: () => displayFilterFlag.flag,
+};
+
+
+const getImageDisplayViews = () => {
+  return {...view};
+};
 
 const recalculateDimensions = () => {
 
@@ -66,12 +77,12 @@ const recalculateDimensions = () => {
   const maxHeight = canvasHeight * maxMinimapCoverage;
 
   minimapScale = Math.min(
-    maxWidth / assetWidth,
-    maxHeight / assetHeight,
+    maxWidth / view.assetWidth,
+    maxHeight / view.assetHeight,
   );
 
-  minimapWidth = Math.round(assetWidth * minimapScale);
-  minimapHeight = Math.round(assetHeight * minimapScale);
+  minimapWidth = Math.round(view.assetWidth * minimapScale);
+  minimapHeight = Math.round(view.assetHeight * minimapScale);
 
   minimapPivot.set({ dimensions: [minimapWidth, minimapHeight] });
   minimapCell.set({ dimensions: [minimapWidth, minimapHeight] });
@@ -86,11 +97,11 @@ const exitMinimapFrameDrag = () => {
   const centerX = x / minimapScale;
   const centerY = y / minimapScale;
 
-  viewX = centerX - viewWidth / 2;
-  viewY = centerY - viewHeight / 2;
+  view.x = centerX - view.width / 2;
+  view.y = centerY - view.height / 2;
 
-  viewX = clamp(viewX, 0, assetWidth - viewWidth);
-  viewY = clamp(viewY, 0, assetHeight - viewHeight);
+  view.x = clamp(view.x, 0, view.assetWidth - view.width);
+  view.y = clamp(view.y, 0, view.assetHeight - view.height);
 
   applyView();
 
@@ -120,11 +131,11 @@ const checkMinimapFrameDrag = () => {
     const centerX = x / minimapScale;
     const centerY = y / minimapScale;
 
-    viewX = centerX - viewWidth / 2;
-    viewY = centerY - viewHeight / 2;
+    view.x = centerX - view.width / 2;
+    view.y = centerY - view.height / 2;
 
-    viewX = clamp(viewX, 0, assetWidth - viewWidth);
-    viewY = clamp(viewY, 0, assetHeight - viewHeight);
+    view.x = clamp(view.x, 0, view.assetWidth - view.width);
+    view.y = clamp(view.y, 0, view.assetHeight - view.height);
 
     applyView();
 
@@ -158,13 +169,10 @@ const createMinimapFrameDragZone = () => {
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
 // Calculate liveView (destination) dimensions in CANVAS space
-// - Prevent stretching when the asset is smaller than the canvas in either dimension
 const calculateLiveViewDimensions = () => {
 
-  const [canvasWidth, canvasHeight] = canvasHandle.get('dimensions');
-
-  const destW = (assetWidth < canvasWidth) ? assetWidth : '100%';
-  const destH = (assetHeight < canvasHeight) ? assetHeight : '100%';
+  const destW = (view.assetWidth < currentDisplayWidth) ? view.assetWidth : '100%';
+  const destH = (view.assetHeight < currentDisplayHeight) ? view.assetHeight : '100%';
 
   return [destW, destH];
 };
@@ -173,64 +181,60 @@ const applyLiveViewDimensions = () => {
 
   const [destW, destH] = calculateLiveViewDimensions();
 
-  // Keep the Picture centered (start/handle already set to center in init)
-  liveView.set({
-    dimensions: [destW, destH],
-  });
+  liveView.set({ dimensions: [destW, destH] });
 };
 
 // Numeric (pixel) destination dimensions for the liveView Picture on the canvas
 const calculateLiveViewDestinationPixels = () => {
 
-  const [canvasWidth, canvasHeight] = canvasHandle.get('dimensions');
-
-  const destW = (assetWidth < canvasWidth) ? assetWidth : canvasWidth;
-  const destH = (assetHeight < canvasHeight) ? assetHeight : canvasHeight;
+  const destW = (view.assetWidth < currentDisplayWidth) ? view.assetWidth : currentDisplayWidth;
+  const destH = (view.assetHeight < currentDisplayHeight) ? view.assetHeight : currentDisplayHeight;
 
   return [destW, destH];
 };
 
 const calculateViewSize = () => {
 
-  const s = currentScale || 1;
+  const s = view.currentScale || 1;
   const [destW, destH] = calculateLiveViewDestinationPixels();
 
-  // In IMAGE space: as scale increases, the visible portion decreases
   let vw = destW / s;
   let vh = destH / s;
 
-  // Guardrails
-  vw = Math.min(vw, assetWidth);
-  vh = Math.min(vh, assetHeight);
+  vw = clamp(vw, 1, view.assetWidth);
+  vh = clamp(vh, 1, view.assetHeight);
 
   return [vw, vh];
 };
 
-// Center view in IMAGE
 const centerView = () => {
 
-  [viewWidth, viewHeight] = calculateViewSize();
+  const [w, h] = calculateViewSize();
+  view.width = w;
+  view.height = h;
 
-  viewX = (assetWidth - viewWidth) / 2;
-  viewY = (assetHeight - viewHeight) / 2;
+  view.x = (view.assetWidth - w) / 2;
+  view.y = (view.assetHeight - h) / 2;
 };
 
 const applyView = () => {
 
   // Canvas
   liveView.set({
-    copyStart: [viewX, viewY],
-    copyDimensions: [viewWidth, viewHeight],
+    copyStart: [view.x, view.y],
+    copyDimensions: [view.width, view.height],
   });
 
   // Minimap frame should only show when the view is cropping the image
-  const shouldShowFrame = (viewWidth < assetWidth) || (viewHeight < assetHeight);
+  const [destWpx, destHpx] = calculateLiveViewDestinationPixels();
+  
+  const shouldShowFrame = 
+    view.assetWidth > destWpx || 
+    view.assetHeight > destHpx ||
+    (view.currentScale || 1) > 1;
 
-  minimapFrame.set({
-    visibility: shouldShowFrame,
-  });
+  minimapFrame.set({ visibility: shouldShowFrame });
 
-  // If hidden, don't update frame geometry
   if (!shouldShowFrame) {
 
     if (minimapFrameDragZone) {
@@ -242,16 +246,18 @@ const applyView = () => {
   }
 
   // Minimap frame geometry
-  minimapFrameWidth = viewWidth * minimapScale;
-  minimapFrameHeight = viewHeight * minimapScale;
+  minimapFrameWidth = view.width * minimapScale;
+  minimapFrameHeight = view.height * minimapScale;
 
   minimapFrame.set({
     dimensions: [minimapFrameWidth, minimapFrameHeight],
-    startX: (viewX + viewWidth / 2) * minimapScale,
-    startY: (viewY + viewHeight / 2) * minimapScale,
+    startX: (view.x + view.width / 2) * minimapScale,
+    startY: (view.y + view.height / 2) * minimapScale,
   });
 
   if (!minimapFrameDragZone) createMinimapFrameDragZone();
+
+  displayFilterFlag.flag = true;
 };
 
 // Export function to display an image
@@ -302,20 +308,17 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
 
   const {width, height, file} = state;
 
-  assetWidth = width;
-  assetHeight = height;
+  view.assetWidth = width;
+  view.assetHeight = height;
 
-  // Fix stretching: if asset is smaller than canvas in either axis,
-  // - set liveView destination dimensions to the asset dimension for that axis.
   applyLiveViewDimensions();
-
   centerView();
 
   // Large asset
   createImageBitmap(file)
   .then(bitmap => {
 
-    // Guarding against user clicking on a different image button before this button's processes complete
+    // Guard: user clicks on a different image button before this button's processes complete
     if (currentlyDisplaying !== selectedKey) {
 
       bitmap.close?.();
@@ -339,6 +342,7 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
 
   recalculateDimensions();
 
+  // Small asset
   createImageBitmap(file, {
     resizeWidth: minimapWidth,
     resizeHeight: minimapHeight,
@@ -346,7 +350,7 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
   })
   .then(bitmap => {
 
-    // Guarding against user clicking on a different image button before this button's processes complete
+    // Guard: user clicks on a different image button before this button's processes complete
     if (currentlyDisplaying !== selectedKey) {
 
       bitmap.close?.();
@@ -378,31 +382,32 @@ const checkLiveView = () => {
 
     if (w !== currentDisplayWidth || h !== currentDisplayHeight) {
 
-      // Preserve center
-      const centerX = viewX + viewWidth / 2;
-      const centerY = viewY + viewHeight / 2;
-
-      recalculateDimensions();
-
       currentDisplayWidth = w;
       currentDisplayHeight = h;
+
+      // Preserve center
+      const centerX = view.x + view.width / 2;
+      const centerY = view.y + view.height / 2;
+
+      recalculateDimensions();
 
       applyLiveViewDimensions();
 
       // Recalculate view size
-      [viewWidth, viewHeight] = calculateViewSize();
+      const [width, height] = calculateViewSize();
+      view.width = width;
+      view.height = height;
 
       // Restore center
-      viewX = centerX - viewWidth / 2;
-      viewY = centerY - viewHeight / 2;
+      view.x = centerX - width / 2;
+      view.y = centerY - height / 2;
 
       // Clamp
-      viewX = clamp(viewX, 0, assetWidth - viewWidth);
-      viewY = clamp(viewY, 0, assetHeight - viewHeight);
+      view.x = clamp(view.x, 0, view.assetWidth - width);
+      view.y = clamp(view.y, 0, view.assetHeight - height);
 
       applyView();
     }
-
     minimapCell.updateHere();
   }
 };
@@ -413,7 +418,6 @@ export const displayDefaultScreen = (imagesAvailable = false) => {
 
   currentlyDisplaying = '';
 
-  checkerboard.set({ visibility: true });
   liveView.set({ visibility: false });
   minimapCell.set({ shown: false });
 
@@ -429,7 +433,6 @@ export const displayDefaultScreen = (imagesAvailable = false) => {
 
 const removeDefaultScreen = () => {
 
-  checkerboard.set({ visibility: false });
   noImagesMessage.set({ visibility: false });
   haveImagesMessage.set({ visibility: false });
 
@@ -438,12 +441,13 @@ const removeDefaultScreen = () => {
 };
 
 // Export for initialization 
-export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
+export const initImageDisplay = (scrawl = null, dom = null) => {
 
   if (!scrawl) throw new Error('Scrawl library not passed to initImageDisplay function');
   if (!dom) throw new Error('DOM mappings not passed to initImageDisplay function');
-  if (!canvas) throw new Error('Canvas element not passed to initImageDisplay function');
 
+
+  const canvas = scrawl.findCanvas('main-canvas');
 
   // Populate local handles
   scrawlHandle = scrawl;
@@ -451,7 +455,6 @@ export const initImageDisplay = (scrawl = null, dom = null, canvas = null) => {
 
   name = (n) => `${canvas.name}-${n}`;
 
-console.log(dom);
   // DOM handles
   minimapShowHide = dom['minimap-show-hide'];
   minimapCenter = dom['minimap-center'];
@@ -495,7 +498,6 @@ console.log(dom);
     group: canvas.get('baseName'),
     dimensions: ['100%', '100%'],
     fillStyle: name('checkerboard-background-cell'),
-    visibility: false,
   });
 
   // Create the default screen messages
@@ -520,10 +522,11 @@ console.log(dom);
   });
 
 
-  // Create the Picture entity which will display a filtered portion of the current image's ImageBitmap object
+  // Create Picture entity
+  // - displays a filtered portion of the current image's ImageBitmap object
   liveView = scrawl.makePicture({
 
-    name: name('live-view'),
+    name: 'live-view',
     dimensions: ['100%', '100%'],
 
     start: ['center', 'center'],
@@ -534,8 +537,9 @@ console.log(dom);
 
     // We'll be building and applying the filter dynamically
     filters: [],
+    memoizeFilterOutput: true,
 
-    ImageSmoothingEnabled: false,
+    imageSmoothingEnabled: false,
     visibility: false,
   });
 
@@ -545,27 +549,20 @@ console.log(dom);
     const el = e?.target;
     if (!el || el.id !== 'image-scale') return;
 
-    // Update canonical scale first (single source of truth)
-    currentScale = parseFloat(el.value) || 1;
+    view.currentScale = parseFloat(el.value) || 1;
 
-    // Apply to Picture entity immediately so canvas rendering matches our math
-    liveView.set({ scale: currentScale });
+    const [w, h] = calculateViewSize();
+    view.width = w;
+    view.height = h;
 
-    // Recalculate view size based on new scale
-    [viewWidth, viewHeight] = calculateViewSize();
+    view.x = (view.assetWidth - w) / 2;
+    view.y = (view.assetHeight - h) / 2;
 
-    // Recenter view in IMAGE space
-    viewX = (assetWidth - viewWidth) / 2;
-    viewY = (assetHeight - viewHeight) / 2;
+    view.x = clamp(view.x, 0, view.assetWidth - w);
+    view.y = clamp(view.y, 0, view.assetHeight - h);
 
-    // Clamp
-    viewX = clamp(viewX, 0, assetWidth - viewWidth);
-    viewY = clamp(viewY, 0, assetHeight - viewHeight);
-
-    // Apply to canvas + minimap
     applyView();
 
-    // Reset the nav controls to center so UI matches behavior
     minimapNavX.value = '50';
     minimapNavY.value = '50';
 
@@ -720,11 +717,11 @@ console.log(dom);
     const centerX = x / minimapScale;
     const centerY = y / minimapScale;
 
-    viewX = centerX - viewWidth / 2;
-    viewY = centerY - viewHeight / 2;
+    view.x = centerX - view.width / 2;
+    view.y = centerY - view.height / 2;
 
-    viewX = clamp(viewX, 0, assetWidth - viewWidth);
-    viewY = clamp(viewY, 0, assetHeight - viewHeight);
+    view.x = clamp(view.x, 0, view.assetWidth - view.width);
+    view.y = clamp(view.y, 0, view.assetHeight - view.height);
 
     applyView();
 
@@ -740,11 +737,11 @@ console.log(dom);
     const centerX = x / minimapScale;
     const centerY = y / minimapScale;
 
-    viewX = centerX - viewWidth / 2;
-    viewY = centerY - viewHeight / 2;
+    view.x = centerX - view.width / 2;
+    view.y = centerY - view.height / 2;
 
-    viewX = clamp(viewX, 0, assetWidth - viewWidth);
-    viewY = clamp(viewY, 0, assetHeight - viewHeight);
+    view.x = clamp(view.x, 0, view.assetWidth - view.width);
+    view.y = clamp(view.y, 0, view.assetHeight - view.height);
 
     applyView();
 
@@ -756,7 +753,8 @@ console.log(dom);
   // Init return
   return {
     displayDefaultScreen,
-    liveView,
     checkLiveView,
+    getImageDisplayViews,
+    displayFilterFlag,
   };
 };
