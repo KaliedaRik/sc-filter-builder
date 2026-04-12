@@ -18,15 +18,12 @@ let scrawlHandle = null,
 // ==============================================
 export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
 
-  console.log(actionWrapper)
-
   const { id, formElement, formId, killList } = actionWrapper;
   const groupName = canvas.base.name;
 
   const gradientName = canvas.domElement.dataset.gradient,
     gradientStyle = scrawlHandle.findStyles(gradientName);
 
-console.log(actionWrapper);
 
   // Gradient bar (top part)
   scrawlHandle.makeBlock({
@@ -85,17 +82,7 @@ console.log(actionWrapper);
   });
 
 
-  // Generate color stops visuals and inputs
-  const colorTriangelGroup = scrawlHandle.makeGroup({
-    name: `${id}_color-stops-group`,
-    host: canvas.base,
-  });
-
-  const gradientWrapper = formElement.querySelector(`#${formId}_gradient_wrapper`);
-
-  const gradientState = {},
-    stopsState = {};
-
+  // Instant updates
   const updateGradient = (deletion = null) => {
 
     const colors = [];
@@ -115,6 +102,18 @@ console.log(actionWrapper);
 
     picture.set({ dimensions: picture.get('dimensions') });
   };
+
+
+  // Generate color stops visuals and inputs
+  const colorTriangleGroup = scrawlHandle.makeGroup({
+    name: `${id}_color-stops-group`,
+    host: canvas.base,
+  });
+
+  const gradientWrapper = formElement.querySelector(`#${formId}_gradient_wrapper`);
+
+  const gradientState = {},
+    stopsState = {};
 
   const createGeneralGradientControls = () => {
 
@@ -232,6 +231,7 @@ console.log(actionWrapper);
   };
 
 
+  // Dynamic gradient color stops controls
   const createColorStopsControls = () => {
 
     const colors = gradientStyle.get('colors');
@@ -258,7 +258,7 @@ console.log(actionWrapper);
       stopData.entity = scrawlHandle.makeShape({
 
         name: `${id}_${stopId}`,
-        group: colorTriangelGroup,
+        group: colorTriangleGroup,
         pathDefinition: 'm0,0 25,60 -50,0z',
         fillStyle: stopData.colorValue,
         strokeStyle: 'black',
@@ -268,11 +268,13 @@ console.log(actionWrapper);
         handle: ['center', 'top'],
       });
 
+      // Most of the form building happens in a separate function
       createControl_colorStop(gradientWrapper, stopData, colorFactory, updateGradient, killList);
 
       stopsState[stopId] = stopData;
     }
 
+    // Add color stop button
     const localId_add = `${id}_gradient_add-color-stop`;
 
     const addButton = document.createElement('button');
@@ -296,23 +298,26 @@ console.log(actionWrapper);
         stopData.componentId = id;
         stopData.stopId = stopId;
 
-        const keyNumber = Math.floor((Math.random() * 600) + 200),
-          keyStartX = ((keyNumber / 10) * 0.9) + 5;
+        const keyNumber = Math.floor(Math.random() * 1000),
+          keyStartX = ((keyNumber / 10) * 0.9) + 5,
+          stopColor = gradientStyle.getColorAtPosition(keyNumber) || 'rgb(0 0 0 /1)';
+
+        const [space, red, green, blue, alpha] = colorFactory.extractDatafromColorString(stopColor);
 
         stopData.currentKey = keyNumber;
-        stopData.colorSpace = 'rgb';
-        stopData.redValue = 0;
-        stopData.greenValue = 0;
-        stopData.blueValue = 0;
-        stopData.alphaValue = 1;
-        stopData.colorValue = 'rgb(0 0 0 /1)';
+        stopData.colorSpace = space || 'rgb';
+        stopData.redValue = red || 0;
+        stopData.greenValue = green || 0;
+        stopData.blueValue = blue || 0;
+        stopData.alphaValue = alpha || 1;
+        stopData.colorValue = stopColor;
 
         stopData.entity = scrawlHandle.makeShape({
 
           name: `${id}_${stopId}`,
-          group: colorTriangelGroup,
+          group: colorTriangleGroup,
           pathDefinition: 'm0,0 25,60 -50,0z',
-          fillStyle: stopData.colorValue,
+          fillStyle: stopColor,
           strokeStyle: 'black',
           lineWidth: 2,
           method: 'fillThenDraw',
@@ -331,10 +336,145 @@ console.log(actionWrapper);
     killList.push(addButtonListener);
   };
 
+
+  // Initialize the filter's controls
   createGeneralGradientControls();
   createColorStopsControls();
 
-  // Animation
+
+  // Canvas animation
+  let draggedStop = false,
+    draggedStopInput = null,
+    draggedStopState = null;
+
+  const currentStop = scrawlHandle.makeDragZone({
+
+    zone: canvas,
+    collisionGroup: colorTriangleGroup,
+    endOn: ['up', 'leave'],
+    exposeCurrentArtefact: true,
+
+    updateOnStart: () => {
+
+      draggedStop = currentStop();
+
+      if (typeof draggedStop !== 'boolean' && draggedStop != null) {
+
+        const pin = draggedStop.artefact;
+
+        pin.isBeingDragged = false;
+        pin.set({ lockXTo: 'mouse' });
+
+        const inputData = pin.name.split('_'),
+          state = stopsState[inputData[1]];
+
+        draggedStopState = state;
+        draggedStopInput = state.element.querySelector('.color-stop-control-input');
+      }
+    },
+
+    updateWhileMoving: () => {
+
+      if (typeof draggedStop !== 'boolean' && draggedStop.artefact) {
+
+        const pin = draggedStop.artefact;
+
+        if (pin && draggedStopState && draggedStopInput) {
+
+          const [x, y] = pin.get('position');
+
+          if (x < 51 || x > 949) currentStop('exit');
+          else {
+
+            let pos = Math.floor((x - 50) * 1.1111);
+
+            if (pos < 3) pos = 0;
+            else if (pos > 996) pos = 999;
+
+            draggedStopState.currentKey = pos;
+            draggedStopInput.value = pos;
+
+            updateGradient();
+          }
+        }
+      }
+    },
+
+    updateOnPrematureExit: () => {
+
+      if (typeof draggedStop !== 'boolean' && draggedStop.artefact) {
+
+        const pin = draggedStop.artefact;
+
+        if (pin) {
+
+          let [x, y] = pin.get('position');
+          if (x < 51) x = 51;
+          else if (x > 949) x = 949;
+
+          pin.set({
+            start: [x, y],
+            lockXTo: 'start',
+          });
+
+          if (draggedStopState && draggedStopInput) {
+
+            let pos = Math.floor((x - 50) * 1.1111);
+
+            if (pos < 3) pos = 0;
+            else if (pos > 996) pos = 999;
+
+            draggedStopState.currentKey = pos;
+            draggedStopInput.value = pos;
+
+            updateGradient();
+          }
+        }
+      }
+      draggedStop = false;
+      draggedStopState = null;
+      draggedStopInput = null;
+    },
+
+    updateOnEnd: () => {
+
+      if (typeof draggedStop !== 'boolean' && draggedStop.artefact) {
+
+        const pin = draggedStop.artefact;
+
+        if (pin) {
+
+          let [x, y] = pin.get('position');
+          if (x < 51) x = 51;
+          else if (x > 949) x = 949;
+
+          pin.set({
+            start: [x, y],
+            lockXTo: 'start',
+          });
+
+          if (draggedStopState && draggedStopInput) {
+
+            let pos = Math.floor((x - 50) * 1.1111);
+
+            if (pos < 3) pos = 0;
+            else if (pos > 996) pos = 999;
+
+            draggedStopState.currentKey = pos;
+            draggedStopInput.value = pos;
+
+            updateGradient();
+          }
+        }
+      }
+      draggedStop = false;
+      draggedStopState = null;
+      draggedStopInput = null;
+    },
+  });
+
+  killList.push(() => currentStop(true));
+
   scrawlHandle.makeRender({
 
     name: `${id}_animation`,
@@ -344,28 +484,10 @@ console.log(actionWrapper);
   killList.push(() => scrawlHandle.purge(id));
 };
 
-// We build HTML input color stop controls here rather than in form-builder.js because they are ephemeral
+// We build HTML input color stop controls here rather than in form-builder.js
+// - because they are ephemeral
+// And each stop gets its own (rather complex) set of controls
 const createControl_colorStop = (wrapper, data, factory, update, kill) => {
-
-  console.log('data', data);
-
-/*
-componentId
-stopId
-currentKey
-redValue
-greenValue
-blueValue
-alphaValue
-colorListener
-colorSpace
-colorValue
-deleteListener
-element
-entity
-rgbaListener
-stopIndexListener
-*/
 
   const { 
     componentId, stopId, currentKey, 
@@ -401,6 +523,7 @@ stopIndexListener
   stopInput.max = 999;
   stopInput.step = 1;
   stopInput.value = currentKey;
+  stopInput.classList.add('color-stop-control-input')
   row1Position.appendChild(stopInput);
 
   const localId_color = `${localId}_color`;
@@ -632,7 +755,6 @@ stopIndexListener
 
   return el;
 };
-
 
 
 // Color curve filter canvas UI
@@ -1155,7 +1277,6 @@ const recalculateColorWeights = function (actionWrapper, weights) {
 };
 
 
-
 // Tone curve filter canvas UI
 // ==============================================
 export const buildToneCurveComponent = (actionWrapper, canvas) => {
@@ -1674,11 +1795,10 @@ export const initCanvasComponents = (
   if (!scrawl) throw new Error('Scrawl library not passed to initCurveComponents function');
   if (!getCurrentWrappedFilter) throw new Error('getCurrentWrappedFilter not passed to initCurveComponents function');
 
+
+  // Initialise module level variables
   scrawlHandle = scrawl;
   getWrapper = getCurrentWrappedFilter;
-
-  // We need access to the Picture entity to get around SC aggressive caching
-  picture = scrawl.findEntity('live-view');
 
   monochromeGrayGradient = scrawl.makeGradient({
 
@@ -1691,5 +1811,11 @@ export const initCanvasComponents = (
   });
 
 
+  // We need access to the Picture entity to get around SC aggressive caching
+  // - While filter changes get picked up and actioned, gradient changes are not so lucky
+  picture = scrawl.findEntity('live-view');
+
+
+  // Returned object
   return {};
 };
