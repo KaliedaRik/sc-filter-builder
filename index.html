@@ -192,7 +192,38 @@
 
     <h2>Downloads management</h2>
 
-    <p>A placeholder modal where downloading a batch of processed images can be set up and triggered</p>
+    <p>Select the image formats required for each image, and the compression values where appropriate, then click on the <b>Download</b> button to start the task.</p>
+
+    <div class="image-format-container">
+      
+      <div id="image-formats-png" class="image-format-row">
+        <div class="image-format-title">PNG format</div>
+        <div>&nbsp;</div>
+        <div>&nbsp;</div>
+        <label for="image-format-checkbox-png">Include in download</label>
+        <input id="image-format-checkbox-png" name="png" class="image-format-checkbox-input" type="checkbox">
+      </div>
+
+      <div id="image-formats-jpg" class="image-format-row">
+        <div class="image-format-title">JPG format</div>
+        <label for="image-format-compression-jpeg">Compression level</label>
+        <input id="image-format-compression-jpeg" class="image-format-compression-input" type="number" min="70" max="100" step="1" value="100">
+        <label for="image-format-checkbox-jpeg">Include in download</label>
+        <input id="image-format-checkbox-jpeg" name="jpeg" class="image-format-checkbox-input" type="checkbox">
+      </div>
+
+      <div id="image-formats-webp" class="image-format-row">
+        <div class="image-format-title">WebP format</div>
+        <label for="image-format-compression-webp">Compression level</label>
+        <input id="image-format-compression-webp" class="image-format-compression-input" type="number" min="70" max="100" step="1" value="100">
+        <label for="image-format-checkbox-webp">Include in download</label>
+        <input id="image-format-checkbox-webp" name="webp" class="image-format-checkbox-input" type="checkbox">
+      </div>
+    </div>
+
+    <h3>Processed files</h3>
+
+    <ul id="processed-images-list"></ul>
 
     <button type="button" id="process-and-download-action">Process and download images</button>
 

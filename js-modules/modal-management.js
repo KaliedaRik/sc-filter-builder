@@ -67,16 +67,23 @@ export const initModalManagement = (scrawl = null, dom = null) => {
   scrawl.addNativeListener('close', () => closeModal(closeImageModalList), imageBatchModal);
   scrawl.addNativeListener('click', actionImageModalList, imageBatchModalRemoveAction);
 
-  // Setup: instructions modal
+  // Setup: downloads modal
   const downloadsModal = dom['downloads-modal'],
     downloadsButton = dom['downloads-modal-button'],
-    downloadsCloseButton = dom['downloads-modal-close'];
+    downloadsCloseButton = dom['downloads-modal-close'],
+    downloadsList = dom['processed-images-list'];
+
+  const closeDownloadsModal = () => {
+    while (downloadsList.firstChild) {
+      downloadsList.removeChild(downloadsList.firstChild);
+    }
+  };
 
   scrawl.addNativeListener('click', () => openModal(downloadsModal), downloadsButton);
-  scrawl.addNativeListener('click', closeModal, downloadsCloseButton);
-  scrawl.addNativeListener('close', closeModal, downloadsModal);
+  scrawl.addNativeListener('click', () => closeModal(closeDownloadsModal), downloadsCloseButton);
+  scrawl.addNativeListener('close', () => closeModal(closeDownloadsModal), downloadsModal);
 
-  // Setup: instructions modal
+  // Setup: changeFilters modal
   const changeFiltersModal = dom['change-filter-modal'],
     changeFiltersButton = dom['change-filter-modal-button'],
     changeFiltersCloseButton = dom['change-filter-modal-close'];
