@@ -1148,6 +1148,32 @@ dialog {
       color: var(--dialog-cta-button-color);
     }
   }
+
+  & .image-format-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    margin-bottom: 1rem;
+    background-color: rgb(220 220 220);
+    padding: 0.5rem;
+    border-radius: 5px;
+
+    & div {
+      font-weight: bold;
+    }
+
+    & input[type=number] {
+      width: 3rem;
+    }
+
+    & input[type=checkbox] {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    &.selected-download-format {
+      background-color: rgb(220 255 220);
+    }
+  }
 }
 
 #instructions-modal {

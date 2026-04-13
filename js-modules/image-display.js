@@ -17,8 +17,7 @@ let currentlyDisplaying = '';
 
 export const getDisplayedImageId = () => currentlyDisplaying;
 
-let checkerboard = null,
-  noImagesMessage = null,
+let noImagesMessage = null,
   haveImagesMessage = null,
   liveView = null;
 
@@ -492,7 +491,7 @@ export const initImageDisplay = (scrawl = null, dom = null) => {
   checkerboardCell.clear();
   checkerboardCell.compile();
 
-  checkerboard = scrawl.makeBlock({
+  scrawl.makeBlock({
 
     name: name('checkerboard-background'),
     group: canvas.get('baseName'),

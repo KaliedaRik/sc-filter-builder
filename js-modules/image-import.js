@@ -14,7 +14,7 @@ import {
 // General
 let counter = 0;
 
-const imageState = {};
+export const imageState = {};
 
 let importCell = null,
   imageImportsHold = null,
@@ -22,7 +22,11 @@ let importCell = null,
   domHandles = null;
 
 // Key information: the thumbnail dimensions - 80px square - get set in CSS. If we change those CSS values, they need to change in this file too
-const thumbnailDimensions = 80;
+const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'],
+  MAX_AREA = 16_000_000,
+  MAX_DIMENSION = 4096,
+  THUMBNAIL_DIMENSIONS = 80;
+
 
 const ingester = [];
 let ingesterIsRunning = false;
@@ -48,7 +52,7 @@ const ingest = () => {
   const [stateId, bitmap] = ingester.shift();
 
   importCell.clear();
-  importCell.engine.drawImage(bitmap, 0, 0, thumbnailDimensions, thumbnailDimensions);
+  importCell.engine.drawImage(bitmap, 0, 0, THUMBNAIL_DIMENSIONS, THUMBNAIL_DIMENSIONS);
 
   importCell.element.toBlob(blob => {
 
@@ -59,7 +63,7 @@ const ingest = () => {
     }
 
     const thumbnailUrl = URL.createObjectURL(blob),
-      thumbnailImg = new Image(thumbnailDimensions, thumbnailDimensions);
+      thumbnailImg = new Image(THUMBNAIL_DIMENSIONS, THUMBNAIL_DIMENSIONS);
 
     thumbnailImg.onload = () => {
 
@@ -97,18 +101,11 @@ const triggerIngest = () => {
 
 const importImageFile = (file) => {
 
-  if (!file.type.startsWith('image/')) return;
-
-  const stateId = `import-${counter}`;
-  counter++;
-
-  imageState[stateId] = {
-    id: stateId,
-    // `file.name` and `file.type` values are defined in the file object
-    file: file,
+  if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+    console.warn(`Failed to import file ${file.name} as its type is not supported by this tool`);
+    return;
   }
 
-  // Get the image's dimensions via a temporary <img> element
   const sizingImg = new Image();
   const sizingUrl = URL.createObjectURL(file);
 
@@ -118,23 +115,48 @@ const importImageFile = (file) => {
 
     const { naturalWidth: w, naturalHeight: h } = sizingImg;
 
-    imageState[stateId].width = w;
-    imageState[stateId].height = h;
+    if (w <= MAX_DIMENSION && h <= MAX_DIMENSION && (w * h) <= MAX_AREA) {
 
-    createImageBitmap(file, {
-        resizeWidth: thumbnailDimensions,
-        resizeHeight: thumbnailDimensions,
+      const stateId = `import-${counter}`;
+      counter++;
+
+      imageState[stateId] = {
+        id: stateId,
+        file,
+        width: w,
+        height: h,
+      };
+
+      createImageBitmap(file, {
+        resizeWidth: THUMBNAIL_DIMENSIONS,
+        resizeHeight: THUMBNAIL_DIMENSIONS,
         resizeQuality: 'high',
-    })
-    .then(bitmap => {
+      })
+      .then(bitmap => {
 
-      ingester.push([stateId, bitmap]);
-      triggerIngest();
-    })
-    .catch(err => console.log(err.message));
-  }
+        ingester.push([stateId, bitmap]);
+      
+        console.log(`Image file ${file.name} (${file.type} - ${w}px by ${h}px) successfuly imported`)
 
-  // Start the import process
+        triggerIngest();
+      })
+      .catch(err => console.warn(err.message));
+    }
+    else console.warn(`Failed to import file ${file.name} as it is too large for this tool to process`);
+
+    sizingImg.onload = null;
+    sizingImg.onerror = null;
+  };
+
+  sizingImg.onerror = () => {
+
+    URL.revokeObjectURL(sizingUrl);
+    console.warn(`Failed to import file ${file.name} because the browser could not decode it`);
+
+    sizingImg.onload = null;
+    sizingImg.onerror = null;
+  };
+
   sizingImg.src = sizingUrl;
 };
 
@@ -153,9 +175,9 @@ const updateCandidatesArray = (e) => {
 
       if (imageRemovalCandidates.includes(name)) {
 
-        const newRmovalCandidates = imageRemovalCandidates.filter(item => item !== name);
+        const newRemovalCandidates = imageRemovalCandidates.filter(item => item !== name);
         imageRemovalCandidates.length = 0;
-        imageRemovalCandidates.push(...newRmovalCandidates);
+        imageRemovalCandidates.push(...newRemovalCandidates);
         target.parentNode.classList.remove('removal-candidate');
       }
       else {
@@ -191,7 +213,7 @@ export const buildImageModalList = () => {
     fileName.classList.add('removal-filename');
     fileName.textContent = data.file.name;
 
-    const img = new Image(thumbnailDimensions, thumbnailDimensions);
+    const img = new Image(THUMBNAIL_DIMENSIONS, THUMBNAIL_DIMENSIONS);
     img.src = data.thumbnailUrl;
     img.classList.add('removal-thumbnail');
 
@@ -321,7 +343,7 @@ export const initImageImport = (scrawl = null, dom = null) => {
   importCell = canvas.buildCell({
 
     name: `${canvas.name}-import-cell`,
-    dimensions: [thumbnailDimensions, thumbnailDimensions],
+    dimensions: [THUMBNAIL_DIMENSIONS, THUMBNAIL_DIMENSIONS],
     cleared: false,
     compiled: false,
     shown: false,

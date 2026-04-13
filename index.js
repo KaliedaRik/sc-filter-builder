@@ -19,6 +19,7 @@ import { initFilterBuilder } from './js-modules/filter-builder.js';
 import { initCanvasComponents } from './js-modules/canvas-ui-components.js';
 import { initFormBuilder } from './js-modules/form-builder.js';
 import { initFormObjects } from './js-modules/form-objects.js';
+import { initImageDownload } from './js-modules/image-download.js';
 
 
 // ------------------------------------------------------------------------
@@ -54,6 +55,7 @@ const dom = scrawl.initializeDomInputs([
   ['button', 'downloads-modal-close', 'Close'],
   ['by-id', 'downloads-modal'],
   ['button', 'process-and-download-action', 'Process and download images'],
+  ['by-id', 'processed-images-list'],
 
   // Capture handles for the change-filter functionality
   ['button', 'change-filter-modal-button', 'Change filter'],
@@ -100,6 +102,8 @@ const {
 initCanvasComponents(scrawl, getCurrentWrappedFilter);
 
 initFormBuilder(scrawl, dom, getCurrentWrappedFilter, actionWrapperLibrary);
+
+initImageDownload(scrawl, dom, getCurrentWrappedFilter);
 
 const {
   checkIfFilterHasChanged,
