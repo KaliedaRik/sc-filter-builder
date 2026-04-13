@@ -136,8 +136,6 @@ const importImageFile = (file) => {
 
         ingester.push([stateId, bitmap]);
       
-        console.log(`Image file ${file.name} (${file.type} - ${w}px by ${h}px) successfuly imported`)
-
         triggerIngest();
       })
       .catch(err => console.warn(err.message));

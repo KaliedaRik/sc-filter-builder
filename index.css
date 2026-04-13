@@ -60,6 +60,8 @@
   --dialog-row-separator: rgb(60 60 60 / 1);
   --dialog-cta-button-background: rgb(220 0 0 / 1);
   --dialog-cta-button-color: rgb(255 255 200 / 1);
+  --dialog-disabled-button-background: rgb(160 160 160 / 1);
+  --dialog-disabled-button-color: rgb(90 90 90 / 1);
 
   /* Image batch dialogue */
   --row-not-selected-background: rgb(240 240 240 / 1);
@@ -71,6 +73,12 @@
   --summary-text: rgb(20 20 120 / 1);
   --filter-card-background: rgb(230 230 255 / 1);
 
+  /* Download modal */
+  --listing-waiting-color: rgb(120 120 120 /1);
+  --listing-processing-color: rgb(240 120 0 /1);
+  --listing-error-color: rgb(240 0 0 /1);
+  --listing-complete-color: rgb(0 140 0 /1);
+  
   /* Range input control variables */
   --range-track: rgb(100 100 100 / 1);
   --range-pin-background: rgb(200 200 200 / 1);
@@ -1147,11 +1155,20 @@ dialog {
       background-color: var(--dialog-cta-button-background);
       color: var(--dialog-cta-button-color);
     }
+    &[disabled] {
+      background-color: var(--dialog-disabled-button-background);
+      color: var(--dialog-disabled-button-color);
+    }
+    &[disabled]:hover {
+      background-color: var(--dialog-disabled-button-background);
+      color: var(--dialog-disabled-button-color);
+    }
   }
 
   & .image-format-row {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    align-items: center;
     margin-bottom: 1rem;
     background-color: rgb(220 220 220);
     padding: 0.5rem;
@@ -1159,10 +1176,16 @@ dialog {
 
     & div {
       font-weight: bold;
+      padding-right: 2rem;
+    }
+
+    & label {
+      padding-right: 1rem;
     }
 
     & input[type=number] {
       width: 3rem;
+      padding-right: 2rem;
     }
 
     & input[type=checkbox] {
@@ -1174,6 +1197,26 @@ dialog {
       background-color: rgb(220 255 220);
     }
   }
+
+  & .image-file-listing {
+
+    font: 1rem monospace;
+    margin-bottom: 0.25rem;
+
+    &.waiting-to-process {
+      color: var(--listing-waiting-color);
+    }
+    &.being-processed {
+      color: var(--listing-processing-color);
+    }
+    &.processing-done {
+      color: var(--listing-complete-color);
+    }
+    &.processing-failed {
+      color: var(--listing-error-color);
+    }
+  }
+
 }
 
 #instructions-modal {

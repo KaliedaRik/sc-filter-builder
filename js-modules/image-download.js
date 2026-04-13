@@ -4,14 +4,15 @@
 
 
 // Imports
+import { downloadZip } from '../js-libraries/client-zip.js';
 import { imageState } from './image-import.js';
 
 
 // Modal level variables
 let scrawlHandle = null,
-  domHandles = null,
   downloadCell = null,
   downloadsList = null,
+  downloadButton = null,
   getFilter = null;
 
 const exportSupport = {
@@ -58,43 +59,109 @@ const updateCandidatesArray = (e) => {
 
 
 // Process images
-const processImages = () => {
+let downloadInProgress = false;
 
-  console.log('exportSupport', exportSupport);
-  console.log('exportCandidates', exportCandidates);
-  console.log('exportCompressionStates', exportCompressionStates);
-  console.log('imageState', imageState);
+const processImages = async () => {
 
-  const list = [];
+  if (downloadInProgress) {
+
+    console.warn('Cannot process images. Download is already in progress');
+    return;
+  }
+
+  downloadInProgress = true;
+  downloadButton.setAttribute('disabled', '');
+
+  const list = [],
+    zipItems = [];
 
   const filterWrapper = getFilter();
-
-  console.log('filterWrapper', filterWrapper);
 
   while (downloadsList.firstChild) {
     downloadsList.removeChild(downloadsList.firstChild);
   }
 
-  if (exportCandidates.length) {
+  try {
 
-    preProcess(list, filterWrapper.name);
+    if (exportCandidates.length) {
+
+      if (Object.keys(imageState).length) {
+
+        preProcess(list, filterWrapper.name);
+
+        // await process(list, filterWrapper.filter, zipItems);
+
+        // downloadZip(zipItems).blob().then(blob => {
+
+        //   const now = new Date(),
+        //     pad = (n) => String(n).padStart(2, '0'),
+        //     nowString = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+
+        //   const filename = `SCFB-batch_${filterWrapper.name}_${nowString}.zip`
+
+        //   const url = URL.createObjectURL(blob);
+
+        //   const a = document.createElement('a');
+        //   a.href = url;
+        //   a.download = filename;
+        //   a.click();
+        //   a.remove();
+
+        //   URL.revokeObjectURL(url);
+        // });
+        await process(list, filterWrapper.filter, zipItems);
+
+        const blob = await downloadZip(zipItems).blob();
+
+        const now = new Date(),
+          pad = (n) => String(n).padStart(2, '0'),
+          nowString = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+
+        const filename = `SCFB-batch_${filterWrapper.name}_${nowString}.zip`;
+
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        a.remove();
+
+        setTimeout(() => URL.revokeObjectURL(url), 0);
+      }
+      else {
+
+        const li = document.createElement('li');
+        li.textContent = 'Please import some image files for processing';
+        downloadsList.appendChild(li);
+      }
+    }
+    else {
+
+      const li = document.createElement('li');
+      li.textContent = 'Please select which image formats should be included in the download';
+      downloadsList.appendChild(li);
+    }
   }
-  else {
+  catch (err) {
 
-    const li = document.createElement('li');
-    li.textContent = 'Please select which image formats should be included in the download';
-
-    downloadsList.appendChild(li);
+    console.log(err.message);
   }
+  finally {
 
-  console.log('list', list);
+    downloadButton.removeAttribute('disabled');
+    downloadInProgress = false;
+  }
 };
+
+const AWAITING = 'waiting-to-process',
+  PROCESSING = 'being-processed',
+  DONE = 'processing-done',
+  FAILED = 'processing-failed';
 
 const preProcess = (list, filterName) => {
 
-  for (const [key, value] of Object.entries(imageState)) {
-    
-    console.log(key, value);
+  Object.values(imageState).forEach(value => {
 
     const item = {};
     item.file = value.file;
@@ -107,6 +174,8 @@ const preProcess = (list, filterName) => {
 
       const li = document.createElement('li');
       li.textContent = `${item.outputName}.${format}`;
+      li.classList.add('image-file-listing');
+      li.classList.add(AWAITING);
 
       item.listings[format] = li;
 
@@ -114,6 +183,93 @@ const preProcess = (list, filterName) => {
     });
 
     list.push(item);
+  });
+};
+
+const process = async (list, filter, zipItems) => {
+
+  const results = [];
+
+  for (const item of list) {
+
+    const result = await processImage(item, filter, zipItems);
+    results.push(result);
+  }
+
+  return results;
+};
+
+const canvasToBlob = (canvas, type, quality) => new Promise(resolve => canvas.toBlob(resolve, type, quality));
+
+const processImage = async (item, filter, zipItems) => {
+
+  const { element, engine } = downloadCell;
+  const { file, width, height, listings } = item;
+
+  const bitmap = await createImageBitmap(file);
+
+  try {
+
+    element.width = width;
+    element.height = height;
+
+    engine.clearRect(0, 0, width, height);
+    engine.drawImage(bitmap, 0, 0, width, height);
+
+    const imageData = engine.getImageData(0, 0, width, height);
+
+    const modifiedImageData = scrawlHandle.filterEngine.action({
+      filters: [filter],
+      image: imageData,
+    });
+
+    engine.putImageData(modifiedImageData, 0, 0);
+
+    for (const format of exportCandidates) {
+
+      listings[format].classList.remove(AWAITING);
+      listings[format].classList.add(PROCESSING);
+
+      const type = `image/${format}`;
+
+      const compressionValue = exportCompressionStates[format]
+        ? parseInt(exportCompressionStates[format].value, 10)
+        : 100;
+
+      const quality = compressionValue / 100;
+
+      const blob = await canvasToBlob(element, type, quality);
+
+      if (!blob) {
+
+        listings[format].classList.remove(PROCESSING);
+        listings[format].classList.add(FAILED);
+        console.warn(`Failed to create blob for ${file.name} (${format})`);
+      }
+      else {
+
+        listings[format].classList.remove(PROCESSING);
+        listings[format].classList.add(DONE);
+        
+        const packet = {
+          name: `${item.outputName}.${format}`,
+          lastModified: new Date(),
+          input: blob,
+        };
+
+        zipItems.push(packet);
+      }
+    }
+    return true;
+  }
+  catch (e) {
+
+    console.warn(e.message);
+    return false;
+  }
+  finally {
+
+    bitmap.close?.();
   }
 };
 
@@ -128,7 +284,6 @@ export const initImageDownload = (scrawl = null, dom = null, filterGetter = null
 
   // Make scrawl available to module functions
   scrawlHandle = scrawl;
-  domHandles = dom;
   getFilter = filterGetter;
 
 
@@ -148,12 +303,14 @@ export const initImageDownload = (scrawl = null, dom = null, filterGetter = null
   // Feature detection and modal setup
   const downloadsModal = dom['downloads-modal'];
   downloadsList = dom['processed-images-list'];
+  downloadButton = dom['process-and-download-action'];
 
+  downloadButton.setAttribute('disabled', '');
+  
   const detectCanvasExportSupport = (type) => {
 
     return new Promise(resolve => {
 
-      // No need to use Scrawl-canvas here, throwaway canvases are fine
       const { element, engine } = downloadCell;
 
       if (!engine || typeof element.toBlob !== 'function') {
@@ -193,14 +350,14 @@ export const initImageDownload = (scrawl = null, dom = null, filterGetter = null
     });
 
     scrawl.addNativeListener('change', updateCandidatesArray, '.image-format-checkbox-input');
+
+    downloadButton.removeAttribute('disabled');
   };
 
   initExportSupport();
 
 
   // Wire up the download button
-  const downloadButton = dom['process-and-download-action'];
-
   scrawl.addNativeListener('click', processImages, downloadButton);
 
 
