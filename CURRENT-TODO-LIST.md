@@ -87,11 +87,11 @@ Giving users the ability to toggle between the image preview types will allow th
 
 
 ## User-generated filter import, and download, work
-Work not yet considered, but should be simple to implement.
+... In progress
 
 
 ## Image batch-processing and download
-This work will (almost certainly) require changes to the SC library, such as exposing the filter engine to the user. Once that work is done, batch processing and downloading filtered images (in a zip file) should not be too difficult
+... Done
 
 
 ## Image file import and export
