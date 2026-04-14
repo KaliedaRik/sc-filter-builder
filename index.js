@@ -81,16 +81,6 @@ const dom = scrawl.initializeDomInputs([
   ['input', 'image-scale', '1'],
 ]);
 
-/*
-          <button type="button" id="import-filter-button">Import filter</button>
-
-          <!-- Download current filter -->
-          <button type="button" id="download-filter-button">Download filter</button>
-
-          <!-- Change filter -->
-          <button type="button" id="change-filter-modal-button">Change filter</button>
-*/
-
 
 // ------------------------------------------------------------------------
 // Start the page running

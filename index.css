@@ -1317,12 +1317,21 @@ dialog {
 
     & details {
       margin-bottom: 1rem;
+      border-radius: 5px;
     
+      &:focus-within {
+        outline: var(--outline-width) solid var(--outline-color);
+      }
+
       & summary {
         color: var(--summary-text);
         background-color: var(--summary-background);
         padding: 0.5rem 1rem;
         border-radius: 5px;
+
+        &:focus {
+          outline: none;
+        }
       }
 
       & .filter-button-grid {
@@ -1359,4 +1368,3 @@ dialog {
     }
   }
 }
-
