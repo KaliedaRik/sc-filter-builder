@@ -5,6 +5,7 @@
 // Imports
 import { starterFilters, filterGroups } from './starter-filters.js';
 import { wrap } from './form-objects.js';
+import { generateFileDate } from './utilities.js';
 
 let currentFilterWrapper = null,
   currentFilterInitialValues = null,
@@ -79,6 +80,16 @@ const loadStarterFilter = (starter) => {
   }
 };
 
+const importFilter = () => {
+
+  console.log('importFilter invoked');
+};
+
+const downloadFilter = () => {
+
+  console.log('downloadFilter invoked');
+};
+
 
 // Init function
 export const initFilterBuilder = (scrawl = null, dom = null) => {
@@ -143,9 +154,13 @@ export const initFilterBuilder = (scrawl = null, dom = null) => {
 
   currentFilterWrapper.updateDisplayFilter();
 
-
   currentFilterTitleElement = dom['current-filter-name'];
   currentFilterTitleElement.textContent = starter.readableName;
+
+
+  // Import and Download filter buttons
+  scrawl.addNativeListener('click', importFilter, dom['import-filter-button']);
+  scrawl.addNativeListener('click', downloadFilter, dom['download-filter-button']);
 
 
   // Return object

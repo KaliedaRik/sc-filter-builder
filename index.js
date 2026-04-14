@@ -50,6 +50,10 @@ const dom = scrawl.initializeDomInputs([
   ['by-id', 'image-imports-hold'],
   ['by-id', 'image-details-panel'],
 
+  // Capture handles to the right hand panel
+  ['button', 'download-filter-button', 'Download filter'],
+  ['by-id', 'import-filter-button'],
+
   // Capture handles for the downloads modal
   ['button', 'downloads-modal-button', 'Downloads'],
   ['button', 'downloads-modal-close', 'Close'],
@@ -76,6 +80,16 @@ const dom = scrawl.initializeDomInputs([
   ['button', 'navigation-center', 'Bring to center'],
   ['input', 'image-scale', '1'],
 ]);
+
+/*
+          <button type="button" id="import-filter-button">Import filter</button>
+
+          <!-- Download current filter -->
+          <button type="button" id="download-filter-button">Download filter</button>
+
+          <!-- Change filter -->
+          <button type="button" id="change-filter-modal-button">Change filter</button>
+*/
 
 
 // ------------------------------------------------------------------------

@@ -122,7 +122,10 @@
         <div class="filter-controls-panel-top-buttons">
           
           <!-- Import user filter -->
-          <button type="button" id="import-filter-button">Import filter</button>
+          <div id="import-filter-button">
+            <input id="import-filter" type="file" accept=".txt" multiple>
+            <label for="import-filter">Import filter</label>
+          </div>
 
           <!-- Download current filter -->
           <button type="button" id="download-filter-button">Download filter</button>
