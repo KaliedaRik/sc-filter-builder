@@ -1313,6 +1313,29 @@ dialog {
     border-bottom: 1px dashed var(--dialog-border);
   }
 
+  & #user-filters-area {
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+    align-items: stretch;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    gap: 1rem;
+    background-color: var(--details-background);
+    padding: 1rem;
+    border-radius: 5px;
+
+    & button {
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--dialog-button-border);
+      background-color: var(--filter-card-background);
+      width: calc(120px + 1rem);
+      min-width: calc(120px + 1rem);
+      max-width: calc(120px + 1rem);
+    }
+  }
+
   & #starter-filters-area {
 
     & details {
