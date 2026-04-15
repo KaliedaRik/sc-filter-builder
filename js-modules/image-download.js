@@ -6,6 +6,7 @@
 // Imports
 import { downloadZip } from '../js-libraries/client-zip.js';
 import { imageState } from './image-import.js';
+import { generateFileDate } from './utilities.js';
 
 
 // Modal level variables
@@ -89,37 +90,11 @@ const processImages = async () => {
 
         preProcess(list, filterWrapper.name);
 
-        // await process(list, filterWrapper.filter, zipItems);
-
-        // downloadZip(zipItems).blob().then(blob => {
-
-        //   const now = new Date(),
-        //     pad = (n) => String(n).padStart(2, '0'),
-        //     nowString = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
-
-        //   const filename = `SCFB-batch_${filterWrapper.name}_${nowString}.zip`
-
-        //   const url = URL.createObjectURL(blob);
-
-        //   const a = document.createElement('a');
-        //   a.href = url;
-        //   a.download = filename;
-        //   a.click();
-        //   a.remove();
-
-        //   URL.revokeObjectURL(url);
-        // });
         await process(list, filterWrapper.filter, zipItems);
 
-        const blob = await downloadZip(zipItems).blob();
-
-        const now = new Date(),
-          pad = (n) => String(n).padStart(2, '0'),
-          nowString = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
-
-        const filename = `SCFB-batch_${filterWrapper.name}_${nowString}.zip`;
-
-        const url = URL.createObjectURL(blob);
+        const blob = await downloadZip(zipItems).blob(),
+          filename = `SCFB-batch_${filterWrapper.name}_${generateFileDate()}.zip`,
+          url = URL.createObjectURL(blob);
 
         const a = document.createElement('a');
         a.href = url;

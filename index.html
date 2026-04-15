@@ -122,7 +122,10 @@
         <div class="filter-controls-panel-top-buttons">
           
           <!-- Import user filter -->
-          <button type="button" id="import-filter-button">Import filter</button>
+          <div id="import-filter-button">
+            <input id="import-filter" type="file" accept=".txt" multiple>
+            <label for="import-filter">Import filter</label>
+          </div>
 
           <!-- Download current filter -->
           <button type="button" id="download-filter-button">Download filter</button>
@@ -236,21 +239,13 @@
 
     <h2>Change filter</h2>
 
-    <div id="change-filter-warning-message" class="warn">[Warning message goes here]</div>
-
-    <button type="button" id="load-filter-action">Import filter packet</button>
-
     <h3>Imported filters</h3>
     
-    <div id="user-filters-area">
-      <p>Any imported filters will be listed here.</p>
-    </div>
+    <div id="user-filters-area"></div>
 
     <h3>Starter filters</h3>
     
-    <div id="starter-filters-area">
-      <p>Starter filters will be displayed here.</p>
-    </div>
+    <div id="starter-filters-area"></div>
 
   </dialog>
 

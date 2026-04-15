@@ -251,8 +251,16 @@ main {
       cursor: pointer;
     }
 
+    &:focus-within {
+      outline: var(--outline-width) solid var(--outline-color);
+    }
+
     & summary {
       font-weight: bold;
+
+      &:focus-visible {
+        outline: none;
+      }
     }
 
     & > div {
@@ -419,19 +427,18 @@ main {
   }
 
   & .filter-controls-panel-top-buttons {
-
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-column-gap: 0.5rem;
-    justify-content: start;
+    gap: 0.5rem;
     margin: 0.5rem 0;
 
-    & button {
+    & button,
+    & #import-filter-button label {
       display: block;
-      width: 100%;
+      box-sizing: border-box;
       text-align: center;
       font-size: 100%;
-      margin: 0.5rem 0 0;
+      margin: 0;
       border: 1px solid var(--filter-bar-section-border);
       padding: 0.25rem 0.5rem;
       border-radius: 5px;
@@ -442,10 +449,26 @@ main {
       &:hover {
         cursor: pointer;
       }
+    }
 
-      &#change-filter-modal-button {
-        grid-column: span 2;
-      }
+    & #change-filter-modal-button {
+      grid-column: 1 / -1;
+    }
+
+    & #import-filter-button input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    & #import-filter-button input:focus-visible + label {
+      outline: var(--outline-width) solid var(--outline-color);
     }
   }
 
@@ -460,6 +483,10 @@ main {
       cursor: pointer;
     }
 
+    &:focus-within {
+      outline: var(--outline-width) solid var(--outline-color);
+    }
+
     & summary {
       font-weight: bold;
 
@@ -470,6 +497,10 @@ main {
       & .summary-identifier {
         font-size: 0.8rem;
         font-weight: normal;
+      }
+
+      &:focus {
+        outline: none;
       }
     }
 
@@ -1282,16 +1313,48 @@ dialog {
     border-bottom: 1px dashed var(--dialog-border);
   }
 
+  & #user-filters-area {
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+    align-items: stretch;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    gap: 1rem;
+    background-color: var(--details-background);
+    padding: 1rem;
+    border-radius: 5px;
+
+    & button {
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--dialog-button-border);
+      background-color: var(--filter-card-background);
+      width: calc(120px + 1rem);
+      min-width: calc(120px + 1rem);
+      max-width: calc(120px + 1rem);
+    }
+  }
+
   & #starter-filters-area {
 
     & details {
       margin-bottom: 1rem;
+      border-radius: 5px;
     
+      &:focus-within {
+        outline: var(--outline-width) solid var(--outline-color);
+      }
+
       & summary {
         color: var(--summary-text);
         background-color: var(--summary-background);
         padding: 0.5rem 1rem;
         border-radius: 5px;
+
+        &:focus {
+          outline: none;
+        }
       }
 
       & .filter-button-grid {
@@ -1328,4 +1391,3 @@ dialog {
     }
   }
 }
-

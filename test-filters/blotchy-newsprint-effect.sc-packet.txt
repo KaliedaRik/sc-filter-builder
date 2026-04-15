@@ -1,0 +1,1 @@
+["blotchy-newsprint-effect","Filter","filter",{"name":"blotchy-newsprint-effect","actions":[{"action":"newsprint","width":3,"opacity":0.5},{"action":"gaussian-blur","radius":2},{"action":"step-channels","red":32,"green":32,"blue":32,"clamp":"round"}]}]
