@@ -187,7 +187,88 @@ const requestImportedFilter = (e) => {
 
 const downloadFilter = () => {
 
-  console.log('downloadFilter invoked');
+  let filterName = window.prompt(
+    'Rename filter',
+  `${currentFilterWrapper.name}_${generateFileDate()}`
+  );
+
+  if (filterName) {
+
+    filterName = filterName.replace(/[ <>:"/\\|?*\x00-\x1F]/g, '-').trim();
+
+    if (filterName.length < 5) console.warn('Filter filename needs to be at least 5 characters long');
+    else if (filterName.length > 80) console.warn('Filter filename is too long');
+    else {
+
+      const fileName = `${filterName}.sc-packet.txt`,
+        packets = [],
+        actions = [];
+
+      let gradientCount = 0;
+
+      currentFilterWrapper.actions.forEach(actionWrapper => {
+
+        const actionObject = actionWrapper.action,
+          actionName = actionObject.action;
+
+        switch(actionName) {
+
+          case 'map-to-gradient' : {
+
+            const currentGradient = scrawlHandle.findStyles(actionWrapper.action.gradient),
+              action = structuredClone(actionObject);
+            
+            let gradientName = `${filterName}_gradient-${gradientCount}`;
+
+            gradientCount++;
+
+            const tempGradient = currentGradient.clone({ name: gradientName }),
+              gradientPacket = tempGradient.saveAsPacket();
+
+            // Just in case there was a naming clash in the SC library
+            gradientName = tempGradient.name;
+
+            tempGradient.kill();
+            packets.push(gradientPacket);
+            action.gradient = gradientName;
+            actions.push(action);
+
+            break;
+          }
+
+          default:
+            actions.push(structuredClone(actionObject));
+        }
+      });
+
+      const tempFilter = scrawlHandle.makeFilter({
+        name: filterName,
+        actions,
+      });
+
+      const tempFilterPacket = tempFilter.saveAsPacket();
+
+      tempFilter.kill();
+
+      packets.push(tempFilterPacket);
+
+      const finalPacket = packets.join(PACKET_DIVIDER);
+
+      const blob = new Blob([finalPacket], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.style.display = 'none';
+
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+    }
+  } 
 };
 
 
