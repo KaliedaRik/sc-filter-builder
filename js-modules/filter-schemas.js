@@ -4117,7 +4117,6 @@ F.presentation = [{
 export const getFilterSchema = (name) => {
 
   if (filterSchemas[name]) return structuredClone(filterSchemas[name]);
-  if (actionSchemas[name]) return structuredClone(actionSchemas[name]);
   return null;
 };
 
@@ -4125,4 +4124,51 @@ export const getActionSchema = (name) => {
 
   if (actionSchemas[name]) return structuredClone(actionSchemas[name]);
   return null;
+};
+
+export const reconciliation = {
+  ['alpha-to-channels']: 'alphaToChannels',
+  ['alpha-to-luminance']: 'alphaToLuminance',
+  ['area-alpha']: 'areaAlpha',
+  ['blend']: 'blend',
+  ['blur']: 'blur',
+  ['lock-channels-to-levels']: 'channelLevels',
+  ['modulate-channels']: 'channels',
+  ['step-channels']: 'channelstep',
+  ['channels-to-alpha']: 'channelsToAlpha',
+  ['chroma']: 'chroma',
+  ['colors-to-alpha']: 'chromakey',
+  ['clamp-channels']: 'clampChannels',
+  ['compose']: 'compose',
+  ['corrode']: 'corrode',
+  ['vary-channels-by-weights']: 'curveWeights',
+  ['deconvolute']: 'deconvolute',
+  ['displace']: 'displace',
+  ['emboss']: 'emboss',
+  ['flood']: 'flood',
+  ['gaussian-blur']: 'gaussianBlur',
+  ['glitch']: 'glitch',
+  ['grayscale']: 'grayscale',
+  ['process-image']: 'image',
+  ['invert-channels']: 'invert',
+  ['luminance-to-alpha']: 'luminanceToAlpha',
+  ['map-to-gradient']: 'mapToGradient',
+  ['matrix']: 'matrix',
+  ['modify-ok-channels']: 'modifyOk',
+  ['modulate-ok-channels']: 'modulateOk',
+  ['negative']: 'negative',
+  ['newsprint']: 'newsprint',
+  ['offset']: 'offset',
+  ['ok-perceptual-curves']: 'okCurveWeights',
+  ['pixelate']: 'pixelate',
+  ['random-noise']: 'randomNoise',
+  ['reduce-palette']: 'reducePalette',
+  ['rotate-hue']: 'rotateHue',
+  ['set-channel-to-level']: 'setChannelsToLevel',
+  ['swirl']: 'swirl',
+  ['threshold']: 'threshold',
+  ['tiles']: 'tiles',
+  ['tint-channels']: 'tint',
+  ['unsharp']: 'unsharp',
+  ['zoom-blur']: 'zoomBlur',
 };

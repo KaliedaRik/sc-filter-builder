@@ -1,0 +1,1 @@
+["jagged-shapes","Filter","filter",{"name":"jagged-shapes","actions":[{"action":"tiles","mode":"random","randomCount":1600},{"action":"tiles","mode":"random","randomCount":400,"opacity":0.5}]}]

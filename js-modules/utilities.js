@@ -26,3 +26,6 @@ export const generateFileDate = () => {
 
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`
 };
+
+export const PACKET_DIVIDER = '§§';
+export const FILTER_IDENTIFIER = '"Filter","filter"';

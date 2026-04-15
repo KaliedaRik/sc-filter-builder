@@ -5,11 +5,14 @@
 // Imports
 import { starterFilters, filterGroups } from './starter-filters.js';
 import { wrap } from './form-objects.js';
-import { generateFileDate } from './utilities.js';
+import { reconciliation } from './filter-schemas.js';
+import { generateFileDate, PACKET_DIVIDER, FILTER_IDENTIFIER } from './utilities.js';
 
 let currentFilterWrapper = null,
   currentFilterInitialValues = null,
   currentFilterTitleElement = null,
+  userFiltersArea = null,
+  scrawlHandle = null,
   canvasHandle = null;
 
 const mainEl = document.querySelector('main'),
@@ -40,21 +43,25 @@ const requestStarterFilter = (e) => {
   // Find button element
   const target = e.target.closest('button[data-packet]');
 
-  if (target && target.dataset.packet) loadStarterFilter(target.dataset.packet);
+  if (target && target.dataset.packet) {
+
+    const starter = target.dataset.packet,
+      data = starterFilters[starter],
+      packet = data.packet;
+
+    if (packet) load(packet, data);
+  }
 };
 
-const loadStarterFilter = (starter) => {
-
-  const data = starterFilters[starter],
-    packet = data.packet;
+const load = (packet, data) => {
 
   if (packet) {
 
-    const packets = packet.split('§§');
+    const packets = packet.split(PACKET_DIVIDER);
 
     packets.forEach(p => {
 
-      if (p.includes('"Filter","filter"')) {
+      if (p.includes(FILTER_IDENTIFIER)) {
 
         const newFilter = canvasHandle.actionPacket(p);
 
@@ -80,9 +87,102 @@ const loadStarterFilter = (starter) => {
   }
 };
 
-const importFilter = () => {
 
-  console.log('importFilter invoked');
+const importedFilters = {};
+let importedFilterCounter = 0;
+
+const importFilter = async (file) => {
+
+  if (!file) return;
+
+  let packet = '';
+
+  try {
+
+    packet = await file.text();
+  }
+  catch (e) {
+
+    console.warn(`Failed to read filter file: ${file.name}`);
+    return;
+  }
+
+  const packets = packet.split(PACKET_DIVIDER),
+    filteredPacket = packets.filter(p => p.includes(FILTER_IDENTIFIER));
+
+  if (filteredPacket.length !== 1) {
+
+    console.warn(`Packet rejected - should only include one filter definition: ${file.name}`);
+    return;
+  }
+
+  const selectedPacket = filteredPacket[0]
+
+  let testFilter;
+
+  try {
+
+    testFilter = canvasHandle.actionPacket(selectedPacket);
+
+    if (!testFilter || Error.isError(testFilter)) {
+
+      console.warn(`Failed to import filter file: ${file.name}`);
+      return;
+    }
+
+    const formSchemaName = [];
+
+    const id = `imported-filter-${importedFilterCounter}`;
+    importedFilterCounter++;
+
+    const title = testFilter.name || file.name;
+
+    testFilter.actions.forEach(a => formSchemaName.push(reconciliation[a.action]));
+
+    importedFilters[id] = {
+      id,
+      title,
+      readableName: title,
+      formSchemaName,
+      fileName: file.name,
+      packet,
+      imageSource: null,
+    };
+
+    testFilter.kill?.();
+
+    addImportedFilterButton(importedFilters[id]);
+  }
+  catch (e) {
+
+    console.warn(`IMPORT ERROR: ${e.message}`);
+    testFilter?.kill?.();
+    return;
+  }
+};
+
+const addImportedFilterButton = (item) => {
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.setAttribute('data-filter-id', item.id);
+  button.textContent = item.title;
+
+  userFiltersArea.appendChild(button);
+
+  scrawlHandle.addNativeListener('click', requestImportedFilter, button);
+};
+
+const requestImportedFilter = (e) => {
+
+  const id = e?.currentTarget?.getAttribute('data-filter-id');
+
+  if (!id || !importedFilters[id]) return;
+
+  const data = importedFilters[id],
+    packet = data.packet;
+
+  load(packet, data);
 };
 
 const downloadFilter = () => {
@@ -100,7 +200,13 @@ export const initFilterBuilder = (scrawl = null, dom = null) => {
 
   const canvas = scrawl.findCanvas('filter-builder-canvas');
 
+  const filterImport = dom['import-filter'];
+
+
   canvasHandle = canvas;
+  scrawlHandle = scrawl;
+  userFiltersArea = dom['user-filters-area'];
+
 
   const frag = new DocumentFragment(),
     starterFiltersArea = dom['starter-filters-area'];
@@ -138,6 +244,7 @@ export const initFilterBuilder = (scrawl = null, dom = null) => {
     });
 
     if (grp.openOnLoad) details.setAttribute('open', '');
+
     details.appendChild(grid);
     frag.appendChild(details);
   });
@@ -159,7 +266,19 @@ export const initFilterBuilder = (scrawl = null, dom = null) => {
 
 
   // Import and Download filter buttons
-  scrawl.addNativeListener('click', importFilter, dom['import-filter-button']);
+  scrawl.addNativeListener('change', async (e) => {
+
+    e.preventDefault();
+
+    for (const file of filterImport.files) {
+
+      await importFilter(file);
+    }
+
+    console.log('importedFilters', importedFilters);
+
+  }, filterImport);
+
   scrawl.addNativeListener('click', downloadFilter, dom['download-filter-button']);
 
 

@@ -1,0 +1,1 @@
+["color-crt","Filter","filter",{"name":"color-crt","actions":[{"action":"area-alpha","tileWidth":20,"tileHeight":2,"gutterWidth":1,"gutterHeight":1,"areaAlphaLevels":[255,100,255,100]},{"action":"modulate-channels","red":0.7,"green":0.7,"blue":0.7},{"action":"gaussian-blur","radius":1.2}]}]

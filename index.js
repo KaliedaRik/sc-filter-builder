@@ -53,6 +53,7 @@ const dom = scrawl.initializeDomInputs([
   // Capture handles to the right hand panel
   ['button', 'download-filter-button', 'Download filter'],
   ['by-id', 'import-filter-button'],
+  ['by-id', 'import-filter'],
 
   // Capture handles for the downloads modal
   ['button', 'downloads-modal-button', 'Downloads'],
@@ -69,6 +70,7 @@ const dom = scrawl.initializeDomInputs([
   ['button', 'load-filter-action', 'Import filter packet'],
   ['by-id', 'starter-filters-area'],
   ['by-id', 'current-filter-name'],
+  ['by-id', 'user-filters-area'],
 
   // Capture handles to the minimap HTML elements
   ['input', 'minimap-horizontal', '50'],

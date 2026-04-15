@@ -5,7 +5,7 @@
 
 // Imports
 // ------------------------------------------------------------------------
-import { getFilterSchema, getActionSchema } from './filter-schemas.js';
+import { getFilterSchema } from './filter-schemas.js';
 import { generateButtonHtml, generateFormHtml } from './form-builder.js';
 import { generateUuid } from './utilities.js';
 
@@ -68,7 +68,7 @@ const FilterWrapper = function (filter, formSchemaName = '') {
         formId: `form_${id}`,
         order: index,
         action: act,
-        formSchema: getActionSchema(act.action),
+        formSchema: getFilterSchema(this.formSchemaName[index]),
       });
 
       this.actions.push(wrapper);
