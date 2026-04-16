@@ -443,6 +443,14 @@ export const starterFilters = {
     packet: `["SC-starter-filter_tint","Filter","filter",{"name":"SC-starter-filter_tint","actions":[{"action":"tint-channels","lineIn":"","lineOut":"","opacity":1,"redInRed":1,"redInGreen":0,"redInBlue":0,"greenInRed":0,"greenInGreen":1,"greenInBlue":0,"blueInRed":0,"blueInGreen":0,"blueInBlue":1}]}]`,
     imageSource: 'assets/thumb/starter-thumb_tint.png',
   },
+
+  ['SC-starter-filter_swirl']: {
+    title: 'Swirl',
+    readableName: 'Swirl starter',
+    formSchemaName: 'swirl',
+    packet: `["SC-starter-filter_swirl","Filter","filter",{"name":"SC-starter-filter_swirl","actions":[{"action":"swirl","lineIn":"","lineOut":"","opacity":1,"swirls":[["50%","50%",0,"30%",90,"linear"]],"transparentEdges":false,"useInputAsMask":false}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_swirl.png',
+  },
 };
 
 export const filterGroups = [{
@@ -450,6 +458,7 @@ export const filterGroups = [{
   title: 'Start here',
   openOnLoad: true,
   filters: [
+    'SC-starter-filter_swirl',
     'SC-starter-filter_blank',
     'SC-starter-filter_brightness',
     'SC-starter-filter_color-curve',

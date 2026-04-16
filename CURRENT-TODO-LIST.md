@@ -3,75 +3,36 @@ The list is evolving and I do not commit to doing anything in the current order
 
 ## Starter filters work and form building
 Create packets for the following filters
-[] - filterSchemas.blend
-[] - filterSchemas.compose
-[] - filterSchemas.displace
-[] - filterSchemas.image
-[] - filterSchemas.swirl
 
-### Mapping packets to single-action starter filters
-```
-['SC-starter-filter_area-alpha'] - filterSchemas.areaAlpha
-['SC-starter-filter_blank'] - n/a
-['SC-starter-filter_blue-channel'] - filterSchemas.blue
-['SC-starter-filter_box-blur'] - filterSchemas.blur
-['SC-starter-filter_brightness'] - filterSchemas.brightness
-['SC-starter-filter_chroma-clear-by-ranges'] - filterSchemas.chroma
-['SC-starter-filter_chroma-clear-by-reference'] - filterSchemas.chromakey
-['SC-starter-filter_clamp-channels'] - filterSchemas.clampChannels
-['SC-starter-filter_color-curve'] - filterSchemas.curveWeights
-['SC-starter-filter_copy-alpha-to-channels'] - filterSchemas.alphaToChannels
-['SC-starter-filter_copy-alpha-to-luminance'] - filterSchemas.alphaToLuminance
-['SC-starter-filter_copy-channels-to-alpha'] - filterSchemas.channelsToAlpha
-['SC-starter-filter_copy-luminance-to-alpha'] - filterSchemas.luminanceToAlpha
-['SC-starter-filter_corrode'] - filterSchemas.corrode
-['SC-starter-filter_cyan-mix'] - filterSchemas.cyan
-['SC-starter-filter_deconvolute'] - filterSchemas.deconvolute
-['SC-starter-filter_desaturate'] - filterSchemas.grayscale
-['SC-starter-filter_edge-detect'] - filterSchemas.edgeDetect
-['SC-starter-filter_emboss'] - filterSchemas.emboss
-['SC-starter-filter_exclude-blue-channel'] - filterSchemas.notblue
-['SC-starter-filter_exclude-green-channel'] - filterSchemas.notgreen
-['SC-starter-filter_exclude-red-channel'] - filterSchemas.notred
-['SC-starter-filter_flood'] - filterSchemas.flood
-['SC-starter-filter_gaussian-blur'] - filterSchemas.gaussianBlur
-['SC-starter-filter_glitch'] - filterSchemas.glitch
-['SC-starter-filter_gray-monochrome'] - filterSchemas.gray
-['SC-starter-filter_green-channel'] - filterSchemas.green
-['SC-starter-filter_invert-colors'] - filterSchemas.invert
-['SC-starter-filter_magenta-mix'] - filterSchemas.magenta
-['SC-starter-filter_map-to-gradient'] - filterSchemas.mapToGradient
-['SC-starter-filter_matrix'] - filterSchemas.matrix
-['SC-starter-filter_modify-ok-channels'] - filterSchemas.modifyOk
-['SC-starter-filter_modulate-channels'] - filterSchemas.channels
-['SC-starter-filter_modulate-ok-channels'] - filterSchemas.modulateOk
-['SC-starter-filter_newsprint'] - filterSchemas.newsprint
-['SC-starter-filter_offset'] - filterSchemas.offset
-['SC-starter-filter_ok-negative'] - filterSchemas.negative
-['SC-starter-filter_pixelate'] - filterSchemas.pixelate
-['SC-starter-filter_posterize-by-step'] - filterSchemas.channelstep
-['SC-starter-filter_posterize-by-value'] - filterSchemas.channelLevels
-['SC-starter-filter_random-noise'] - filterSchemas.randomNoise
-['SC-starter-filter_red-channel'] - filterSchemas.red
-['SC-starter-filter_reduce-palette'] - filterSchemas.reducePalette
-['SC-starter-filter_rotate-hue'] - filterSchemas.rotateHue
-['SC-starter-filter_saturation'] - filterSchemas.saturation
-['SC-starter-filter_sepia-tint'] - filterSchemas.sepia
-['SC-starter-filter_set-channels-to-level'] - filterSchemas.setChannelsToLevel
-['SC-starter-filter_sharpen'] - filterSchemas.sharpen
-['SC-starter-filter_threshold'] - filterSchemas.threshold
-['SC-starter-filter_tiles'] - filterSchemas.tiles
-['SC-starter-filter_tint'] - filterSchemas.tint
-['SC-starter-filter_tone-curve'] - filterSchemas.okCurveWeights
-['SC-starter-filter_unsharp'] - filterSchemas.unsharp
-['SC-starter-filter_yellow-mix'] - filterSchemas.yellow
-['SC-starter-filter_zoom-blur'] - filterSchemas.zoomBlur
-[] - filterSchemas.blend
-[] - filterSchemas.compose
-[] - filterSchemas.displace
-[] - filterSchemas.image
-[] - filterSchemas.swirl
-```
+- [] filterSchemas.blend
+- [] filterSchemas.compose
+- [] filterSchemas.displace
+- [] filterSchemas.image
+- [] filterSchemas.swirl
+
+For `blend` and `compose`, we just need to create the form builder object.
+
+For `swirl` we need to build a new form component - a swirl filter can include an array of swirls, each of which will need to be separately editabe.
+
+For `displace`, I think this will be the same story as for blend/compose (2 inputs)
+
+For `image`, we need to do some work in the forms to allow the user to select an image. 
+- When it comes to saving/downloading filters which depend an upstream `image`, we need to figure out a way to serialise the image (no reliance on URLs)
+- When it comes to importing and using such a filter, we need to do work to get the image into SC as an asset
+
+### Image preview
+We need to do further work to make the preview more realistic, particularly when the user zooms the viewport
+- area-alpha currently does not shift areas as user navigates over image
+- gaussian-blur - theres a case to make the steps in the range input smaller (0.1) and maybe limit the upper bound for this tool. Also: how to zoom the blur?
+- etc
+
+
+## User-generated filter import, and download, work
+... Done
+
+
+## Image batch-processing and download
+... Done
 
 
 ## Image preview enhancement
@@ -84,14 +45,6 @@ We can fix this by having two types of image preview:
 The advantages of `advanced` is that we can cut out a lot of the view calculations, and the resulting preview will be "final download" accurate. The disadvantages are that the approach will consume a lot more memory, and we have to apply the filter to a potentially very large image - both of which could damage performance.
 
 Giving users the ability to toggle between the image preview types will allow them to do the majority of their work in `basic` (the default preview), but then switch to `advanced` for more detailed assessment of the filter results, if required.
-
-
-## User-generated filter import, and download, work
-... In progress
-
-
-## Image batch-processing and download
-... Done
 
 
 ## Image file import and export
