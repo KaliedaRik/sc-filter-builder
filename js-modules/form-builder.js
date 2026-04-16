@@ -589,8 +589,6 @@ const createControl_swirl = (data, actionWrapper) => {
         const target = e.target,
           value = target.value;
 
-console.log('easing', value, target, e)
-
         swirlData.easing = value;
 
         updateSwirlArrays();
@@ -606,7 +604,6 @@ console.log('easing', value, target, e)
 
   // Add swirl button goes here
 
-console.log(data, actionWrapper)
   return el;
 };
 
