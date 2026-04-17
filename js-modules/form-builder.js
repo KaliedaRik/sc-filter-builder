@@ -200,19 +200,21 @@ const createControl_swirl = (data, actionWrapper) => {
     currentFilter.updateHistory();
   };
 
-  swirlArrays.forEach((s, index) => {
+  const buildSwirlPanel = (swirl, index) => {
 
     const swirlId = generateUniqueString();
 
-    const [startX, startY, innerRadius, outerRadius, angle, easing] = s;
+    const [startX, startY, innerRadius, outerRadius, angle, easing] = swirl;
 
     const swirlData = {
+      swirlId,
       startX,
       startY,
       innerRadius,
       outerRadius,
       angle,
-      easing
+      easing,
+      localKill: [],
     };
 
     swirlObjects[swirlId] = swirlData;
@@ -245,7 +247,7 @@ const createControl_swirl = (data, actionWrapper) => {
     topper.appendChild(title);
 
     const button = document.createElement('button');
-    button.classList.add('swirls-title');
+    button.classList.add('add-swirl-button');
     button.textContent = `Delete`;
     button.type = 'button';
     button.id = localSwirlDelete;
@@ -256,11 +258,15 @@ const createControl_swirl = (data, actionWrapper) => {
 
         e.preventDefault();
 
-        console.log(`User wants to delete swirl ${index + 1}`);
+        swirlData.localKill.forEach(item => item());
+        delete swirlObjects[swirlId];
+
+        updateSwirlArrays();
       }
     }, button);
 
     killList.push(listener);
+    swirlData.localKill.push(listener);
 
     topper.appendChild(button);
     localSwirl.appendChild(topper);
@@ -320,6 +326,7 @@ const createControl_swirl = (data, actionWrapper) => {
     }, rangeInput);
 
     killList.push(listener);
+    swirlData.localKill.push(listener);
 
     localSwirl.appendChild(swirlEl);
 
@@ -378,6 +385,7 @@ const createControl_swirl = (data, actionWrapper) => {
     }, rangeInput);
 
     killList.push(listener);
+    swirlData.localKill.push(listener);
 
     localSwirl.appendChild(swirlEl);
 
@@ -436,6 +444,7 @@ const createControl_swirl = (data, actionWrapper) => {
     }, rangeInput);
 
     killList.push(listener);
+    swirlData.localKill.push(listener);
 
     localSwirl.appendChild(swirlEl);
 
@@ -494,6 +503,7 @@ const createControl_swirl = (data, actionWrapper) => {
     }, rangeInput);
 
     killList.push(listener);
+    swirlData.localKill.push(listener);
 
     localSwirl.appendChild(swirlEl);
 
@@ -551,6 +561,7 @@ const createControl_swirl = (data, actionWrapper) => {
     }, rangeInput);
 
     killList.push(listener);
+    swirlData.localKill.push(listener);
 
     localSwirl.appendChild(swirlEl);
 
@@ -596,13 +607,36 @@ const createControl_swirl = (data, actionWrapper) => {
     }, easingInput);
 
     killList.push(listener);
+    swirlData.localKill.push(listener);
 
     localSwirl.appendChild(swirlEl);
+    swirlData.localKill.push(() => localSwirl.remove());
 
     el.appendChild(localSwirl);
-  });
+  };
 
-  // Add swirl button goes here
+  swirlArrays.forEach((swirl, index) => buildSwirlPanel(swirl, index));
+
+  const addSwirlButton = document.createElement('button');
+  addSwirlButton.classList.add('add-swirl-button');
+  addSwirlButton.textContent = `Add a new swirl`;
+  addSwirlButton.type = 'button';
+
+  el.appendChild(addSwirlButton);
+
+  const addSwirlButtonListener = scrawlHandle.addNativeListener('click', (e) => {
+
+    if (e) {
+
+      e.preventDefault();
+
+      buildSwirlPanel(['50%', '50%', 0, '30%', 0, 'linear'], swirlArrays.length);
+
+      updateSwirlArrays();
+    }
+  }, addSwirlButton);
+
+  killList.push(addSwirlButtonListener);
 
   return el;
 };
