@@ -176,10 +176,17 @@ F.updateDisplayFilter = function () {
         break;
       }
       case 'blur':
+      case 'corrode':
+      case 'emboss':
       case 'gaussian-blur':
+      case 'glitch':
+      case 'matrix':
+      case 'offset':
       case 'newsprint':
       case 'random-noise':
+      case 'reduce-palette':
       case 'swirl':
+      case 'unsharp':
       case 'zoom-blur': {
         warningFlag = true;
         break;
