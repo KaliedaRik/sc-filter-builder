@@ -11,6 +11,8 @@ import {
   buildGradientComponent,
 } from './canvas-ui-components.js'
 
+import { generateUniqueString, DOMID } from './utilities.js';
+
 
 // Module-scoped Handles and variables
 // ------------------------------------------------------------------------
@@ -151,6 +153,7 @@ const createControl = (data, actionWrapper) => {
     case 'bespoke-vary-channel-by-weights': return createControl_channelWeights(data, actionWrapper);
     case 'bespoke-ok-perceptual-curves': return createControl_toneWeights(data, actionWrapper);
     case 'bespoke-map-to-gradient': return createControl_gradient(data, actionWrapper);
+    case 'bespoke-swirl': return createControl_swirl(data, actionWrapper);
     default:
       const el = document.createElement('div');
       el.textContent = `No function for ${actionWrapper.formId} - ${data.label}`;
@@ -159,6 +162,491 @@ const createControl = (data, actionWrapper) => {
 };
 
 const getListenId = (id) => `${id}_listen`;
+
+
+const createControl_swirl = (data, actionWrapper) => {
+
+  actionWrapper.swirlObjects = {};
+
+  const {formId, action, swirlObjects, killList } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`;
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-swirls');
+  el.id = localId;
+
+  const swirlArrays = action.swirls;
+
+  const updateSwirlArrays = () => {
+
+    swirlArrays.length = 0;
+
+    Object.values(swirlObjects).forEach(val => {
+
+      swirlArrays.push([
+        val.startX,
+        val.startY,
+        val.innerRadius,
+        val.outerRadius,
+        val.angle,
+        val.easing,
+      ]);
+    })
+
+    const currentFilter = getWrapper();
+
+    currentFilter.updateDisplayFilter();
+    currentFilter.updateHistory();
+  };
+
+  let addSwirlButton = null;
+
+  const buildSwirlPanel = (swirl, index) => {
+
+    const swirlId = generateUniqueString();
+
+    const [startX, startY, innerRadius, outerRadius, angle, easing] = swirl;
+
+    const swirlData = {
+      swirlId,
+      startX,
+      startY,
+      innerRadius,
+      outerRadius,
+      angle,
+      easing,
+      localKill: [],
+    };
+
+    swirlObjects[swirlId] = swirlData;
+
+    let swirlEl, row1, row2, label, rangeInput, value, listener;
+
+    const localSwirlId = `${localId}_${swirlId}`,
+      localSwirlStartX = `${localSwirlId}_start-x`,
+      localSwirlStartX_number = `${localSwirlId}_start-x_number`,
+      localSwirlStartY = `${localSwirlId}_start-y`,
+      localSwirlStartY_number = `${localSwirlId}_start-y_number`,
+      localSwirlInnerRadius = `${localSwirlId}_inner-radius`,
+      localSwirlInnerRadius_number = `${localSwirlId}_inner-radius_number`,
+      localSwirlOuterRadius = `${localSwirlId}_outer-radius`,
+      localSwirlOuterRadius_number = `${localSwirlId}_outer-radius_number`,
+      localSwirlAngle = `${localSwirlId}_angle`,
+      localSwirlAngle_number = `${localSwirlId}_angle_number`,
+      localSwirlEasing = `${localSwirlId}_easing`,
+      localSwirlDelete = `${localSwirlId}_delete`;
+
+    const localSwirl = document.createElement('div');
+    localSwirl.classList.add('swirls-panel');
+
+    const topper = document.createElement('div');
+    topper.classList.add('swirls-topper');
+
+    const title = document.createElement('div');
+    title.classList.add('swirls-title');
+    title.textContent = `Swirl ${index + 1}`;
+    topper.appendChild(title);
+
+    const button = document.createElement('button');
+    button.classList.add('add-swirl-button');
+    button.textContent = `Delete`;
+    button.type = 'button';
+    button.id = localSwirlDelete;
+
+    listener = scrawlHandle.addNativeListener('click', (e) => {
+
+      if (e) {
+
+        e.preventDefault();
+
+        swirlData.localKill.forEach(item => item());
+        delete swirlObjects[swirlId];
+
+        updateSwirlArrays();
+      }
+    }, button);
+
+    killList.push(listener);
+    swirlData.localKill.push(listener);
+
+    topper.appendChild(button);
+    localSwirl.appendChild(topper);
+
+    // startX control
+    swirlEl = document.createElement('div');
+    swirlEl.classList.add('action-control-inputs-for-number');
+
+    row1 = document.createElement('div');
+    row1.classList.add('action-control-inputs-for-number-row-1');
+
+    label = document.createElement('label');
+    label.classList.add('action-control-visible-label');
+    label.textContent = 'Horizontal start';
+    label.setAttribute('for', localSwirlStartX);
+    row1.appendChild(label);
+
+    value = parseFloat(swirlData.startX);
+
+    const displayedValue_startX = document.createElement('div');
+    displayedValue_startX.id = localSwirlStartX_number;
+    displayedValue_startX.textContent = `${value}%`;
+    row1.appendChild(displayedValue_startX);
+
+    row2 = document.createElement('div');
+    row2.classList.add('action-control-inputs-for-number-row-2');
+
+    rangeInput = document.createElement('input');
+    rangeInput.id = localSwirlStartX;
+    rangeInput.name = localSwirlStartX;
+    rangeInput.type = 'range';
+    rangeInput.min = '-30';
+    rangeInput.max = '130';
+    rangeInput.step = '0.1';
+    rangeInput.value = `${value}`;
+    row2.appendChild(rangeInput);
+
+    swirlEl.appendChild(row1);
+    swirlEl.appendChild(row2);
+
+    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+      if (e && e.target) {
+
+        e.preventDefault();
+
+        const target = e.target,
+          value = parseFloat(target.value),
+          valueString = `${value}%`;
+
+        swirlData.startX = valueString;
+
+        displayedValue_startX.textContent = valueString;
+
+        updateSwirlArrays();
+      }
+    }, rangeInput);
+
+    killList.push(listener);
+    swirlData.localKill.push(listener);
+
+    localSwirl.appendChild(swirlEl);
+
+    // startY control
+    swirlEl = document.createElement('div');
+    swirlEl.classList.add('action-control-inputs-for-number');
+
+    row1 = document.createElement('div');
+    row1.classList.add('action-control-inputs-for-number-row-1');
+
+    label = document.createElement('label');
+    label.classList.add('action-control-visible-label');
+    label.textContent = 'Vertical start';
+    label.setAttribute('for', localSwirlStartY);
+    row1.appendChild(label);
+
+    value = parseFloat(swirlData.startY);
+
+    const displayedValue_startY = document.createElement('div');
+    displayedValue_startY.id = localSwirlStartY_number;
+    displayedValue_startY.textContent = `${value}%`;
+    row1.appendChild(displayedValue_startY);
+
+    row2 = document.createElement('div');
+    row2.classList.add('action-control-inputs-for-number-row-2');
+
+    rangeInput = document.createElement('input');
+    rangeInput.id = localSwirlStartY;
+    rangeInput.name = localSwirlStartY;
+    rangeInput.type = 'range';
+    rangeInput.min = '-30';
+    rangeInput.max = '130';
+    rangeInput.step = '0.1';
+    rangeInput.value = `${value}`;
+    row2.appendChild(rangeInput);
+
+    swirlEl.appendChild(row1);
+    swirlEl.appendChild(row2);
+
+    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+      if (e && e.target) {
+
+        e.preventDefault();
+
+        const target = e.target,
+          value = parseFloat(target.value),
+          valueString = `${value}%`;
+
+        swirlData.startY = valueString;
+
+        displayedValue_startY.textContent = valueString;
+
+        updateSwirlArrays();
+      }
+    }, rangeInput);
+
+    killList.push(listener);
+    swirlData.localKill.push(listener);
+
+    localSwirl.appendChild(swirlEl);
+
+    // innerRadius control
+    swirlEl = document.createElement('div');
+    swirlEl.classList.add('action-control-inputs-for-number');
+
+    row1 = document.createElement('div');
+    row1.classList.add('action-control-inputs-for-number-row-1');
+
+    label = document.createElement('label');
+    label.classList.add('action-control-visible-label');
+    label.textContent = 'Inner radius';
+    label.setAttribute('for', localSwirlInnerRadius);
+    row1.appendChild(label);
+
+    value = parseFloat(swirlData.innerRadius);
+
+    const displayedValue_innerRadius = document.createElement('div');
+    displayedValue_innerRadius.id = localSwirlInnerRadius_number;
+    displayedValue_innerRadius.textContent = `${value}%`;
+    row1.appendChild(displayedValue_innerRadius);
+
+    row2 = document.createElement('div');
+    row2.classList.add('action-control-inputs-for-number-row-2');
+
+    rangeInput = document.createElement('input');
+    rangeInput.id = localSwirlInnerRadius;
+    rangeInput.name = localSwirlInnerRadius;
+    rangeInput.type = 'range';
+    rangeInput.min = '0';
+    rangeInput.max = '100';
+    rangeInput.step = '0.1';
+    rangeInput.value = `${value}`;
+    row2.appendChild(rangeInput);
+
+    swirlEl.appendChild(row1);
+    swirlEl.appendChild(row2);
+
+    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+      if (e && e.target) {
+
+        e.preventDefault();
+
+        const target = e.target,
+          value = parseFloat(target.value),
+          valueString = `${value}%`;
+
+        swirlData.innerRadius = valueString;
+
+        displayedValue_innerRadius.textContent = valueString;
+
+        updateSwirlArrays();
+      }
+    }, rangeInput);
+
+    killList.push(listener);
+    swirlData.localKill.push(listener);
+
+    localSwirl.appendChild(swirlEl);
+
+    // outerRadius control
+    swirlEl = document.createElement('div');
+    swirlEl.classList.add('action-control-inputs-for-number');
+
+    row1 = document.createElement('div');
+    row1.classList.add('action-control-inputs-for-number-row-1');
+
+    label = document.createElement('label');
+    label.classList.add('action-control-visible-label');
+    label.textContent = 'Outer radius';
+    label.setAttribute('for', localSwirlOuterRadius);
+    row1.appendChild(label);
+
+    value = parseFloat(swirlData.outerRadius);
+
+    const displayedValue_outerRadius = document.createElement('div');
+    displayedValue_outerRadius.id = localSwirlOuterRadius_number;
+    displayedValue_outerRadius.textContent = `${value}%`;
+    row1.appendChild(displayedValue_outerRadius);
+
+    row2 = document.createElement('div');
+    row2.classList.add('action-control-inputs-for-number-row-2');
+
+    rangeInput = document.createElement('input');
+    rangeInput.id = localSwirlOuterRadius;
+    rangeInput.name = localSwirlOuterRadius;
+    rangeInput.type = 'range';
+    rangeInput.min = '0';
+    rangeInput.max = '100';
+    rangeInput.step = '0.1';
+    rangeInput.value = `${value}`;
+    row2.appendChild(rangeInput);
+
+    swirlEl.appendChild(row1);
+    swirlEl.appendChild(row2);
+
+    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+      if (e && e.target) {
+
+        e.preventDefault();
+
+        const target = e.target,
+          value = parseFloat(target.value),
+          valueString = `${value}%`;
+
+        swirlData.outerRadius = valueString;
+
+        displayedValue_outerRadius.textContent = valueString;
+
+        updateSwirlArrays();
+      }
+    }, rangeInput);
+
+    killList.push(listener);
+    swirlData.localKill.push(listener);
+
+    localSwirl.appendChild(swirlEl);
+
+    // angle control
+    swirlEl = document.createElement('div');
+    swirlEl.classList.add('action-control-inputs-for-number');
+
+    row1 = document.createElement('div');
+    row1.classList.add('action-control-inputs-for-number-row-1');
+
+    label = document.createElement('label');
+    label.classList.add('action-control-visible-label');
+    label.textContent = 'Angle';
+    label.setAttribute('for', localSwirlAngle);
+    row1.appendChild(label);
+
+    value = parseFloat(swirlData.angle);
+
+    const displayedValue_angle = document.createElement('div');
+    displayedValue_angle.id = localSwirlAngle_number;
+    displayedValue_angle.textContent = `${value}`;
+    row1.appendChild(displayedValue_angle);
+
+    row2 = document.createElement('div');
+    row2.classList.add('action-control-inputs-for-number-row-2');
+
+    rangeInput = document.createElement('input');
+    rangeInput.id = localSwirlAngle;
+    rangeInput.name = localSwirlAngle;
+    rangeInput.type = 'range';
+    rangeInput.min = '-720';
+    rangeInput.max = '720';
+    rangeInput.step = '1';
+    rangeInput.value = `${value}`;
+    row2.appendChild(rangeInput);
+
+    swirlEl.appendChild(row1);
+    swirlEl.appendChild(row2);
+
+    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+      if (e && e.target) {
+
+        e.preventDefault();
+
+        const target = e.target,
+          value = parseFloat(target.value);
+
+        swirlData.angle = value;
+
+        displayedValue_angle.textContent = `${value}`;
+
+        updateSwirlArrays();
+      }
+    }, rangeInput);
+
+    killList.push(listener);
+    swirlData.localKill.push(listener);
+
+    localSwirl.appendChild(swirlEl);
+
+    // easing control
+    swirlEl = document.createElement('div');
+    swirlEl.classList.add('action-control-inputs-for-select');
+
+    label = document.createElement('label');
+    label.classList.add('action-control-swirl-easing-select-label');
+    label.textContent = 'Swirl easing';
+    label.setAttribute('for', localSwirlEasing);
+    swirlEl.appendChild(label);
+
+    const easingInput = document.createElement('select');
+    easingInput.id = localSwirlEasing;
+    easingInput.name = localSwirlEasing;
+
+    [
+      'linear', 'easeOut', 'easeOutIn', 'easeInOut', 'easeIn',
+      'steppedEasing2', 'steppedEasing3', 'steppedEasing4', 'steppedEasing5', 
+      'steppedEasing6', 'steppedEasing7', 'steppedEasing8'
+    ].forEach(val => {
+
+      const option = document.createElement('option');
+      option.value = val;
+      option.textContent = val;
+      easingInput.appendChild(option);
+    });
+
+    easingInput.value = swirlData.easing;
+
+    swirlEl.appendChild(easingInput);
+
+    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+
+      if (e && e.target) {
+
+        e.preventDefault();
+
+        const target = e.target,
+          value = target.value;
+
+        swirlData.easing = value;
+
+        updateSwirlArrays();
+      }
+    }, easingInput);
+
+    killList.push(listener);
+    swirlData.localKill.push(listener);
+
+    localSwirl.appendChild(swirlEl);
+    swirlData.localKill.push(() => localSwirl.remove());
+
+    if (addSwirlButton) el.insertBefore(localSwirl, addSwirlButton);
+    else el.appendChild(localSwirl);
+  };
+
+  swirlArrays.forEach((swirl, index) => buildSwirlPanel(swirl, index));
+
+  addSwirlButton = document.createElement('button');
+  addSwirlButton.classList.add('add-swirl-button');
+  addSwirlButton.textContent = `Add a new swirl`;
+  addSwirlButton.type = 'button';
+
+  el.appendChild(addSwirlButton);
+
+  const addSwirlButtonListener = scrawlHandle.addNativeListener('click', (e) => {
+
+    if (e) {
+
+      e.preventDefault();
+
+      buildSwirlPanel(['50%', '50%', 0, '30%', 0, 'linear'], swirlArrays.length);
+
+      updateSwirlArrays();
+    }
+  }, addSwirlButton);
+
+  killList.push(addSwirlButtonListener);
+
+  return el;
+};
 
 
 const createControl_color = (data, actionWrapper) => {
@@ -2148,8 +2636,8 @@ export const initFormBuilder = (
 
   // // populate module-level variables
   scrawlHandle = scrawl;
-  filterControlsPanel = dom['filter-controls-panel'];
-  filterBuilderAreaHold = dom['filter-builder-area-hold'];
+  filterControlsPanel = dom[DOMID.CONTROLS_PANEL];
+  filterBuilderAreaHold = dom[DOMID.BUILDER_HOLD];
   getWrapper = getCurrentWrappedFilter;
 
   colorFactory = scrawl.makeColor({
@@ -2187,7 +2675,7 @@ export const initFormBuilder = (
           if (actionWrapper) {
 
             // Import filter action buttons into SC
-            if (mutation.target.id === 'filter-builder-area-hold' && node.tagName === 'BUTTON') {
+            if (mutation.target.id === DOMID.BUILDER_HOLD && node.tagName === 'BUTTON') {
 
               // Only process the element once
               if (!node.dataset.scAdopted) {
@@ -2214,7 +2702,7 @@ export const initFormBuilder = (
             }
 
             // Import filter form canvas elements into SC
-            else if (mutation.target.id === 'filter-controls-panel') {
+            else if (mutation.target.id === DOMID.CONTROLS_PANEL) {
 
               // Only process the element once
               if (!node.dataset.scAdopted) {

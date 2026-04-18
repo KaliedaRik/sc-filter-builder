@@ -138,6 +138,23 @@
         <!-- Current filter details -->
         <h2>Current filter:<br><span id="current-filter-name">[current filter name goes here]</span> <span id="current-filter-modified">(modified)</span></h2>
 
+        <div class="preview-controls">
+
+          <div class="preview-selector">
+            
+            <label for="preview-select">Image preview</label>
+            <select id="preview-select">
+              <option value="basic">Basic</option>
+              <option value="accurate">Accurate</option>
+            </select>
+          </div>
+
+          <div><small>(Accurate preview not yet implemented)</small></div>
+          
+          <div id="preview-warning">Some current filter actions will display incorrectly in <code>basic</code> preview. Use <code>accurate</code> preview to see the effects of these actions on the image.</div>
+
+        </div>
+
       </div>
       
     </div>

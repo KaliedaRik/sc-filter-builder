@@ -303,7 +303,7 @@ const actionSchemas = {
     label: 'Box blur',
     description: '',
     action: 'blur',
-    viewportAccuracy: 'reasonable',
+    viewportAccuracy: 'poor',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -681,7 +681,7 @@ const actionSchemas = {
     label: 'Corrode',
     description: '',
     action: 'corrode',
-    viewportAccuracy: 'reasonable',
+    viewportAccuracy: 'poor',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -759,101 +759,6 @@ const actionSchemas = {
         key: 'operation',
         options: ['mean', 'lowest', 'highest'],
         label: 'Operation',
-        description: '',
-      },
-    },
-  },
-
-  ['deconvolute']: {
-    label: 'Deconvolute',
-    description: '',
-    action: 'deconvolute',
-    viewportAccuracy: 'good',
-    hasOrigin: false,
-    controls: {
-      ...requiredControls,
-      strength: {
-        controlType: 'number',
-        default: 0.85,
-        key: 'strength',
-        minValue: 0,
-        maxValue: 2,
-        step: 0.01,
-        label: 'Strength',
-        description: '',
-      },
-      radius: {
-        controlType: 'number',
-        default: 1.25,
-        key: 'radius',
-        minValue: 0,
-        maxValue: 10,
-        step: 0.05,
-        label: 'Radius',
-        description: '',
-      },
-      level: {
-        controlType: 'number',
-        default: 0.015,
-        key: 'level',
-        minValue: 0,
-        maxValue: 0.05,
-        step: 0.001,
-        label: 'Level',
-        description: '',
-      },
-      smoothing: {
-        controlType: 'number',
-        default: 0.015,
-        key: 'smoothing',
-        minValue: 0,
-        maxValue: 0.05,
-        step: 0.001,
-        label: 'Smoothing',
-        description: '',
-      },
-      clamp: {
-        controlType: 'number',
-        default: 0.08,
-        key: 'clamp',
-        minValue: 0,
-        maxValue: 0.2,
-        step: 0.01,
-        label: 'Clamp',
-        description: '',
-      },
-      passes: {
-        controlType: 'number',
-        default: 8,
-        key: 'passes',
-        minValue: 0,
-        maxValue: 20,
-        step: 1,
-        label: 'Passes',
-        description: '',
-      },
-      deriveMaskFromImage: {
-        controlType: 'boolean',
-        default: true,
-        key: 'deriveMaskFromImage',
-        label: 'Derive mask from image',
-        description: '',
-      },
-      multiscale: {
-        controlType: 'boolean',
-        default: true,
-        key: 'multiscale',
-        label: 'Multiscale',
-        description: '',
-      },
-      multiscaleFinalPasses: {
-        controlType: 'number',
-        default: 2,
-        key: 'multiscaleFinalPasses',
-        minValue: 0,
-        maxValue: 4,
-        step: 1,
-        label: 'Multiscale final passes',
         description: '',
       },
     },
@@ -951,7 +856,7 @@ const actionSchemas = {
     label: 'Emboss',
     description: '',
     action: 'emboss',
-    viewportAccuracy: 'reasonable',
+    viewportAccuracy: 'poor',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1817,7 +1722,7 @@ const actionSchemas = {
     label: 'Pixelate',
     description: '',
     action: 'pixelate',
-    viewportAccuracy: 'reasonable',
+    viewportAccuracy: 'poor',
     hasOrigin: true,
     controls: {
       ...requiredControls,
@@ -2058,7 +1963,7 @@ const actionSchemas = {
     label: 'Reduce palette',
     description: '',
     action: 'reduce-palette',
-    viewportAccuracy: 'reasonable',
+    viewportAccuracy: 'poor',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -2629,7 +2534,7 @@ const actionSchemas = {
     label: 'Unsharp',
     description: '',
     action: 'unsharp',
-    viewportAccuracy: 'good',
+    viewportAccuracy: 'poor',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -2722,7 +2627,7 @@ const actionSchemas = {
     label: 'Zoom blur',
     description: '',
     action: 'zoom-blur',
-    viewportAccuracy: 'reasonable',
+    viewportAccuracy: 'poor',
     hasOrigin: true,
     controls: {
       ...requiredControls,
@@ -3291,22 +3196,6 @@ F.controls.includeGreen.default = true;
 F.controls.includeBlue.default = true;
 F.presentation = [...defaultPresentation];
 
-// deconvolute
-F = filterSchemas.deconvolute = structuredClone(actionSchemas['deconvolute']);
-F.presentation = [{
-    header: 'Connections',
-    openOnLoad: false,
-    inputs: ['lineIn', 'lineOut'],
-  },{
-    header: 'Control values',
-    openOnLoad: true,
-    inputs: ['radius', 'strength', 'level', 'smoothing', 'clamp', 'passes', 'multiscale', 'multiscaleFinalPasses', 'deriveMaskFromImage'],
-  },{
-    header: 'Impact',
-    openOnLoad: true,
-    inputs: ['opacity'],
-}];
-
 // displace
 F = filterSchemas.displace = structuredClone(actionSchemas['displace']);
 F.presentation = [{
@@ -3334,7 +3223,7 @@ F.presentation = [{
 // edgeDetect ('matrix' variant)
 F = filterSchemas.edgeDetect = structuredClone(actionSchemas['matrix']);
 F.label = 'Edge detect';
-F.viewportAccuracy = 'reasonable';
+F.viewportAccuracy = 'poor';
 F.description = '';
 F.controls.weights.default = [0, 1, 0, 1, -4, 1, 0, 1, 0];
 F.presentation = [...defaultPresentation];
@@ -3833,7 +3722,7 @@ F.presentation = [{
 // sharpen ('matrix' variant)
 F = filterSchemas.sharpen = structuredClone(actionSchemas['matrix']);
 F.label = 'Sharpen';
-F.viewportAccuracy = 'good';
+F.viewportAccuracy = 'poor';
 F.description = '';
 F.controls.weights.default = [0, -1, 0, -1, 5, -1, 0, -1, 0];
 F.presentation = [...defaultPresentation];
@@ -4142,7 +4031,6 @@ export const reconciliation = {
   ['compose']: 'compose',
   ['corrode']: 'corrode',
   ['vary-channels-by-weights']: 'curveWeights',
-  ['deconvolute']: 'deconvolute',
   ['displace']: 'displace',
   ['emboss']: 'emboss',
   ['flood']: 'flood',

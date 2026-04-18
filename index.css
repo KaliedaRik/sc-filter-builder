@@ -472,6 +472,25 @@ main {
     }
   }
 
+  & .preview-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 0.5rem;
+    align-items: center;
+    margin: 0.5rem 0;
+  }
+
+  & #preview-warning {
+    font-size: 85%;
+    color: var(--advice-color);
+    display: none;
+
+    &.warning-is-active {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+  }
+
   & details {
     margin: 0.5rem 0;
     border: 1px solid var(--filter-bar-section-border);
@@ -531,6 +550,40 @@ main {
 
           & input {
             width: calc(100% - 0.5rem);
+          }
+        }
+
+        /* filter-schema.js - controlType: 'swirl' */
+        & .action-control-inputs-for-swirls {
+
+          & .swirls-panel {
+            margin-top: 0.5rem;
+            border-radius: 5px;
+            border: 1px solid var(--filter-bar-section-border);
+          }
+
+          & .swirls-topper {
+            margin: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+
+            & .swirls-title {
+              font-weight: bold;
+            }
+
+            & button {
+              border-radius: 5px;
+              border: 1px solid var(--filter-bar-section-border);
+              width: 5rem;
+              margin: 0;
+            }
+          }
+
+          & .add-swirl-button {
+            margin-top: 0.5rem;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid var(--filter-bar-section-border);
           }
         }
 

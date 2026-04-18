@@ -6,7 +6,7 @@
 // Imports
 import { downloadZip } from '../js-libraries/client-zip.js';
 import { imageState } from './image-import.js';
-import { generateFileDate } from './utilities.js';
+import { generateFileDate, DOMID } from './utilities.js';
 
 
 // Modal level variables
@@ -276,9 +276,9 @@ export const initImageDownload = (scrawl = null, dom = null, filterGetter = null
 
 
   // Feature detection and modal setup
-  const downloadsModal = dom['downloads-modal'];
-  downloadsList = dom['processed-images-list'];
-  downloadButton = dom['process-and-download-action'];
+  const downloadsModal = dom[DOMID.DOWNLOAD_MODAL];
+  downloadsList = dom[DOMID.DOWNLOAD_LIST];
+  downloadButton = dom[DOMID.DOWNLOAD_PROCESS];
 
   downloadButton.setAttribute('disabled', '');
   

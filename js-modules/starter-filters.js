@@ -364,15 +364,7 @@ export const starterFilters = {
     imageSource: 'assets/thumb/starter-thumb_tone-curve.png',
   },
 
-  ['SC-starter-filter_deconvolute']: {
-    title: 'Deconvolute',
-    readableName: 'Deconvolute starter',
-    formSchemaName: ['deconvolute'],
-    packet: `["SC-starter-filter_deconvolute","Filter","filter",{"name":"SC-starter-filter_deconvolute","actions":[{"action":"deconvolute","lineIn":"","lineOut":"","opacity":1,"strength":0.85,"radius":1.25,"level":0.015,"smoothing":0.015,"clamp":0.08,"passes":8,"deriveMaskFromImage":true,"multiscale":true,"multiscaleFinalPasses":2}]}]`,
-    imageSource: 'assets/thumb/starter-thumb_deconvolute.png',
-  },
-
-  ['SC-starter-filter_glitch']: {
+   ['SC-starter-filter_glitch']: {
     title: 'Glitch',
     readableName: 'Glitch starter',
     formSchemaName: ['glitch'],
@@ -443,6 +435,14 @@ export const starterFilters = {
     packet: `["SC-starter-filter_tint","Filter","filter",{"name":"SC-starter-filter_tint","actions":[{"action":"tint-channels","lineIn":"","lineOut":"","opacity":1,"redInRed":1,"redInGreen":0,"redInBlue":0,"greenInRed":0,"greenInGreen":1,"greenInBlue":0,"blueInRed":0,"blueInGreen":0,"blueInBlue":1}]}]`,
     imageSource: 'assets/thumb/starter-thumb_tint.png',
   },
+
+  ['SC-starter-filter_swirl']: {
+    title: 'Swirl',
+    readableName: 'Swirl starter',
+    formSchemaName: 'swirl',
+    packet: `["SC-starter-filter_swirl","Filter","filter",{"name":"SC-starter-filter_swirl","actions":[{"action":"swirl","lineIn":"","lineOut":"","opacity":1,"swirls":[["50%","50%",0,"30%",90,"linear"]],"transparentEdges":false,"useInputAsMask":false}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_swirl.png',
+  },
 };
 
 export const filterGroups = [{
@@ -453,11 +453,10 @@ export const filterGroups = [{
     'SC-starter-filter_blank',
     'SC-starter-filter_brightness',
     'SC-starter-filter_color-curve',
+    'SC-starter-filter_desaturate',
     'SC-starter-filter_gaussian-blur',
-    'SC-starter-filter_rotate-hue',
+    'SC-starter-filter_ok-negative',
     'SC-starter-filter_saturation',
-    'SC-starter-filter_sharpen',
-    'SC-starter-filter_threshold',
     'SC-starter-filter_tone-curve',
   ],
 },{
@@ -469,7 +468,6 @@ export const filterGroups = [{
     'SC-starter-filter_brightness',
     'SC-starter-filter_clamp-channels',
     'SC-starter-filter_color-curve',
-    'SC-starter-filter_deconvolute',
     'SC-starter-filter_gaussian-blur',
     'SC-starter-filter_matrix',
     'SC-starter-filter_modify-ok-channels',
@@ -517,6 +515,7 @@ export const filterGroups = [{
     'SC-starter-filter_posterize-by-value',
     'SC-starter-filter_random-noise',
     'SC-starter-filter_reduce-palette',
+    'SC-starter-filter_swirl',
     'SC-starter-filter_tiles',
     'SC-starter-filter_zoom-blur',
   ],
@@ -526,12 +525,7 @@ export const filterGroups = [{
   openOnLoad: false,
   filters: [
     'SC-starter-filter_blue-channel',
-    'SC-starter-filter_copy-alpha-to-channels',
-    'SC-starter-filter_copy-alpha-to-luminance',
-    'SC-starter-filter_copy-channels-to-alpha',
-    'SC-starter-filter_copy-luminance-to-alpha',
     'SC-starter-filter_cyan-mix',
-    'SC-starter-filter_edge-detect',
     'SC-starter-filter_exclude-blue-channel',
     'SC-starter-filter_exclude-green-channel',
     'SC-starter-filter_exclude-red-channel',
@@ -539,7 +533,8 @@ export const filterGroups = [{
     'SC-starter-filter_green-channel',
     'SC-starter-filter_magenta-mix',
     'SC-starter-filter_red-channel',
-    'SC-starter-filter_threshold',
+    'SC-starter-filter_sepia-tint',
+    'SC-starter-filter_tint',
     'SC-starter-filter_yellow-mix',
   ],
 },{
