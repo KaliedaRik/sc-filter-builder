@@ -4,6 +4,7 @@
 
 
 // Imports
+import { DOMID } from './utilities.js';
 import { 
   prepareImageForDisplay,
   getDisplayedImageId,
@@ -43,7 +44,7 @@ const ingest = () => {
 
       displayDefaultScreen(Object.keys(imageState).length > 0);
 
-      const panel = domHandles['image-details-panel'];
+      const panel = domHandles[DOMID.IMAGE_DETAILS];
       panel.setAttribute('open', '');
     }
     return;
@@ -194,7 +195,7 @@ export const buildImageModalList = () => {
 
   imageRemovalCandidates.length = 0;
 
-  const target = domHandles['image-batch-modal-images-list'];
+  const target = domHandles[DOMID.BATCH_LIST];
   const currentImages = Object.keys(imageState);
   const root = new DocumentFragment();
 
@@ -253,7 +254,7 @@ export const actionImageModalList = () => {
   });
 
   // Close the modal
-  const modal = domHandles['image-batch-modal'];
+  const modal = domHandles[DOMID.BATCH_MODAL];
   modal.close();
 
   if (imageRemovalCandidates.includes(getDisplayedImageId())) {
@@ -261,7 +262,7 @@ export const actionImageModalList = () => {
     displayDefaultScreen(!!Object.keys(imageState).length);
 
     // display the image panel, if closed
-    const panel = domHandles['image-details-panel'];
+    const panel = domHandles[DOMID.IMAGE_DETAILS];
     panel.setAttribute('open', '');
   }
 
@@ -276,7 +277,7 @@ export const closeImageModalList = () => {
     checkboxListeners = null;
   }
 
-  const target = domHandles['image-batch-modal-images-list'];
+  const target = domHandles[DOMID.BATCH_LIST];
 
   target.replaceChildren();
 };
@@ -295,10 +296,10 @@ export const initImageImport = (scrawl = null, dom = null) => {
   domHandles = dom;
 
   // Capture DOM elements
-  const imageImportButton = dom['image-import-button'],
-    imageImport = dom['image-import'];
+  const imageImportButton = dom[DOMID.IMAGE_IMPORT_BUTTON],
+    imageImport = dom[DOMID.IMAGE_IMPORT];
 
-  imageImportsHold = dom['image-imports-hold'];
+  imageImportsHold = dom[DOMID.IMAGE_IMPORT_HOLD];
 
 
   // Accessibility
@@ -313,7 +314,7 @@ export const initImageImport = (scrawl = null, dom = null) => {
     e.preventDefault();
     e.stopPropagation();
 
-  }, canvas.domElement);
+  }, document.body);
 
   scrawl.addNativeListener('drop', (e) => {
 
@@ -324,7 +325,7 @@ export const initImageImport = (scrawl = null, dom = null) => {
 
     if (dt) [...dt.files].forEach(importImageFile);
 
-  }, canvas.domElement);
+  }, document.body);
 
 
   // UX: Load background images into the canvas using the browser's file selector

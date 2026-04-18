@@ -11,7 +11,7 @@ import {
   buildGradientComponent,
 } from './canvas-ui-components.js'
 
-import { generateUniqueString } from './utilities.js';
+import { generateUniqueString, DOMID } from './utilities.js';
 
 
 // Module-scoped Handles and variables
@@ -199,6 +199,8 @@ const createControl_swirl = (data, actionWrapper) => {
     currentFilter.updateDisplayFilter();
     currentFilter.updateHistory();
   };
+
+  let addSwirlButton = null;
 
   const buildSwirlPanel = (swirl, index) => {
 
@@ -579,7 +581,11 @@ const createControl_swirl = (data, actionWrapper) => {
     easingInput.id = localSwirlEasing;
     easingInput.name = localSwirlEasing;
 
-    ['linear', 'easeOut', 'easeOutIn', 'easeInOut', 'easeIn'].forEach(val => {
+    [
+      'linear', 'easeOut', 'easeOutIn', 'easeInOut', 'easeIn',
+      'steppedEasing2', 'steppedEasing3', 'steppedEasing4', 'steppedEasing5', 
+      'steppedEasing6', 'steppedEasing7', 'steppedEasing8'
+    ].forEach(val => {
 
       const option = document.createElement('option');
       option.value = val;
@@ -612,12 +618,13 @@ const createControl_swirl = (data, actionWrapper) => {
     localSwirl.appendChild(swirlEl);
     swirlData.localKill.push(() => localSwirl.remove());
 
-    el.appendChild(localSwirl);
+    if (addSwirlButton) el.insertBefore(localSwirl, addSwirlButton);
+    else el.appendChild(localSwirl);
   };
 
   swirlArrays.forEach((swirl, index) => buildSwirlPanel(swirl, index));
 
-  const addSwirlButton = document.createElement('button');
+  addSwirlButton = document.createElement('button');
   addSwirlButton.classList.add('add-swirl-button');
   addSwirlButton.textContent = `Add a new swirl`;
   addSwirlButton.type = 'button';
@@ -2629,8 +2636,8 @@ export const initFormBuilder = (
 
   // // populate module-level variables
   scrawlHandle = scrawl;
-  filterControlsPanel = dom['filter-controls-panel'];
-  filterBuilderAreaHold = dom['filter-builder-area-hold'];
+  filterControlsPanel = dom[DOMID.CONTROLS_PANEL];
+  filterBuilderAreaHold = dom[DOMID.BUILDER_HOLD];
   getWrapper = getCurrentWrappedFilter;
 
   colorFactory = scrawl.makeColor({
@@ -2668,7 +2675,7 @@ export const initFormBuilder = (
           if (actionWrapper) {
 
             // Import filter action buttons into SC
-            if (mutation.target.id === 'filter-builder-area-hold' && node.tagName === 'BUTTON') {
+            if (mutation.target.id === DOMID.BUILDER_HOLD && node.tagName === 'BUTTON') {
 
               // Only process the element once
               if (!node.dataset.scAdopted) {
@@ -2695,7 +2702,7 @@ export const initFormBuilder = (
             }
 
             // Import filter form canvas elements into SC
-            else if (mutation.target.id === 'filter-controls-panel') {
+            else if (mutation.target.id === DOMID.CONTROLS_PANEL) {
 
               // Only process the element once
               if (!node.dataset.scAdopted) {

@@ -7,14 +7,15 @@
 // ------------------------------------------------------------------------
 import { getFilterSchema } from './filter-schemas.js';
 import { generateButtonHtml, generateFormHtml } from './form-builder.js';
-import { generateUuid } from './utilities.js';
+import { generateUuid, DOMID } from './utilities.js';
 
 
 // Module-scoped Handles and variables
 // ------------------------------------------------------------------------
 let currentFilter = null,
   displayFilter = null,
-  getView = null;
+  getView = null,
+  domHandle = null;
 
 
 // Used in other modules - exported via the init function
@@ -156,6 +157,8 @@ F.updateDisplayFilter = function () {
   // - This is why we separate the working and display filters 
   const view = getView();
 
+  let warningFlag = false;
+
   actions.forEach(act => {
 
     switch (act.action) {
@@ -164,38 +167,38 @@ F.updateDisplayFilter = function () {
         correctDisplayFilterAction_areaAlpha(act, view);
         break;
       }
-      case 'blur': {
-        correctDisplayFilterAction_blur(act, view);
-        break;
-      }
-      case 'gaussian-blur': {
-        correctDisplayFilterAction_gaussianBlur(act, view);
-        break;
-      }
-      case 'newsprint': {
-        correctDisplayFilterAction_newsprint(act, view);
-        break;
-      }
       case 'pixelate': {
         correctDisplayFilterAction_pixelate(act, view);
         break;
       }
-      case 'random-noise': {
-        correctDisplayFilterAction_randomNoise(act, view);
+      case 'blur': {
+        warningFlag = true;
         break;
       }
-      case 'tiles': {
-        correctDisplayFilterAction_tiles(act, view);
-        break;
-      }
+
+      case 'gaussian-blur':
+      case 'newsprint':
+      case 'random-noise':
+      case 'swirl':
+      case 'tiles':
       case 'zoom-blur': {
-        correctDisplayFilterAction_zoomBlur(act, view);
+        warningFlag = true;
         break;
       }
     }
   });
 
   displayFilter.set({ actions });
+
+  const warningCss = DOMID.PREVIEW_WARNING_CSS,
+    warn = domHandle[DOMID.PREVIEW_WARNING];
+
+console.log(warningCss, warn)
+  if (warn) {
+
+    if (warningFlag) warn.classList.add(warningCss);
+    else warn.classList.remove(warningCss);
+  }
 };
 
 
@@ -228,34 +231,6 @@ const correctDisplayFilterAction_areaAlpha = (action, view) => {
   action.gutterHeight = updatedGutterHeight;
 };
 
-const correctDisplayFilterAction_blur = (action, view) => {
-
-  const { currentScale } = view;
-  const { radiusHorizontal, radiusVertical, stepHorizontal, stepVertical } = action;
-
-  action.radiusHorizontal = radiusHorizontal * currentScale;
-  action.radiusVertical = radiusVertical * currentScale;
-  action.stepHorizontal = Math.round(stepHorizontal * currentScale);
-  action.stepVertical = Math.round(stepVertical * currentScale);
-};
-
-const correctDisplayFilterAction_gaussianBlur = (action, view) => {
-
-  const { currentScale } = view;
-  const { radiusHorizontal, radiusVertical } = action;
-
-  action.radiusHorizontal = radiusHorizontal * currentScale;
-  action.radiusVertical = radiusVertical * currentScale;
-};
-
-const correctDisplayFilterAction_newsprint = (action, view) => {
-
-  const { currentScale } = view;
-  const { width } = action;
-
-  action.width = Math.round(width * currentScale);
-};
-
 const correctDisplayFilterAction_pixelate = (action, view) => {
 
   const { x, y, currentScale } = view;
@@ -277,55 +252,6 @@ const correctDisplayFilterAction_pixelate = (action, view) => {
   action.tileHeight = updatedHeight;
   action.offsetX = updatedOffsetX * currentScale;
   action.offsetY = updatedOffsetY * currentScale;
-};
-
-const correctDisplayFilterAction_randomNoise = (action, view) => {
-
-  const { currentScale } = view;
-  const { width, height, level } = action;
-
-  action.width = width * currentScale;
-  action.height = height * currentScale;
-  action.level = level / currentScale;
-};
-
-const correctDisplayFilterAction_tiles = (action, view) => {
-
-  const { x, y, assetWidth, assetHeight, currentScale } = view;
-  const { originX, originY, hexRadius, rectWidth, rectHeight } = action;
-
-  let fX, fY;
-
-  if (typeof originX === 'string') fX = parseFloat(originX) / 100;
-  else fX = originX / assetWidth;
-
-  if (typeof originY === 'string') fY = parseFloat(originY) / 100;
-  else fY = originY / assetHeight;
-
-  action.originX = ((assetWidth * fX) - x) * currentScale;
-  action.originY = ((assetHeight * fY) - y) * currentScale;
-  action.hexRadius = hexRadius * currentScale;
-  action.rectWidth = rectWidth * currentScale;
-  action.rectHeight = rectHeight * currentScale;
-};
-
-const correctDisplayFilterAction_zoomBlur = (action, view) => {
-
-  const { x, y, assetWidth, assetHeight, currentScale } = view;
-  const { startX, startY, innerRadius, outerRadius } = action;
-
-  let fX, fY;
-
-  if (typeof startX === 'string') fX = parseFloat(startX) / 100;
-  else fX = startX / assetWidth;
-
-  if (typeof startY === 'string') fY = parseFloat(startY) / 100;
-  else fY = startY / assetHeight;
-
-  action.startX = ((assetWidth * fX) - x) * currentScale;
-  action.startY = ((assetHeight * fY) - y) * currentScale;
-  action.innerRadius = innerRadius * currentScale;
-  action.outerRadius = outerRadius * currentScale;
 };
 
 
@@ -403,13 +329,15 @@ export const wrap = (filter, form) => new FilterWrapper(filter, form);
 
 // Export for initialization 
 // ------------------------------------------------------------------------
-export const initFormObjects = (scrawl = null, getImageDisplayViews = null) => {
+export const initFormObjects = (scrawl = null, dom = null, getImageDisplayViews = null) => {
 
   if (!scrawl) throw new Error('Scrawl library not passed to initFormObjects function');
+  if (!dom) throw new Error('DOM handles object not passed to initFormObjects function');
   if (!getImageDisplayViews) throw new Error('getImageDisplayViews function not passed to initFormObjects function');
 
 
   // Populate module-level variables
+  domHandle = dom;
   getView = getImageDisplayViews;
 
 

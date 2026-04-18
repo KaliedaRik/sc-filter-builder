@@ -29,3 +29,70 @@ export const generateFileDate = () => {
 
 export const PACKET_DIVIDER = '§§';
 export const FILTER_IDENTIFIER = '"Filter","filter"';
+export const PREVIEW_WARNING = 'warning-is-active';
+
+// Mapping HTML element ids to JS element handles
+export const DOMID = {
+
+  // Capture handle to key parts of page
+  SPLITTER: 'splitter',
+  CONTROLS_PANEL: 'filter-controls-panel',
+  BUILDER_HOLD: 'filter-builder-area-hold',
+
+  // Capture handles for the instructions modal
+  INSTRUCTIONS_BUTTON: 'instructions-modal-button',
+  INSTRUCTIONS_CLOSE: 'instructions-modal-close',
+  INSTRUCTIONS_MODAL: 'instructions-modal',
+
+  // Capture handles for the image-batch modal
+  BATCH_BUTTON: 'image-batch-modal-button',
+  BATCH_CLOSE: 'image-batch-modal-close',
+  BATCH_MODAL: 'image-batch-modal',
+  BATCH_REMOVE: 'image-batch-modal-remove-action',
+  BATCH_LIST: 'image-batch-modal-images-list',
+
+  // Capture handles to the image-panel-related HTML elements
+  IMAGE_IMPORT: 'image-import',
+  IMAGE_IMPORT_BUTTON: 'image-import-button',
+  IMAGE_IMPORT_HOLD: 'image-imports-hold',
+  IMAGE_DETAILS: 'image-details-panel',
+
+  // Capture handles to the right hand panel
+  FILTER_DOWNLOAD: 'download-filter-button',
+  FILTER_BUTTON: 'import-filter-button',
+  FILTER_IMPORT: 'import-filter',
+  PREVIEW_WARNING: 'preview-warning',
+  PREVIEW_WARNING_CSS: 'warning-is-active',
+
+  // Capture handles for the downloads modal
+  DOWNLOAD_BUTTON: 'downloads-modal-button',
+  DOWNLOAD_CLOSE: 'downloads-modal-close',
+  DOWNLOAD_MODAL: 'downloads-modal',
+  DOWNLOAD_PROCESS: 'process-and-download-action',
+  DOWNLOAD_LIST: 'processed-images-list',
+
+  // Capture handles for the change-filter functionality
+  CHANGE_BUTTON: 'change-filter-modal-button',
+  CHANGE_CLOSE: 'change-filter-modal-close',
+  CHANGE_MODAL: 'change-filter-modal',
+  MODIFIED_WARNING: 'change-filter-warning-message',
+  PACKET_IMPORT: 'load-filter-action',
+  FILTER_STARTERS: 'starter-filters-area',
+  FILTER_CURRENT: 'current-filter-name',
+  FILTER_USERS: 'user-filters-area',
+
+  // Capture handles to the minimap HTML elements
+  MINIMAP_X: 'minimap-horizontal',
+  MINIMAP_Y: 'minimap-vertical',
+  MINIMAP_SHOW: 'minimap-show-hide',
+  MINIMAP_CENTER: 'minimap-center',
+  NAVIGATION_X: 'navigation-horizontal',
+  NAVIGATION_Y: 'navigation-vertical',
+  NAVIGATION_CENTER: 'navigation-center',
+  PREVIEW_SCALE: 'image-scale',
+
+
+  SCALE_CONTROLS_CSS: '.scale-controls',
+  NAVIGATION_CONTROLS_CSS: '.navigation-controls',
+  MINIMAP_CONTROLS_CSS: '.minimap-controls',
+};

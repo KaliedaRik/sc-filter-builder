@@ -4,6 +4,7 @@
 
 
 // Imports
+import { DOMID } from './utilities.js';
 import {
   buildImageModalList,
   actionImageModalList,
@@ -48,19 +49,19 @@ export const initModalManagement = (scrawl = null, dom = null) => {
   if (!dom) throw new Error('DOM mappings not passed to initModalManagement function');
 
   // Setup: instructions modal
-  const instructionsModal = dom['instructions-modal'],
-    instructionsButton = dom['instructions-modal-button'],
-    instructionsCloseButton = dom['instructions-modal-close'];
+  const instructionsModal = dom[DOMID.INSTRUCTIONS_MODAL],
+    instructionsButton = dom[DOMID.INSTRUCTIONS_BUTTON],
+    instructionsCloseButton = dom[DOMID.INSTRUCTIONS_CLOSE];
 
   scrawl.addNativeListener('click', () => openModal(instructionsModal), instructionsButton);
   scrawl.addNativeListener('click', closeModal, instructionsCloseButton);
   scrawl.addNativeListener('close', closeModal, instructionsModal);
 
   // Setup: image-batch modal
-  const imageBatchModal = dom['image-batch-modal'],
-    imageBatchButton = dom['image-batch-modal-button'],
-    imageBatchCloseButton = dom['image-batch-modal-close'],
-    imageBatchModalRemoveAction = dom['image-batch-modal-remove-action'];
+  const imageBatchModal = dom[DOMID.BATCH_MODAL],
+    imageBatchButton = dom[DOMID.BATCH_BUTTON],
+    imageBatchCloseButton = dom[DOMID.BATCH_CLOSE],
+    imageBatchModalRemoveAction = dom[DOMID.BATCH_REMOVE];
 
   scrawl.addNativeListener('click', () => openModal(imageBatchModal, buildImageModalList), imageBatchButton);
   scrawl.addNativeListener('click', () => closeModal(closeImageModalList), imageBatchCloseButton);
@@ -68,10 +69,10 @@ export const initModalManagement = (scrawl = null, dom = null) => {
   scrawl.addNativeListener('click', actionImageModalList, imageBatchModalRemoveAction);
 
   // Setup: downloads modal
-  const downloadsModal = dom['downloads-modal'],
-    downloadsButton = dom['downloads-modal-button'],
-    downloadsCloseButton = dom['downloads-modal-close'],
-    downloadsList = dom['processed-images-list'];
+  const downloadsModal = dom[DOMID.DOWNLOAD_MODAL],
+    downloadsButton = dom[DOMID.DOWNLOAD_BUTTON],
+    downloadsCloseButton = dom[DOMID.DOWNLOAD_CLOSE],
+    downloadsList = dom[DOMID.DOWNLOAD_LIST];
 
   const closeDownloadsModal = () => {
     while (downloadsList.firstChild) {
@@ -84,9 +85,9 @@ export const initModalManagement = (scrawl = null, dom = null) => {
   scrawl.addNativeListener('close', () => closeModal(closeDownloadsModal), downloadsModal);
 
   // Setup: changeFilters modal
-  const changeFiltersModal = dom['change-filter-modal'],
-    changeFiltersButton = dom['change-filter-modal-button'],
-    changeFiltersCloseButton = dom['change-filter-modal-close'];
+  const changeFiltersModal = dom[DOMID.CHANGE_MODAL],
+    changeFiltersButton = dom[DOMID.CHANGE_BUTTON],
+    changeFiltersCloseButton = dom[DOMID.CHANGE_CLOSE];
 
   scrawl.addNativeListener('click', () => openModal(changeFiltersModal), changeFiltersButton);
   scrawl.addNativeListener('click', closeModal, changeFiltersCloseButton);

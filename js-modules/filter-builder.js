@@ -6,7 +6,7 @@
 import { starterFilters, filterGroups } from './starter-filters.js';
 import { wrap } from './form-objects.js';
 import { reconciliation } from './filter-schemas.js';
-import { generateFileDate, PACKET_DIVIDER, FILTER_IDENTIFIER } from './utilities.js';
+import { generateFileDate, DOMID, PACKET_DIVIDER, FILTER_IDENTIFIER } from './utilities.js';
 
 let currentFilterWrapper = null,
   currentFilterInitialValues = null,
@@ -281,16 +281,16 @@ export const initFilterBuilder = (scrawl = null, dom = null) => {
 
   const canvas = scrawl.findCanvas('filter-builder-canvas');
 
-  const filterImport = dom['import-filter'];
+  const filterImport = dom[DOMID.FILTER_IMPORT];
 
 
   canvasHandle = canvas;
   scrawlHandle = scrawl;
-  userFiltersArea = dom['user-filters-area'];
+  userFiltersArea = dom[DOMID.FILTER_USERS];
 
 
   const frag = new DocumentFragment(),
-    starterFiltersArea = dom['starter-filters-area'];
+    starterFiltersArea = dom[DOMID.FILTER_STARTERS];
 
   filterGroups.forEach(grp => {
 
@@ -342,7 +342,7 @@ export const initFilterBuilder = (scrawl = null, dom = null) => {
 
   currentFilterWrapper.updateDisplayFilter();
 
-  currentFilterTitleElement = dom['current-filter-name'];
+  currentFilterTitleElement = dom[DOMID.FILTER_CURRENT];
   currentFilterTitleElement.textContent = starter.readableName;
 
 
@@ -360,7 +360,7 @@ export const initFilterBuilder = (scrawl = null, dom = null) => {
 
   }, filterImport);
 
-  scrawl.addNativeListener('click', downloadFilter, dom['download-filter-button']);
+  scrawl.addNativeListener('click', downloadFilter, dom[DOMID.FILTER_DOWNLOAD]);
 
 
   // Return object

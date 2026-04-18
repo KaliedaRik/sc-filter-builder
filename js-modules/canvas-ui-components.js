@@ -183,7 +183,11 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
     easingInput.id = easingId;
     easingInput.name = easingId;
 
-    ['linear', 'easeOut', 'easeOutIn', 'easeInOut', 'easeIn'].forEach(val => {
+    [
+      'linear', 'easeOut', 'easeOutIn', 'easeInOut', 'easeIn',
+      'steppedEasing2', 'steppedEasing3', 'steppedEasing4', 'steppedEasing5', 
+      'steppedEasing6', 'steppedEasing7', 'steppedEasing8'
+    ].forEach(val => {
 
       const option = document.createElement('option');
       option.value = val;

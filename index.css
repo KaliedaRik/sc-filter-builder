@@ -472,6 +472,17 @@ main {
     }
   }
 
+  & #preview-warning {
+    font-size: 85%;
+    color: var(--advice-color);
+
+    display: none;
+
+    &.warning-is-active {
+      display: block;
+    }
+  }
+
   & details {
     margin: 0.5rem 0;
     border: 1px solid var(--filter-bar-section-border);

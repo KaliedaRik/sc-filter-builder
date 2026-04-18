@@ -1,7 +1,10 @@
-
 // ------------------------------------------------------------------------
 // Image display in the canvas
 // ------------------------------------------------------------------------
+
+
+// Imports
+import { DOMID } from './utilities.js';
 
 
 // Local handles to SC and DOM
@@ -455,13 +458,13 @@ export const initImageDisplay = (scrawl = null, dom = null) => {
   name = (n) => `${canvas.name}-${n}`;
 
   // DOM handles
-  minimapShowHide = dom['minimap-show-hide'];
-  minimapCenter = dom['minimap-center'];
-  minimapX = dom['minimap-horizontal'];
-  minimapY = dom['minimap-vertical'];
-  minimapNavX = dom['navigation-horizontal'];
-  minimapNavY = dom['navigation-vertical'];
-  minimapNavCenter = dom['navigation-center'];
+  minimapShowHide = dom[DOMID.MINIMAP_SHOW];
+  minimapCenter = dom[DOMID.MINIMAP_CENTER];
+  minimapX = dom[DOMID.MINIMAP_X];
+  minimapY = dom[DOMID.MINIMAP_Y];
+  minimapNavX = dom[DOMID.NAVIGATION_X];
+  minimapNavY = dom[DOMID.NAVIGATION_Y];
+  minimapNavCenter = dom[DOMID.NAVIGATION_CENTER];
 
 
   // Create the default screen checkerboard background
@@ -565,7 +568,8 @@ export const initImageDisplay = (scrawl = null, dom = null) => {
     minimapNavX.value = '50';
     minimapNavY.value = '50';
 
-  }, '.scale-controls');
+  }, DOMID.SCALE_CONTROLS_CSS);
+
 
   // Create the infrastructure for the minimap
   scrawl.makeGroup({
@@ -634,7 +638,7 @@ export const initImageDisplay = (scrawl = null, dom = null) => {
   scrawl.makeUpdater({
 
     event: ['input', 'change'],
-    origin: '.minimap-controls',
+    origin: DOMID.MINIMAP_CONTROLS_CSS,
 
     target: minimapPivot,
 
@@ -642,8 +646,8 @@ export const initImageDisplay = (scrawl = null, dom = null) => {
     preventDefault: true,
 
     updates: {
-      ['minimap-horizontal']: ['startX', '%'],
-      ['minimap-vertical']: ['startY', '%'],
+      [DOMID.MINIMAP_X]: ['startX', '%'],
+      [DOMID.MINIMAP_Y]: ['startY', '%'],
     },
   });
 
@@ -724,7 +728,7 @@ export const initImageDisplay = (scrawl = null, dom = null) => {
 
     applyView();
 
-  }, '.navigation-controls');
+  }, DOMID.NAVIGATION_CONTROLS_CSS);
 
   scrawl.addNativeListener('click', () => {
 
