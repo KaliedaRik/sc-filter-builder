@@ -29,7 +29,6 @@ export const generateFileDate = () => {
 
 export const PACKET_DIVIDER = '§§';
 export const FILTER_IDENTIFIER = '"Filter","filter"';
-export const PREVIEW_WARNING = 'warning-is-active';
 
 // Mapping HTML element ids to JS element handles
 export const DOMID = {
@@ -91,7 +90,7 @@ export const DOMID = {
   NAVIGATION_CENTER: 'navigation-center',
   PREVIEW_SCALE: 'image-scale',
 
-
+  // CSS classes used for control identification
   SCALE_CONTROLS_CSS: '.scale-controls',
   NAVIGATION_CONTROLS_CSS: '.navigation-controls',
   MINIMAP_CONTROLS_CSS: '.minimap-controls',

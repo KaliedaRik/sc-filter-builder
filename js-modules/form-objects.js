@@ -171,16 +171,15 @@ F.updateDisplayFilter = function () {
         correctDisplayFilterAction_pixelate(act, view);
         break;
       }
-      case 'blur': {
-        warningFlag = true;
+      case 'tiles': {
+        correctDisplayFilterAction_tiles(act, view);
         break;
       }
-
+      case 'blur':
       case 'gaussian-blur':
       case 'newsprint':
       case 'random-noise':
       case 'swirl':
-      case 'tiles':
       case 'zoom-blur': {
         warningFlag = true;
         break;
@@ -193,7 +192,6 @@ F.updateDisplayFilter = function () {
   const warningCss = DOMID.PREVIEW_WARNING_CSS,
     warn = domHandle[DOMID.PREVIEW_WARNING];
 
-console.log(warningCss, warn)
   if (warn) {
 
     if (warningFlag) warn.classList.add(warningCss);
@@ -254,6 +252,25 @@ const correctDisplayFilterAction_pixelate = (action, view) => {
   action.offsetY = updatedOffsetY * currentScale;
 };
 
+const correctDisplayFilterAction_tiles = (action, view) => {
+
+  const { x, y, assetWidth, assetHeight, currentScale } = view;
+  const { originX, originY, hexRadius, rectWidth, rectHeight } = action;
+
+  let fX, fY;
+
+  if (typeof originX === 'string') fX = parseFloat(originX) / 100;
+  else fX = originX / assetWidth;
+
+  if (typeof originY === 'string') fY = parseFloat(originY) / 100;
+  else fY = originY / assetHeight;
+
+  action.originX = ((assetWidth * fX) - x) * currentScale;
+  action.originY = ((assetHeight * fY) - y) * currentScale;
+  action.hexRadius = hexRadius * currentScale;
+  action.rectWidth = rectWidth * currentScale;
+  action.rectHeight = rectHeight * currentScale;
+};
 
 // FilterActionWrapper object
 // ------------------------------------------------------------------------
