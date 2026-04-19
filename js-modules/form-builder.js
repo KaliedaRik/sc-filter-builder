@@ -11,7 +11,14 @@ import {
   buildGradientComponent,
 } from './canvas-ui-components.js'
 
-import { generateUniqueString, DOMID } from './utilities.js';
+import {
+  generateUniqueString,
+  generateShortId,
+  DOMID,
+  ACCEPTED_IMAGE_TYPES,
+  MAX_AREA,
+  MAX_DIMENSION,
+} from './utilities.js';
 
 
 // Module-scoped Handles and variables
@@ -19,6 +26,7 @@ import { generateUniqueString, DOMID } from './utilities.js';
 let scrawlHandle = null,
   filterControlsPanel = null,
   filterBuilderAreaHold = null,
+  imageAssetsHold = null,
   getWrapper = null,
   colorFactory = null;
 
@@ -154,6 +162,7 @@ const createControl = (data, actionWrapper) => {
     case 'bespoke-ok-perceptual-curves': return createControl_toneWeights(data, actionWrapper);
     case 'bespoke-map-to-gradient': return createControl_gradient(data, actionWrapper);
     case 'bespoke-swirl': return createControl_swirl(data, actionWrapper);
+    case 'bespoke-file-loader': return createControl_imageAsset(data, actionWrapper);
     default:
       const el = document.createElement('div');
       el.textContent = `No function for ${actionWrapper.formId} - ${data.label}`;
@@ -164,20 +173,141 @@ const createControl = (data, actionWrapper) => {
 const getListenId = (id) => `${id}_listen`;
 
 
-const createControl_swirl = (data, actionWrapper) => {
+const createControl_imageAsset = (data, actionWrapper) => {
 
-  actionWrapper.swirlObjects = {};
+  // Helper for `createControl_imageAsset` function
+  const importImageFileAsAsset = ((file, panel, wrapper) => {
 
-  const {formId, action, swirlObjects, killList } = actionWrapper;
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      console.warn(`Failed to import file ${file.name} as its type is not supported by this tool`);
+      return;
+    }
+
+    const safeName = file.name.replace(/[^a-zA-Z0-9_-]/g, '_'),
+      assetId = `${safeName}_${generateShortId()}`,
+      assetImg = new Image(),
+      assetUrl = URL.createObjectURL(file);
+
+    assetImg.id = assetId;
+
+    assetImg.onload = () => {
+
+      URL.revokeObjectURL(assetUrl);
+
+      const { naturalWidth: w, naturalHeight: h } = assetImg;
+
+      if (w <= MAX_DIMENSION && h <= MAX_DIMENSION && (w * h) <= MAX_AREA) {
+
+        scrawlHandle.importDomImage(`#${assetId}`);
+
+        const myAsset = scrawlHandle.findAsset(assetId);
+
+        if (myAsset != null) {
+
+          const name = myAsset.name,
+            parentEl = panel.parentElement;
+
+          panel.querySelector('.asset-name-value').textContent = name;
+          parentEl.querySelector('.action-control-inputs-for-linetext input').value = name;
+
+          wrapper.set({
+            asset: name,
+            lineOut: name,
+          });
+
+          const currentFilter = getWrapper();
+
+          currentFilter.updateDisplayFilter();
+          currentFilter.updateHistory();
+        }
+     }
+      else console.warn(`Failed to import file ${file.name} as it is too large for this tool to process`);
+
+      assetImg.onload = null;
+      assetImg.onerror = null;
+    };
+
+    assetImg.onerror = () => {
+
+      URL.revokeObjectURL(assetUrl);
+      console.warn(`Failed to import file ${file.name} because the browser could not decode it`);
+
+      assetImg.onload = null;
+      assetImg.onerror = null;
+    };
+
+    assetImg.src = assetUrl;
+
+    imageAssetsHold.appendChild(assetImg);
+  });
+
+  // Main function
+  const {formId, killList } = actionWrapper;
 
   const localId = `${formId}_${data.key}`;
 
   const el = document.createElement('div');
-  el.classList.add('action-control-inputs-for-swirls');
-  el.id = localId;
+  el.classList.add('action-control-inputs-for-image-asset');
+  el.dataset.localId = localId;
 
-  const swirlArrays = action.swirls;
+  let value = actionWrapper.action.asset;
+  if (value == null) value = '';
 
+  const row1 = document.createElement('div');
+  row1.classList.add('image-asset-row');
+
+  const div1 = document.createElement('div');
+  div1.classList.add('asset-name-label');
+  div1.textContent = data.label;
+  row1.appendChild(div1);
+
+  const div2 = document.createElement('div');
+  div2.classList.add('asset-name-value');
+  div2.textContent = value.length ? value : '[none]';
+  row1.appendChild(div2);
+
+  el.appendChild(row1);
+
+  const row2 = document.createElement('div');
+  row2.classList.add('image-asset-import-button');
+
+  const input = document.createElement('input');
+  input.id = localId;
+  input.name = localId;
+  input.type = 'file';
+  input.setAttribute('accept', 'image/png, image/jpeg, image/jpg, image/webp');
+  row2.appendChild(input);
+
+  const label = document.createElement('label');
+  label.textContent = 'Load image';
+  label.setAttribute('for', localId);
+  row2.appendChild(label);
+
+  el.appendChild(row2);
+
+  const listener = scrawlHandle.addNativeListener('change', (e) => {
+
+    if (e && e.target) {
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      const files = [...(e.target.files || [])],
+        file = files[0];
+
+      if (file != null) importImageFileAsAsset(file, el, actionWrapper);
+    }
+  }, input);
+
+  killList.push(listener);
+
+  return el;
+};
+
+
+const createControl_swirl = (data, actionWrapper) => {
+
+  // Helpers for `createControl_swirl` function
   const updateSwirlArrays = () => {
 
     swirlArrays.length = 0;
@@ -199,8 +329,6 @@ const createControl_swirl = (data, actionWrapper) => {
     currentFilter.updateDisplayFilter();
     currentFilter.updateHistory();
   };
-
-  let addSwirlButton = null;
 
   const buildSwirlPanel = (swirl, index) => {
 
@@ -621,6 +749,21 @@ const createControl_swirl = (data, actionWrapper) => {
     if (addSwirlButton) el.insertBefore(localSwirl, addSwirlButton);
     else el.appendChild(localSwirl);
   };
+
+  // Main function
+  actionWrapper.swirlObjects = {};
+
+  const {formId, action, swirlObjects, killList } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`;
+
+  const el = document.createElement('div');
+  el.classList.add('action-control-inputs-for-swirls');
+  el.id = localId;
+
+  const swirlArrays = action.swirls;
+
+  let addSwirlButton = null;
 
   swirlArrays.forEach((swirl, index) => buildSwirlPanel(swirl, index));
 
@@ -2638,6 +2781,7 @@ export const initFormBuilder = (
   scrawlHandle = scrawl;
   filterControlsPanel = dom[DOMID.CONTROLS_PANEL];
   filterBuilderAreaHold = dom[DOMID.BUILDER_HOLD];
+  imageAssetsHold = dom[DOMID.ASSETS_HOLD];
   getWrapper = getCurrentWrappedFilter;
 
   colorFactory = scrawl.makeColor({

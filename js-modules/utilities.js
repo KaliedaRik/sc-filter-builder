@@ -16,6 +16,7 @@ export const generateUniqueString = () => performance.now().toString(36) + _rand
 // - http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
 const s4 = () => _floor((1 + _random()) * 0x10000).toString(16).substring(1);
 export const generateUuid = () => `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
+export const generateShortId = () => `${s4()}${s4()}`;
 
 
 // Padded date-time string
@@ -30,6 +31,10 @@ export const generateFileDate = () => {
 export const PACKET_DIVIDER = '§§';
 export const FILTER_IDENTIFIER = '"Filter","filter"';
 
+export const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+export const MAX_AREA = 16_000_000;
+export const MAX_DIMENSION = 4096;
+  
 // Mapping HTML element ids to JS element handles
 export const DOMID = {
 
@@ -37,6 +42,7 @@ export const DOMID = {
   SPLITTER: 'splitter',
   CONTROLS_PANEL: 'filter-controls-panel',
   BUILDER_HOLD: 'filter-builder-area-hold',
+  ASSETS_HOLD: 'image-assets-hold',
 
   // Capture handles for the instructions modal
   INSTRUCTIONS_BUTTON: 'instructions-modal-button',

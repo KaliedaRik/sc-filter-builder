@@ -279,6 +279,7 @@ const correctDisplayFilterAction_tiles = (action, view) => {
   action.rectHeight = rectHeight * currentScale;
 };
 
+
 // FilterActionWrapper object
 // ------------------------------------------------------------------------
 const actionWrapperLibrary = {};

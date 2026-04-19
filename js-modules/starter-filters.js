@@ -4,6 +4,14 @@
 
 export const starterFilters = {
 
+  ['SC-starter-filter_image-asset']: {
+    title: 'Image asset',
+    readableName: 'Image asset starter',
+    formSchemaName: ['image'],
+    packet: `["SC-starter-filter_image-asset","Filter","filter",{"name":"SC-starter-filter_image-asset","actions":[{"action":"process-image","lineOut":"","asset":"","copyWidth":"100%","copyHeight":"100%","copyX":"0%","copyY":"0%"}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_blank.png',
+  },
+
   ['SC-starter-filter_blank']: {
     title: 'Blank',
     readableName: 'Blank starter',
@@ -450,6 +458,7 @@ export const filterGroups = [{
   title: 'Start here',
   openOnLoad: true,
   filters: [
+    'SC-starter-filter_image-asset',
     'SC-starter-filter_blank',
     'SC-starter-filter_brightness',
     'SC-starter-filter_color-curve',

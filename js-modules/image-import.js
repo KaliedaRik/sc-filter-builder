@@ -4,7 +4,13 @@
 
 
 // Imports
-import { DOMID } from './utilities.js';
+import {
+  DOMID,
+  ACCEPTED_IMAGE_TYPES,
+  MAX_AREA,
+  MAX_DIMENSION,
+} from './utilities.js';
+
 import { 
   prepareImageForDisplay,
   getDisplayedImageId,
@@ -23,10 +29,7 @@ let importCell = null,
   domHandles = null;
 
 // Key information: the thumbnail dimensions - 80px square - get set in CSS. If we change those CSS values, they need to change in this file too
-const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'],
-  MAX_AREA = 16_000_000,
-  MAX_DIMENSION = 4096,
-  THUMBNAIL_DIMENSIONS = 80;
+const THUMBNAIL_DIMENSIONS = 80;
 
 
 const ingester = [];
