@@ -976,7 +976,7 @@ const createControl_unitColor = (data, actionWrapper) => {
         greenValue = parseFloat(greenInput.value),
         blueValue = parseFloat(blueInput.value);
 
-      const redValueInt = Math.floor(redVal * 256),
+      const redValueInt = Math.floor(redValue * 256),
         greenValueInt = Math.floor(greenValue * 256),
         blueValueInt = Math.floor(blueValue * 256);
 
