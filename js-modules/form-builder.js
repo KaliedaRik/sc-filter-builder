@@ -207,7 +207,8 @@ const createControl_imageAsset = (data, actionWrapper) => {
           const name = myAsset.name,
             parentEl = panel.parentElement;
 
-          panel.querySelector('.asset-name-value').textContent = name;
+          // panel.querySelector('.asset-name-value').textContent = name;
+          div2.textContent = name;
           parentEl.querySelector('.action-control-inputs-for-linetext input').value = name;
 
           wrapper.set({
@@ -215,10 +216,24 @@ const createControl_imageAsset = (data, actionWrapper) => {
             lineOut: name,
           });
 
-          const currentFilter = getWrapper();
+          const reader = new FileReader();
 
-          currentFilter.updateDisplayFilter();
-          currentFilter.updateHistory();
+          reader.onload = () => {
+
+            wrapper.importedImageAsset = {
+              name,
+              originalFileName: file.name,
+              mimeType: file.type,
+              dataUrl: reader.result,
+            };
+
+            const currentFilter = getWrapper();
+
+            currentFilter.updateDisplayFilter();
+            currentFilter.updateHistory();
+          };
+
+          reader.readAsDataURL(file);
         }
      }
       else console.warn(`Failed to import file ${file.name} as it is too large for this tool to process`);

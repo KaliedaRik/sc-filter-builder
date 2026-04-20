@@ -30,6 +30,7 @@ export const generateFileDate = () => {
 
 export const PACKET_DIVIDER = '§§';
 export const FILTER_IDENTIFIER = '"Filter","filter"';
+export const ASSET_IDENTIFIER = '"type":"SC_IMAGE_ASSET"';
 
 export const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
 export const MAX_AREA = 16_000_000;

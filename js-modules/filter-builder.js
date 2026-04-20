@@ -6,11 +6,19 @@
 import { starterFilters, filterGroups } from './starter-filters.js';
 import { wrap } from './form-objects.js';
 import { reconciliation } from './filter-schemas.js';
-import { generateFileDate, DOMID, PACKET_DIVIDER, FILTER_IDENTIFIER } from './utilities.js';
+
+import {
+  generateFileDate,
+  DOMID,
+  PACKET_DIVIDER,
+  FILTER_IDENTIFIER,
+  ASSET_IDENTIFIER,
+} from './utilities.js';
 
 let currentFilterWrapper = null,
   currentFilterInitialValues = null,
   currentFilterTitleElement = null,
+  imageAssetsHold = null,
   userFiltersArea = null,
   scrawlHandle = null,
   canvasHandle = null;
@@ -108,13 +116,45 @@ const importFilter = async (file) => {
   }
 
   const packets = packet.split(PACKET_DIVIDER),
-    filteredPacket = packets.filter(p => p.includes(FILTER_IDENTIFIER));
+    filteredPacket = packets.filter(p => p.includes(FILTER_IDENTIFIER)),
+    otherPackets = packets.filter(p => !p.includes(FILTER_IDENTIFIER));
 
   if (filteredPacket.length !== 1) {
 
     console.warn(`Packet rejected - should only include one filter definition: ${file.name}`);
     return;
   }
+
+  otherPackets.forEach(p => {
+
+    if (p.includes(ASSET_IDENTIFIER)) {
+
+      try {
+
+        const assetData = JSON.parse(p);
+
+        const {name, dataUrl} = assetData;
+
+        const asset = scrawlHandle.findAsset(name);
+
+        // Only do work to create asset if it does not already exist in the SC library
+        if (asset == null) {
+
+          const img = new Image();
+          img.id = name;
+          img.onload = () => scrawlHandle.importDomImage(`#${name}`);
+          img.onerror = () => console.warn(`Failed to decode image asset ${name}`);
+
+          imageAssetsHold.appendChild(img);
+          img.src = dataUrl;
+        }
+      }
+      catch (e) {
+
+        console.warn(`failed to parse asset packet: ${e.message}`);
+      }
+    }
+  });
 
   const selectedPacket = filteredPacket[0]
 
@@ -236,6 +276,30 @@ const downloadFilter = () => {
             break;
           }
 
+          case 'process-image': {
+
+            const action = structuredClone(actionObject);
+            const imported = actionWrapper.importedImageAsset;
+
+            if (!imported || !imported.dataUrl) {
+              console.warn(`Process-image action "${actionWrapper.id}" has no embedded image data`);
+              actions.push(action);
+              break;
+            }
+
+            packets.push(JSON.stringify({
+              type: 'SC_IMAGE_ASSET',
+              version: 1,
+              name: imported.name,
+              originalFileName: imported.originalFileName,
+              mimeType: imported.mimeType,
+              dataUrl: imported.dataUrl,
+            }));
+
+            actions.push(action);
+            break;
+          }
+
           default:
             actions.push(structuredClone(actionObject));
         }
@@ -287,6 +351,8 @@ export const initFilterBuilder = (scrawl = null, dom = null) => {
   canvasHandle = canvas;
   scrawlHandle = scrawl;
   userFiltersArea = dom[DOMID.FILTER_USERS];
+  imageAssetsHold = dom[DOMID.ASSETS_HOLD];
+
 
 
   const frag = new DocumentFragment(),
