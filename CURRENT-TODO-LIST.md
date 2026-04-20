@@ -2,21 +2,23 @@
 The list is evolving and I do not commit to doing anything in the current order
 
 ## Starter filters work and form building
-... Initial work done
+Status: initial work done
 
 ### Image preview
-... Done
+Status: done
 
 
 ## User-generated filter import, and download, work
-... Done
+Status: done
 
 
 ## Image batch-processing and download
-... Done
+Status: done
 
 
 ## Image preview enhancement
+Status: in progress
+
 Currently we show a portion of the image in the preview, to which the filter is applied. When moving around the image (via the minimap), or scaling it, this means the filter needs corrections to make what the user sees approximate the effect the filter will have on that area of the image. It also means that filter actions like random noise continue to show single pixel displacements when the user has zoomed in on the image.
 
 We can fix this by having two types of image preview:
