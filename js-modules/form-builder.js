@@ -70,6 +70,7 @@ export const generateButtonHtml = (actionWrapper) => {
 // ------------------------------------------------------------------------
 export const generateFormHtml = (actionWrapper) => {
 
+console.log(actionWrapper);
   const id = actionWrapper.formId;
 
   const details = document.createElement('details');

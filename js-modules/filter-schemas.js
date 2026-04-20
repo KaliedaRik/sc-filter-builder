@@ -2849,7 +2849,7 @@ F.presentation = [{
 F = filterSchemas.blend = structuredClone(actionSchemas['blend']);
 F.presentation = [{
     header: 'Connections',
-    openOnLoad: false,
+    openOnLoad: true,
     inputs: ['lineIn', 'lineMix', 'lineOut'],
   },{
     header: 'Mix input offset',
@@ -3123,7 +3123,7 @@ F.presentation = [{
 F = filterSchemas.compose = structuredClone(actionSchemas['compose']);
 F.presentation = [{
     header: 'Connections',
-    openOnLoad: false,
+    openOnLoad: true,
     inputs: ['lineIn', 'lineMix', 'lineOut'],
   },{
     header: 'Mix input offset',
@@ -3193,7 +3193,7 @@ F.presentation = [...defaultPresentation];
 F = filterSchemas.displace = structuredClone(actionSchemas['displace']);
 F.presentation = [{
     header: 'Connections',
-    openOnLoad: false,
+    openOnLoad: true,
     inputs: ['lineIn', 'lineMix', 'lineOut'],
   },{
     header: 'Horizontal controls',
