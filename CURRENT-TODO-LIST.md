@@ -2,14 +2,7 @@
 The list is evolving and I do not commit to doing anything in the current order
 
 ## Starter filters work and form building
-Create packets for the following filters
-
-- [] filterSchemas.displace
-- [] filterSchemas.image
-
-For `image`, we need to do some work in the forms to allow the user to select an image. 
-- When it comes to saving/downloading filters which depend an upstream `image`, we need to figure out a way to serialise the image (no reliance on remote URLs)
-- When it comes to importing and using such a filter, we need to do work to get the image into SC as an asset
+... Initial work done
 
 ### Image preview
 ... Done
