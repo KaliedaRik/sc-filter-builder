@@ -90,6 +90,8 @@ const load = (packet, data) => {
           mainEl.classList.remove(filterHasChangedClass);
         }
       }
+      // Do nothing for asset metadata
+      else if (p.includes(ASSET_IDENTIFIER)) {}
       else canvasHandle.actionPacket(p);
     });
   }
