@@ -2,29 +2,10 @@
 The list is evolving and I do not commit to doing anything in the current order
 
 ## Starter filters work and form building
-Create packets for the following filters
-
-- [] filterSchemas.blend
-- [] filterSchemas.compose
-- [] filterSchemas.displace
-- [] filterSchemas.image
-- [] filterSchemas.swirl
-
-For `blend` and `compose`, we just need to create the form builder object.
-
-For `swirl` we need to build a new form component - a swirl filter can include an array of swirls, each of which will need to be separately editabe.
-
-For `displace`, I think this will be the same story as for blend/compose (2 inputs)
-
-For `image`, we need to do some work in the forms to allow the user to select an image. 
-- When it comes to saving/downloading filters which depend an upstream `image`, we need to figure out a way to serialise the image (no reliance on URLs)
-- When it comes to importing and using such a filter, we need to do work to get the image into SC as an asset
+... Initial work done
 
 ### Image preview
-We need to do further work to make the preview more realistic, particularly when the user zooms the viewport
-- area-alpha currently does not shift areas as user navigates over image
-- gaussian-blur - theres a case to make the steps in the range input smaller (0.1) and maybe limit the upper bound for this tool. Also: how to zoom the blur?
-- etc
+... Done
 
 
 ## User-generated filter import, and download, work
@@ -46,9 +27,25 @@ The advantages of `advanced` is that we can cut out a lot of the view calculatio
 
 Giving users the ability to toggle between the image preview types will allow them to do the majority of their work in `basic` (the default preview), but then switch to `advanced` for more detailed assessment of the filter results, if required.
 
+## Filter construction
+The last major piece of work will be around user-driven filter construction and experimentation. The Use Case is as follows:
 
-## Image file import and export
-This is a piece of consideration and research work to see if we could support the import, and download, of image file formats currently not supported by browsers, for example `.tiff`, etc. 
+- User selects a starter filter on which they want to build their own filter
+- The filter actions display in the filter builder area at the bottom of the page
+- on the left hand side, two boxes:
+  - "source"
+  - "source-alpha"
+- On the right hand side a single box - "output"
+- In the middle, the element blocks for each filter action display
+  - Blocks are wired up appropriately with lines moving from each block's "lineOut" area to the filter action which accepts the results of the block for further processing ("lineIn", "lineMix")
+- Users have the ability to quickly remove a filter action from the graph
+  - Would be nice for the graph to self-heal after an action's removal
+- Users have the ability to quickly add additional filter actions to the graph 
+  - Again, would be nice if the graph could self-heal (as far as posssible) following the insertion of a new action
+- Filter action boxes can be dragged around the graph area
+- Each filter action get's manipulated in its own set of controls in the right hand panel
+- Live (near-real-time) updates to graph manipulations
+- Extra? Need to address Undo/Redo functionality
 
-- For this work, I'm willing to use either dedicated JS image conversion libraries, or WASM-enabled libraries (like `ffmpeg`, but lighter?) in non-JS languages, which handle this sort of conversion work well.
-- Export should remain limited to browser-native formats unless a clear user need justifies adding specialist encoders.
+
+

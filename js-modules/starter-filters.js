@@ -4,6 +4,38 @@
 
 export const starterFilters = {
 
+  ['SC-starter-filter_image-asset']: {
+    title: 'Image asset',
+    readableName: 'Image asset starter',
+    formSchemaName: ['image'],
+    packet: `["SC-starter-filter_image-asset","Filter","filter",{"name":"SC-starter-filter_image-asset","actions":[{"action":"process-image","lineOut":"","asset":"","copyWidth":"100%","copyHeight":"100%","copyX":"0%","copyY":"0%"}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_blank.png',
+  },
+
+  ['SC-starter-filter_compose']: {
+    title: 'Compose',
+    readableName: 'Compose starter',
+    formSchemaName: ['compose'],
+    packet: `["SC-starter-filter_compose","Filter","filter",{"name":"SC-starter-filter_compose","actions":[{"action":"compose","lineIn":"","lineOut":"","lineMix":"","compose":"source-over","offsetX":0,"offsetY":0,"opacity":1}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_blank.png',
+  },
+
+  ['SC-starter-filter_blend']: {
+    title: 'Blend',
+    readableName: 'Blend starter',
+    formSchemaName: ['blend'],
+    packet: `["SC-starter-filter_blend","Filter","filter",{"name":"SC-starter-filter_blend","actions":[{"action":"blend","lineIn":"","lineOut":"","lineMix":"","blend":"normal","offsetX":0,"offsetY":0,"opacity":1}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_blank.png',
+  },
+
+  ['SC-starter-filter_displace']: {
+    title: 'Displace',
+    readableName: 'Displace starter',
+    formSchemaName: ['displace'],
+    packet: `["SC-starter-filter_displace","Filter","filter",{"name":"SC-starter-filter_displace","actions":[{"action":"displace","lineIn":"","lineOut":"","lineMix":"","opacity":1,"channelX":"red","channelY":"green","offsetX":0,"offsetY":0,"scaleX":1,"scaleY":1,"transparentEdges":false,"useInputAsMask":false}]}]`,
+    imageSource: 'assets/thumb/starter-thumb_blank.png',
+  },
+
   ['SC-starter-filter_blank']: {
     title: 'Blank',
     readableName: 'Blank starter',
@@ -556,5 +588,15 @@ export const filterGroups = [{
     'SC-starter-filter_set-channel-to-level',
     'SC-starter-filter_tint',
     'SC-starter-filter_tone-curve',
+  ],
+},{
+  id: 'multiImageComposition',
+  title: 'Multi-image composition',
+  openOnLoad: false,
+  filters: [
+    'SC-starter-filter_image-asset',
+    'SC-starter-filter_blend',
+    'SC-starter-filter_compose',
+    'SC-starter-filter_displace',
   ],
 }];

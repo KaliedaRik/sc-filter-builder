@@ -33,6 +33,7 @@ const dom = scrawl.initializeDomInputs([
   ['by-id', DOMID.SPLITTER],
   ['by-id', DOMID.CONTROLS_PANEL],
   ['by-id', DOMID.BUILDER_HOLD],
+  ['by-id', DOMID.ASSETS_HOLD],
 
   // Capture handles for the instructions modal
   ['button', DOMID.INSTRUCTIONS_BUTTON, 'Instructions'],
