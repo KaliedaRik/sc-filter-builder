@@ -143,6 +143,7 @@ const generateFormSection = (section, actionWrapper) => {
 // ------------------------------------------------------------------------
 const createControl = (data, actionWrapper) => {
 
+console.log(data)
   switch (data.controlType) {
 
     case 'color': return createControl_color(data, actionWrapper);

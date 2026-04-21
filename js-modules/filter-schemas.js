@@ -815,24 +815,24 @@ const actionSchemas = {
         label: 'Y Offset',
         description: '',
       },
-      scaleX: {
+      strengthX: {
         controlType: 'number',
         default: 0,
-        key: 'scaleX',
-        minValue: 0,
+        key: 'strengthX',
+        minValue: -100,
         maxValue: 100,
         step: 1,
-        label: 'X scale',
+        label: 'X strength',
         description: '',
       },
-      scaleY: {
+      strengthY: {
         controlType: 'number',
         default: 0,
-        key: 'scaleY',
-        minValue: 0,
+        key: 'strengthY',
+        minValue: -100,
         maxValue: 100,
         step: 1,
-        label: 'Y scale',
+        label: 'Y strength',
         description: '',
       },
       transparentEdges: {
@@ -1831,24 +1831,57 @@ const actionSchemas = {
         label: 'Copy height',
         description: '',
       },
-      copyX: {
+      copyStartX: {
         controlType: 'percentage-number',
         default: 0,
-        key: 'copyX',
+        key: 'copyStartX',
         minValue: 0,
         maxValue: 99.95,
         step: 0.05,
         label: 'Copy horizontal start',
         description: '',
       },
-      copyY: {
+      copyStartY: {
         controlType: 'percentage-number',
         default: 0,
-        key: 'copyY',
+        key: 'copyStartY',
         minValue: 0,
         maxValue: 99.95,
         step: 0.05,
         label: 'Copy vertical start',
+        description: '',
+      },
+      fit: {
+        controlType: 'select',
+        default: 'none',
+        key: 'fit',
+        options: ['none', 'contain', 'cover', 'stretch'],
+        label: 'Image fit',
+        description: '',
+      },
+      scale: {
+        controlType: 'number',
+        default: 1,
+        key: 'scale',
+        minValue: 0.1,
+        maxValue: 10,
+        step: 0.1,
+        label: 'Image scale',
+        description: '',
+      },
+      smoothing: {
+        controlType: 'boolean',
+        default: false,
+        key: 'smoothing',
+        label: 'Image smoothing',
+        description: '',
+      },
+      backgroundColor: {
+        controlType: 'select',
+        default: 'rgb(0 0 0 / 0)',
+        key: 'backgroundColor',
+        options: ['rgb(0 0 0 / 0)', 'rgb(127 127 127 / 1)'],
+        label: 'Background color',
         description: '',
       },
     },
@@ -3198,11 +3231,11 @@ F.presentation = [{
   },{
     header: 'Horizontal controls',
     openOnLoad: false,
-    inputs: ['channelX', 'offsetX', 'scaleX'],
+    inputs: ['channelX', 'offsetX', 'strengthX'],
   },{
     header: 'Vertical controls',
     openOnLoad: false,
-    inputs: ['channelY', 'offsetY', 'scaleY'],
+    inputs: ['channelY', 'offsetY', 'strengthY'],
   },{
     header: 'Flags',
     openOnLoad: false,
@@ -3354,9 +3387,13 @@ F.presentation = [{
     openOnLoad: true,
     inputs: ['import', 'lineOut'],
   },{
-    header: 'Source controls',
-    openOnLoad: true,
-    inputs: ['copyX', 'copyY', 'copyWidth', 'copyHeight'],
+    header: 'Copy area',
+    openOnLoad: false,
+    inputs: ['copyStartX', 'copyStartY', 'copyWidth', 'copyHeight'],
+  },{
+    header: 'Copy display',
+    openOnLoad: false,
+    inputs: ['fit', 'scale', 'smoothing', 'backgroundColor'],
 }];
 
 // invert
