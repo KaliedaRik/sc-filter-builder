@@ -4,14 +4,11 @@
 
 
 // Imports
-import { generateUniqueString } from './utilities.js';
+import { generateUniqueString, getScrawlHandle } from './utilities.js';
 
 
 // Module variables
-let scrawlHandle = null,
-  getWrapper = null,
-  monochromeGrayGradient = null,
-  picture = null;
+let scrawl, getWrapper, monochromeGrayGradient, picture;
 
 
 // Gradient builder canvas UI
@@ -22,11 +19,11 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
   const groupName = canvas.base.name;
 
   const gradientName = canvas.domElement.dataset.gradient,
-    gradientStyle = scrawlHandle.findStyles(gradientName);
+    gradientStyle = scrawl.findStyles(gradientName);
 
 
   // Gradient bar (top part)
-  scrawlHandle.makeBlock({
+  scrawl.makeBlock({
 
     name: `${id}-gradient-bar-background`,
     group: groupName,
@@ -36,7 +33,7 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
     fillStyle: 'main-canvas-checkerboard-background-cell',
     method: 'fill',
   });
-  scrawlHandle.makeBlock({
+  scrawl.makeBlock({
 
     name: `${id}-gradient-bar`,
     group: groupName,
@@ -47,7 +44,7 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
     lockFillStyleToEntity: true,
     method: 'fillThenDraw',
   });
-  scrawlHandle.makeBlock({
+  scrawl.makeBlock({
 
     name: `${id}-monochrome-gradient-bar`,
     group: groupName,
@@ -59,7 +56,7 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
     method: 'fill',
   });
 
-  scrawlHandle.makeLabel({
+  scrawl.makeLabel({
 
     name: `${id}_label-for-0`,
     group: groupName,
@@ -105,7 +102,7 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
 
 
   // Generate color stops visuals and inputs
-  const colorTriangleGroup = scrawlHandle.makeGroup({
+  const colorTriangleGroup = scrawl.makeGroup({
     name: `${id}_color-stops-group`,
     host: canvas.base,
   });
@@ -201,7 +198,7 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
 
     gradientWrapper.appendChild(el);
 
-    const colorSpaceListener = scrawlHandle.addNativeListener('change', (e) => {
+    const colorSpaceListener = scrawl.addNativeListener('change', (e) => {
 
       if (e && e.target) {
 
@@ -211,7 +208,7 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
       }
     }, colorSpaceInput);
 
-    const precisionListener = scrawlHandle.addNativeListener('change', (e) => {
+    const precisionListener = scrawl.addNativeListener('change', (e) => {
 
       if (e && e.target) {
 
@@ -221,7 +218,7 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
       }
     }, precisionInput);
 
-    const easingListener = scrawlHandle.addNativeListener('change', (e) => {
+    const easingListener = scrawl.addNativeListener('change', (e) => {
 
       if (e && e.target) {
 
@@ -259,7 +256,7 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
       stopData.alphaValue = color[4];
       stopData.colorValue = colorFactory.buildColorStringFromData(color);
 
-      stopData.entity = scrawlHandle.makeShape({
+      stopData.entity = scrawl.makeShape({
 
         name: `${id}_${stopId}`,
         group: colorTriangleGroup,
@@ -290,7 +287,7 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
 
     gradientWrapper.appendChild(addButton);
 
-    const addButtonListener = scrawlHandle.addNativeListener('click', (e) => {
+    const addButtonListener = scrawl.addNativeListener('click', (e) => {
 
       if (e && e.target) {
 
@@ -316,7 +313,7 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
         stopData.alphaValue = alpha || 1;
         stopData.colorValue = stopColor;
 
-        stopData.entity = scrawlHandle.makeShape({
+        stopData.entity = scrawl.makeShape({
 
           name: `${id}_${stopId}`,
           group: colorTriangleGroup,
@@ -351,7 +348,7 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
     draggedStopInput = null,
     draggedStopState = null;
 
-  const currentStop = scrawlHandle.makeDragZone({
+  const currentStop = scrawl.makeDragZone({
 
     zone: canvas,
     collisionGroup: colorTriangleGroup,
@@ -446,13 +443,13 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
 
   killList.push(() => currentStop(true));
 
-  scrawlHandle.makeRender({
+  scrawl.makeRender({
 
     name: `${id}_animation`,
     target: canvas,
   });
 
-  killList.push(() => scrawlHandle.purge(id));
+  killList.push(() => scrawl.purge(id));
 };
 
 // We build HTML input color stop controls here rather than in form-builder.js
@@ -630,7 +627,7 @@ const createControl_colorStop = (wrapper, data, factory, update, kill) => {
 
   data.element = el;
 
-  const colorListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const colorListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -657,7 +654,7 @@ const createControl_colorStop = (wrapper, data, factory, update, kill) => {
 
   data.colorListener = colorListener;
 
-  const rgbaListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const rgbaListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -684,7 +681,7 @@ const createControl_colorStop = (wrapper, data, factory, update, kill) => {
 
   data.rgbaListener = rgbaListener;
 
-  const stopIndexListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const stopIndexListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -702,7 +699,7 @@ const createControl_colorStop = (wrapper, data, factory, update, kill) => {
 
   data.stopIndexListener = stopIndexListener;
 
-  const deleteListener = scrawlHandle.addNativeListener('click', (e) => {
+  const deleteListener = scrawl.addNativeListener('click', (e) => {
 
     if (e && e.target) {
 
@@ -773,7 +770,7 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
 
 
     // Channels each get their own group
-    groups[channel] = scrawlHandle.makeGroup({
+    groups[channel] = scrawl.makeGroup({
 
       name: `${mainName}_group`,
       host: canvas.base,
@@ -788,7 +785,7 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
 
       const instanceName = `${mainName}_${label}`;
 
-      scrawlHandle.makeWheel({
+      scrawl.makeWheel({
 
         name: instanceName,
         group: groups[channel],
@@ -805,7 +802,7 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
 
     // Each channel gets its own bezier curve
     // - Curve shape determined by the draggable pins
-    beziers[channel] = scrawlHandle.makeBezier({
+    beziers[channel] = scrawl.makeBezier({
 
       name: `${id}_${channel}_curve`,
       group: groupName,
@@ -852,7 +849,7 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
 
     if (typeof currentPin === 'function') currentPin(true);
 
-    currentPin = scrawlHandle.makeDragZone({
+    currentPin = scrawl.makeDragZone({
 
       zone: canvas,
       collisionGroup: groups[channel],
@@ -953,7 +950,7 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
 
   buildDragZone('combined');
 
-  const animation = scrawlHandle.makeRender({
+  const animation = scrawl.makeRender({
 
     name: `${canvas.name}_animation`,
     target: canvas,
@@ -963,7 +960,7 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
   // Form event listeners 
   let currentChannel = 'combined';
 
-  const channelSelector = scrawlHandle.addNativeListener('change', (e) => {
+  const channelSelector = scrawl.addNativeListener('change', (e) => {
 
     if (e) e.preventDefault();
 
@@ -1001,13 +998,13 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
 
     let pin, x, y;
 
-    pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_start`);
+    pin = scrawl.findEntity(`${id}_${currentChannel}_pin_start`);
     [x, y] = pin.get('position');
 
     y = clampVal(y);
     input['start-y'].value = y;
 
-    pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_first-control`);
+    pin = scrawl.findEntity(`${id}_${currentChannel}_pin_first-control`);
     [x, y] = pin.get('position');
 
     x = clampVal(x);
@@ -1016,7 +1013,7 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
     y = clampVal(y);
     input['start-control-y'].value = y;
 
-    pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_second-control`);
+    pin = scrawl.findEntity(`${id}_${currentChannel}_pin_second-control`);
     [x, y] = pin.get('position');
 
     x = clampVal(x);
@@ -1025,7 +1022,7 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
     y = clampVal(y);
     input['end-control-y'].value = y;
 
-    pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_end`);
+    pin = scrawl.findEntity(`${id}_${currentChannel}_pin_end`);
     [x, y] = pin.get('position');
 
     y = clampVal(y);
@@ -1033,7 +1030,7 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
 
   }, selector);
 
-  const inputSelectors = scrawlHandle.addNativeListener(['input', 'change'], (e) => {
+  const inputSelectors = scrawl.addNativeListener(['input', 'change'], (e) => {
 
     if (e && e.target && e.target.id.indexOf(id) > 0) {
 
@@ -1047,32 +1044,32 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
 
       if (name.indexOf('start-y') > 0) {
 
-        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_start`);
+        pin = scrawl.findEntity(`${id}_${currentChannel}_pin_start`);
         pin.set({ startY: val });
       }
       else if (name.indexOf('start-control-x') > 0) {
         
-        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_first-control`);
+        pin = scrawl.findEntity(`${id}_${currentChannel}_pin_first-control`);
         pin.set({ startX: val });
       }
       else if (name.indexOf('start-control-y') > 0) {
         
-        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_first-control`);
+        pin = scrawl.findEntity(`${id}_${currentChannel}_pin_first-control`);
         pin.set({ startY: val });
       }
       else if (name.indexOf('end-control-x') > 0) {
         
-        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_second-control`);
+        pin = scrawl.findEntity(`${id}_${currentChannel}_pin_second-control`);
         pin.set({ startX: val });
       }
       else if (name.indexOf('end-control-y') > 0) {
         
-        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_second-control`);
+        pin = scrawl.findEntity(`${id}_${currentChannel}_pin_second-control`);
         pin.set({ startY: val });
       }
       else if (name.indexOf('end-y') > 0) {
         
-        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_end`);
+        pin = scrawl.findEntity(`${id}_${currentChannel}_pin_end`);
         pin.set({ startY: val });
       }
 
@@ -1084,7 +1081,7 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
   // Clean up
   actionWrapper.killList.push(() => {if (typeof currentPin === 'function') currentPin(true)});
   actionWrapper.killList.push(animation, channelSelector, inputSelectors);
-  actionWrapper.killList.push(() => scrawlHandle.purge(id));
+  actionWrapper.killList.push(() => scrawl.purge(id));
 };
 
 
@@ -1093,10 +1090,10 @@ const recalculateColorWeights = function (actionWrapper, weights) {
 
   const { id } = actionWrapper;
 
-  const allCurve = scrawlHandle.findEntity(`${id}_combined_curve`),
-    redCurve = scrawlHandle.findEntity(`${id}_red_curve`),
-    greenCurve = scrawlHandle.findEntity(`${id}_green_curve`),
-    blueCurve = scrawlHandle.findEntity(`${id}_blue_curve`);
+  const allCurve = scrawl.findEntity(`${id}_combined_curve`),
+    redCurve = scrawl.findEntity(`${id}_red_curve`),
+    greenCurve = scrawl.findEntity(`${id}_green_curve`),
+    blueCurve = scrawl.findEntity(`${id}_blue_curve`);
 
   const inverseStep = 256 / 1000;
 
@@ -1299,7 +1296,7 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
 
 
     // Channels each get their own group
-    groups[channel] = scrawlHandle.makeGroup({
+    groups[channel] = scrawl.makeGroup({
 
       name: `${mainName}_group`,
       host: canvas.base,
@@ -1314,7 +1311,7 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
 
       const instanceName = `${mainName}_${label}`;
 
-      scrawlHandle.makeWheel({
+      scrawl.makeWheel({
 
         name: instanceName,
         group: groups[channel],
@@ -1331,7 +1328,7 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
 
     // Each channel gets its own bezier curve
     // - Curve shape determined by the draggable pins
-    beziers[channel] = scrawlHandle.makeBezier({
+    beziers[channel] = scrawl.makeBezier({
 
       name: `${id}_${channel}_curve`,
       strokeStyle: channelColors[channel],
@@ -1373,7 +1370,7 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
 
     if (typeof currentPin === 'function') currentPin(true);
 
-    currentPin = scrawlHandle.makeDragZone({
+    currentPin = scrawl.makeDragZone({
 
       zone: canvas,
       collisionGroup: groups[channel],
@@ -1470,7 +1467,7 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
 
 
   // Animation
-  const animation = scrawlHandle.makeRender({
+  const animation = scrawl.makeRender({
 
     name: `${canvas.name}_animation`,
     target: canvas,
@@ -1484,7 +1481,7 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
 
 
   // Form event listeners 
-  const channelSelector = scrawlHandle.addNativeListener('change', (e) => {
+  const channelSelector = scrawl.addNativeListener('change', (e) => {
 
     if (e) e.preventDefault();
 
@@ -1500,13 +1497,13 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
 
     let pin, x, y;
 
-    pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_start`);
+    pin = scrawl.findEntity(`${id}_${currentChannel}_pin_start`);
     [x, y] = pin.get('position');
 
     y = clampVal(y);
     input['start-y'].value = y;
 
-    pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_first-control`);
+    pin = scrawl.findEntity(`${id}_${currentChannel}_pin_first-control`);
     [x, y] = pin.get('position');
 
     x = clampVal(x);
@@ -1515,7 +1512,7 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
     y = clampVal(y);
     input['start-control-y'].value = y;
 
-    pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_second-control`);
+    pin = scrawl.findEntity(`${id}_${currentChannel}_pin_second-control`);
     [x, y] = pin.get('position');
 
     x = clampVal(x);
@@ -1524,7 +1521,7 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
     y = clampVal(y);
     input['end-control-y'].value = y;
 
-    pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_end`);
+    pin = scrawl.findEntity(`${id}_${currentChannel}_pin_end`);
     [x, y] = pin.get('position');
 
     y = clampVal(y);
@@ -1532,7 +1529,7 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
 
   }, selector);
 
-  const inputSelectors = scrawlHandle.addNativeListener(['input', 'change'], (e) => {
+  const inputSelectors = scrawl.addNativeListener(['input', 'change'], (e) => {
 
     if (e && e.target && e.target.id.indexOf(id) > 0) {
 
@@ -1546,32 +1543,32 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
 
       if (name.indexOf('start-y') > 0) {
 
-        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_start`);
+        pin = scrawl.findEntity(`${id}_${currentChannel}_pin_start`);
         pin.set({ startY: val });
       }
       else if (name.indexOf('start-control-x') > 0) {
         
-        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_first-control`);
+        pin = scrawl.findEntity(`${id}_${currentChannel}_pin_first-control`);
         pin.set({ startX: val });
       }
       else if (name.indexOf('start-control-y') > 0) {
         
-        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_first-control`);
+        pin = scrawl.findEntity(`${id}_${currentChannel}_pin_first-control`);
         pin.set({ startY: val });
       }
       else if (name.indexOf('end-control-x') > 0) {
         
-        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_second-control`);
+        pin = scrawl.findEntity(`${id}_${currentChannel}_pin_second-control`);
         pin.set({ startX: val });
       }
       else if (name.indexOf('end-control-y') > 0) {
         
-        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_second-control`);
+        pin = scrawl.findEntity(`${id}_${currentChannel}_pin_second-control`);
         pin.set({ startY: val });
       }
       else if (name.indexOf('end-y') > 0) {
         
-        pin = scrawlHandle.findEntity(`${id}_${currentChannel}_pin_end`);
+        pin = scrawl.findEntity(`${id}_${currentChannel}_pin_end`);
         pin.set({ startY: val });
       }
 
@@ -1582,7 +1579,7 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
   // Clean up
   actionWrapper.killList.push(() => {if (typeof currentPin === 'function') currentPin(true)});
   actionWrapper.killList.push(animation, channelSelector, inputSelectors);
-  actionWrapper.killList.push(() => scrawlHandle.purge(id));
+  actionWrapper.killList.push(() => scrawl.purge(id));
 };
 
 
@@ -1601,10 +1598,10 @@ const recalculateToneCurves = function (actionWrapper) {
   const C_WEIGHTS_SIZE = 201;
   const AB_WEIGHTS_SIZE = 501;
 
-  const lumCurve = scrawlHandle.findEntity(`${id}_luminance_curve`);
-  const chromaCurve = scrawlHandle.findEntity(`${id}_chroma_curve`);
-  const aCurve = scrawlHandle.findEntity(`${id}_aChannel_curve`);
-  const bCurve = scrawlHandle.findEntity(`${id}_bChannel_curve`);
+  const lumCurve = scrawl.findEntity(`${id}_luminance_curve`);
+  const chromaCurve = scrawl.findEntity(`${id}_chroma_curve`);
+  const aCurve = scrawl.findEntity(`${id}_aChannel_curve`);
+  const bCurve = scrawl.findEntity(`${id}_bChannel_curve`);
 
   const sampleBezierToCurve = (curveEntity, sampleCount) => {
 
@@ -1758,17 +1755,13 @@ const recalculateToneCurves = function (actionWrapper) {
 
 // Export for initialization 
 // ------------------------------------------------------------------------
-export const initCanvasComponents = (
-  scrawl = null,
-  getCurrentWrappedFilter = null,
-) => {
+export const initCanvasComponents = ( getCurrentWrappedFilter = null ) => {
 
-  if (!scrawl) throw new Error('Scrawl library not passed to initCurveComponents function');
   if (!getCurrentWrappedFilter) throw new Error('getCurrentWrappedFilter not passed to initCurveComponents function');
 
 
   // Initialise module level variables
-  scrawlHandle = scrawl;
+  scrawl = getScrawlHandle();
   getWrapper = getCurrentWrappedFilter;
 
   monochromeGrayGradient = scrawl.makeGradient({

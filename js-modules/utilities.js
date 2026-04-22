@@ -69,6 +69,7 @@ export const DOMID = {
   FILTER_IMPORT: 'import-filter',
   PREVIEW_WARNING: 'preview-warning',
   PREVIEW_WARNING_CSS: 'warning-is-active',
+  PREVIEW_SELECT: 'preview-select',
 
   // Capture handles for the downloads modal
   DOWNLOAD_BUTTON: 'downloads-modal-button',
@@ -102,3 +103,28 @@ export const DOMID = {
   NAVIGATION_CONTROLS_CSS: '.navigation-controls',
   MINIMAP_CONTROLS_CSS: '.minimap-controls',
 };
+
+export const FLAGS = {
+  dirtyFilter: true,
+  filterChanged: false,
+  isBasicPreview: true,
+};
+
+export const VIEW = {
+  x: 0,
+  y: 0,
+  width: 1,
+  height: 1,
+  assetWidth: 1,
+  assetHeight: 1,
+  currentScale: 1,
+};
+
+let scrawlHandle = null;
+export const setScrawlHandle = (handle) => scrawlHandle = handle;
+export const getScrawlHandle = () => scrawlHandle;
+
+let domHandle = null;
+export const setDomHandle = (handle) => domHandle = handle;
+export const getDomHandle = () => domHandle;
+

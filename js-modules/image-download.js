@@ -1,20 +1,13 @@
 // ------------------------------------------------------------------------
 // Image processing and download management
 // ------------------------------------------------------------------------
-
-
-// Imports
+import { generateFileDate, DOMID, getScrawlHandle, getDomHandle } from './utilities.js';
 import { downloadZip } from '../js-libraries/client-zip.js';
 import { imageState } from './image-import.js';
-import { generateFileDate, DOMID } from './utilities.js';
 
 
 // Modal level variables
-let scrawlHandle = null,
-  downloadCell = null,
-  downloadsList = null,
-  downloadButton = null,
-  getFilter = null;
+let scrawl, dom, canvas, downloadCell, downloadsList, downloadButton, getFilter;
 
 const exportSupport = {
   png: false,
@@ -193,7 +186,7 @@ const processImage = async (item, filter, zipItems) => {
 
     const imageData = engine.getImageData(0, 0, width, height);
 
-    const modifiedImageData = scrawlHandle.filterEngine.action({
+    const modifiedImageData = scrawl.filterEngine.action({
       filters: [filter],
       image: imageData,
     });
@@ -250,23 +243,16 @@ const processImage = async (item, filter, zipItems) => {
 
 
 // Export for initialization
-export const initImageDownload = (scrawl = null, dom = null, filterGetter = null) => {
+export const initImageDownload = (filterGetter = null) => {
 
-  if (!scrawl) throw new Error('Scrawl library not passed to initImageDownload function');
-  if (!dom) throw new Error('DOM mappings not passed to initImageDownload function');
   if (!filterGetter) throw new Error('getFilterWrapper function not passed to initImageDownload function');
 
-
-  // Make scrawl available to module functions
-  scrawlHandle = scrawl;
+  scrawl = getScrawlHandle();
+  dom = getDomHandle();
   getFilter = filterGetter;
-
-
-  // Create the working canvas
-  const canvas = scrawl.findCanvas('main-canvas');
+  canvas = scrawl.findCanvas('main-canvas');
 
   downloadCell = canvas.buildCell({
-
     name: `${canvas.name}-import-cell`,
     dimensions: [1, 1],
     cleared: false,

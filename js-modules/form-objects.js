@@ -1,21 +1,14 @@
 // ------------------------------------------------------------------------
 // Form objects
 // ------------------------------------------------------------------------
-
-
-// Imports
-// ------------------------------------------------------------------------
+import { generateUuid, DOMID, VIEW, getScrawlHandle, getDomHandle } from './utilities.js';
 import { getFilterSchema } from './filter-schemas.js';
 import { generateButtonHtml, generateFormHtml } from './form-builder.js';
-import { generateUuid, DOMID } from './utilities.js';
 
 
 // Module-scoped Handles and variables
 // ------------------------------------------------------------------------
-let currentFilter = null,
-  displayFilter = null,
-  getView = null,
-  domHandle = null;
+let currentFilter, displayFilter, scrawl, dom;
 
 
 // Used in other modules - exported via the init function
@@ -155,7 +148,7 @@ F.updateDisplayFilter = function () {
 
   // We need to manipulate the actions because some are scale and position sensitive
   // - This is why we separate the working and display filters 
-  const view = getView();
+  const view = structuredClone(VIEW);
 
   let warningFlag = false;
 
@@ -197,7 +190,7 @@ F.updateDisplayFilter = function () {
   displayFilter.set({ actions });
 
   const warningCss = DOMID.PREVIEW_WARNING_CSS,
-    warn = domHandle[DOMID.PREVIEW_WARNING];
+    warn = dom[DOMID.PREVIEW_WARNING];
 
   if (warn) {
 
@@ -354,16 +347,10 @@ export const wrap = (filter, form) => new FilterWrapper(filter, form);
 
 // Export for initialization 
 // ------------------------------------------------------------------------
-export const initFormObjects = (scrawl = null, dom = null, getImageDisplayViews = null) => {
+export const initFormObjects = () => {
 
-  if (!scrawl) throw new Error('Scrawl library not passed to initFormObjects function');
-  if (!dom) throw new Error('DOM handles object not passed to initFormObjects function');
-  if (!getImageDisplayViews) throw new Error('getImageDisplayViews function not passed to initFormObjects function');
-
-
-  // Populate module-level variables
-  domHandle = dom;
-  getView = getImageDisplayViews;
+  scrawl = getScrawlHandle();
+  dom = getDomHandle();
 
 
   // Create the display filter and add it to picture

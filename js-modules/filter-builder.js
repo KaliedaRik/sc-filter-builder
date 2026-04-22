@@ -3,47 +3,44 @@
 // ------------------------------------------------------------------------
 
 // Imports
-import { starterFilters, filterGroups } from './starter-filters.js';
-import { wrap } from './form-objects.js';
-import { reconciliation } from './filter-schemas.js';
-
 import {
   generateFileDate,
   DOMID,
   PACKET_DIVIDER,
   FILTER_IDENTIFIER,
   ASSET_IDENTIFIER,
+  FLAGS,
+  getScrawlHandle,
+  getDomHandle,
 } from './utilities.js';
 
-let currentFilterWrapper = null,
-  currentFilterInitialValues = null,
-  currentFilterTitleElement = null,
-  imageAssetsHold = null,
-  userFiltersArea = null,
-  scrawlHandle = null,
-  canvasHandle = null;
+import { starterFilters, filterGroups } from './starter-filters.js';
+import { wrap } from './form-objects.js';
+import { reconciliation } from './filter-schemas.js';
+
+let currentFilterWrapper, currentFilterTitleElement,
+  currentFilterInitialValues,
+  imageAssetsHold, userFiltersArea,
+  scrawl, canvas, dom, filterImport;
 
 const mainEl = document.querySelector('main'),
   filterHasChangedClass = 'filter-has-been-modified';
 
 
 // Filter modification
-let filterHasChanged = false;
+// const checkIfFilterHasChanged = () => {
 
-const checkIfFilterHasChanged = () => {
+//   if (currentFilterInitialValues !== currentFilterWrapper.toString()) {
 
-  if (currentFilterInitialValues !== currentFilterWrapper.toString()) {
+//     mainEl.classList.add(filterHasChangedClass);
+//     FLAGS.filterChanged = true;
+//   }
+//   else {
 
-    mainEl.classList.add(filterHasChangedClass);
-    filterHasChanged = true;
-  }
-  else {
-
-    mainEl.classList.remove(filterHasChangedClass);
-    filterHasChanged = false;
-  }
-
-};
+//     mainEl.classList.remove(filterHasChangedClass);
+//     FLAGS.filterChanged = false;
+//   }
+// };
 
 
 const requestStarterFilter = (e) => {
@@ -71,7 +68,7 @@ const load = (packet, data) => {
 
       if (p.includes(FILTER_IDENTIFIER)) {
 
-        const newFilter = canvasHandle.actionPacket(p);
+        const newFilter = canvas.actionPacket(p);
 
         if (newFilter) {
 
@@ -86,13 +83,13 @@ const load = (packet, data) => {
 
           currentFilterTitleElement.textContent = data.readableName;
 
-          filterHasChanged = false;
+          FLAGS.filterChanged = false;
           mainEl.classList.remove(filterHasChangedClass);
         }
       }
       // Do nothing for asset metadata
       else if (p.includes(ASSET_IDENTIFIER)) {}
-      else canvasHandle.actionPacket(p);
+      else canvas.actionPacket(p);
     });
   }
 };
@@ -137,14 +134,14 @@ const importFilter = async (file) => {
 
         const {name, dataUrl} = assetData;
 
-        const asset = scrawlHandle.findAsset(name);
+        const asset = scrawl.findAsset(name);
 
         // Only do work to create asset if it does not already exist in the SC library
         if (asset == null) {
 
           const img = new Image();
           img.id = name;
-          img.onload = () => scrawlHandle.importDomImage(`#${name}`);
+          img.onload = () => scrawl.importDomImage(`#${name}`);
           img.onerror = () => console.warn(`Failed to decode image asset ${name}`);
 
           imageAssetsHold.appendChild(img);
@@ -164,7 +161,7 @@ const importFilter = async (file) => {
 
   try {
 
-    testFilter = canvasHandle.actionPacket(selectedPacket);
+    testFilter = canvas.actionPacket(selectedPacket);
 
     if (!testFilter || Error.isError(testFilter)) {
 
@@ -212,7 +209,7 @@ const addImportedFilterButton = (item) => {
 
   userFiltersArea.appendChild(button);
 
-  scrawlHandle.addNativeListener('click', requestImportedFilter, button);
+  scrawl.addNativeListener('click', requestImportedFilter, button);
 };
 
 const requestImportedFilter = (e) => {
@@ -257,7 +254,7 @@ const downloadFilter = () => {
 
           case 'map-to-gradient' : {
 
-            const currentGradient = scrawlHandle.findStyles(actionWrapper.action.gradient),
+            const currentGradient = scrawl.findStyles(actionWrapper.action.gradient),
               action = structuredClone(actionObject);
             
             let gradientName = `${filterName}_gradient-${gradientCount}`;
@@ -307,7 +304,7 @@ const downloadFilter = () => {
         }
       });
 
-      const tempFilter = scrawlHandle.makeFilter({
+      const tempFilter = scrawl.makeFilter({
         name: filterName,
         actions,
       });
@@ -339,19 +336,12 @@ const downloadFilter = () => {
 
 
 // Init function
-export const initFilterBuilder = (scrawl = null, dom = null) => {
+export const initFilterBuilder = () => {
 
-  if (!scrawl) throw new Error('Scrawl library not passed to initFilterBuilder function');
-  if (!dom) throw new Error('DOM mappings not passed to initFilterBuilder function');
-
-
-  const canvas = scrawl.findCanvas('filter-builder-canvas');
-
-  const filterImport = dom[DOMID.FILTER_IMPORT];
-
-
-  canvasHandle = canvas;
-  scrawlHandle = scrawl;
+  scrawl = getScrawlHandle();
+  dom = getDomHandle();
+  canvas = scrawl.findCanvas('filter-builder-canvas');
+  filterImport = dom[DOMID.FILTER_IMPORT];
   userFiltersArea = dom[DOMID.FILTER_USERS];
   imageAssetsHold = dom[DOMID.ASSETS_HOLD];
 
@@ -432,7 +422,5 @@ export const initFilterBuilder = (scrawl = null, dom = null) => {
 
 
   // Return object
-  return {
-    checkIfFilterHasChanged,
-  };
+  return {};
 };

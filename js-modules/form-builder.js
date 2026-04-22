@@ -1,16 +1,6 @@
 // ------------------------------------------------------------------------
 // Form builder
 // ------------------------------------------------------------------------
-
-
-// Imports
-// ------------------------------------------------------------------------
-import {
-  buildColorCurveComponent,
-  buildToneCurveComponent,
-  buildGradientComponent,
-} from './canvas-ui-components.js'
-
 import {
   generateUniqueString,
   generateShortId,
@@ -18,17 +8,22 @@ import {
   ACCEPTED_IMAGE_TYPES,
   MAX_AREA,
   MAX_DIMENSION,
+  getDomHandle,
+  getScrawlHandle,
 } from './utilities.js';
+
+import {
+  buildColorCurveComponent,
+  buildToneCurveComponent,
+  buildGradientComponent,
+} from './canvas-ui-components.js'
 
 
 // Module-scoped Handles and variables
 // ------------------------------------------------------------------------
-let scrawlHandle = null,
-  filterControlsPanel = null,
-  filterBuilderAreaHold = null,
-  imageAssetsHold = null,
-  getWrapper = null,
-  colorFactory = null;
+let scrawl, dom, stack,
+  filterControlsPanel, filterBuilderAreaHold, 
+  imageAssetsHold, getWrapper, colorFactory;
 
 
 // CSS considerations
@@ -70,7 +65,6 @@ export const generateButtonHtml = (actionWrapper) => {
 // ------------------------------------------------------------------------
 export const generateFormHtml = (actionWrapper) => {
 
-console.log(actionWrapper);
   const id = actionWrapper.formId;
 
   const details = document.createElement('details');
@@ -143,7 +137,6 @@ const generateFormSection = (section, actionWrapper) => {
 // ------------------------------------------------------------------------
 const createControl = (data, actionWrapper) => {
 
-console.log(data)
   switch (data.controlType) {
 
     case 'color': return createControl_color(data, actionWrapper);
@@ -200,9 +193,9 @@ const createControl_imageAsset = (data, actionWrapper) => {
 
       if (w <= MAX_DIMENSION && h <= MAX_DIMENSION && (w * h) <= MAX_AREA) {
 
-        scrawlHandle.importDomImage(`#${assetId}`);
+        scrawl.importDomImage(`#${assetId}`);
 
-        const myAsset = scrawlHandle.findAsset(assetId);
+        const myAsset = scrawl.findAsset(assetId);
 
         if (myAsset != null) {
 
@@ -302,7 +295,7 @@ const createControl_imageAsset = (data, actionWrapper) => {
 
   el.appendChild(row2);
 
-  const listener = scrawlHandle.addNativeListener('change', (e) => {
+  const listener = scrawl.addNativeListener('change', (e) => {
 
     if (e && e.target) {
 
@@ -399,7 +392,7 @@ const createControl_swirl = (data, actionWrapper) => {
     button.type = 'button';
     button.id = localSwirlDelete;
 
-    listener = scrawlHandle.addNativeListener('click', (e) => {
+    listener = scrawl.addNativeListener('click', (e) => {
 
       if (e) {
 
@@ -454,7 +447,7 @@ const createControl_swirl = (data, actionWrapper) => {
     swirlEl.appendChild(row1);
     swirlEl.appendChild(row2);
 
-    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+    listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
       if (e && e.target) {
 
@@ -513,7 +506,7 @@ const createControl_swirl = (data, actionWrapper) => {
     swirlEl.appendChild(row1);
     swirlEl.appendChild(row2);
 
-    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+    listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
       if (e && e.target) {
 
@@ -572,7 +565,7 @@ const createControl_swirl = (data, actionWrapper) => {
     swirlEl.appendChild(row1);
     swirlEl.appendChild(row2);
 
-    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+    listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
       if (e && e.target) {
 
@@ -631,7 +624,7 @@ const createControl_swirl = (data, actionWrapper) => {
     swirlEl.appendChild(row1);
     swirlEl.appendChild(row2);
 
-    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+    listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
       if (e && e.target) {
 
@@ -690,7 +683,7 @@ const createControl_swirl = (data, actionWrapper) => {
     swirlEl.appendChild(row1);
     swirlEl.appendChild(row2);
 
-    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+    listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
       if (e && e.target) {
 
@@ -742,7 +735,7 @@ const createControl_swirl = (data, actionWrapper) => {
 
     swirlEl.appendChild(easingInput);
 
-    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+    listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
       if (e && e.target) {
 
@@ -791,7 +784,7 @@ const createControl_swirl = (data, actionWrapper) => {
 
   el.appendChild(addSwirlButton);
 
-  const addSwirlButtonListener = scrawlHandle.addNativeListener('click', (e) => {
+  const addSwirlButtonListener = scrawl.addNativeListener('click', (e) => {
 
     if (e) {
 
@@ -921,7 +914,7 @@ const createControl_color = (data, actionWrapper) => {
   el.appendChild(row1);
   el.appendChild(row2);
 
-  const colorListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const colorListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -948,7 +941,7 @@ const createControl_color = (data, actionWrapper) => {
     }
   }, colorInput);
 
-  const rgbListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const rgbListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -1095,7 +1088,7 @@ const createControl_unitColor = (data, actionWrapper) => {
   el.appendChild(row1);
   el.appendChild(row2);
 
-  const colorListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const colorListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -1126,7 +1119,7 @@ const createControl_unitColor = (data, actionWrapper) => {
     }
   }, colorInput);
 
-  const rgbListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const rgbListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -1294,7 +1287,7 @@ const createControl_colorArray = (data, actionWrapper) => {
   el.appendChild(row1);
   el.appendChild(row2);
 
-  const colorListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const colorListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -1318,7 +1311,7 @@ const createControl_colorArray = (data, actionWrapper) => {
     }
   }, colorInput);
 
-  const rgbListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const rgbListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -1340,7 +1333,7 @@ const createControl_colorArray = (data, actionWrapper) => {
     }
   }, [redInput, greenInput, blueInput]);
 
-  const alphaListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const alphaListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -1393,7 +1386,7 @@ const createControl_lineText = (data, actionWrapper) => {
   input.value = value;
   el.appendChild(input);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -1531,7 +1524,7 @@ const createControl_areaAlpha = (data, actionWrapper) => {
 
   el.appendChild(container);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -1586,7 +1579,7 @@ const createControl_text = (data, actionWrapper) => {
   input.value = value;
   el.appendChild(input);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -1674,7 +1667,7 @@ const createControl_matrixWeights = (data, actionWrapper) => {
   message.classList.add('small-field-message');
   el.appendChild(message);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -1782,7 +1775,7 @@ const createControl_colorRanges = (data, actionWrapper) => {
   message.classList.add('small-field-message');
   el.appendChild(message);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -1867,7 +1860,7 @@ const createControl_channelLevels = (data, actionWrapper) => {
   message.classList.add('small-field-message');
   el.appendChild(message);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -1981,16 +1974,16 @@ const createControl_reducePalette = (data, actionWrapper) => {
   paletteButton.classList.add('copy-current-colors');
   el.appendChild(paletteButton);
 
-  const copier = scrawlHandle.addNativeListener('click', async () => {
+  const copier = scrawl.addNativeListener('click', async () => {
 
-    const palette = scrawlHandle.getLastUsedReducePalette();
+    const palette = scrawl.getLastUsedReducePalette();
 
     try { await navigator.clipboard.writeText(palette); }
     catch (error) { console.log(error.message); }
 
   }, paletteButton);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -2053,7 +2046,7 @@ const createControl_boolean = (data, actionWrapper) => {
 
   el.appendChild(input);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -2123,7 +2116,7 @@ const createControl_number = (data, actionWrapper) => {
   el.appendChild(row1);
   el.appendChild(row2);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -2199,7 +2192,7 @@ const createControl_percentageNumber = (data, actionWrapper) => {
   el.appendChild(row1);
   el.appendChild(row2);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -2266,7 +2259,7 @@ const createControl_select = (data, actionWrapper) => {
 
   el.appendChild(input);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
@@ -2779,23 +2772,16 @@ const createControl_gradient = (data, actionWrapper) => {
 
 // Export for initialization 
 // ------------------------------------------------------------------------
-export const initFormBuilder = (
-  scrawl = null,
-  dom = null,
-  getCurrentWrappedFilter = null,
-  actionWrapperLibrary = null,
-) => {
+export const initFormBuilder = (getCurrentWrappedFilter = null, actionWrapperLibrary = null) => {
 
-  if (!scrawl) throw new Error('Scrawl library not passed to initFormBuilder function');
-  if (!dom) throw new Error('DOM mappings not passed to initFormBuilder function');
   if (!getCurrentWrappedFilter) throw new Error('getCurrentWrappedFilter not passed to initFormBuilder function');
   if (!actionWrapperLibrary) throw new Error('actionWrapperLibrary not passed to initFormBuilder function');
 
-
-  const stack = scrawl.findStack('filter-builder-stack');
+  scrawl = getScrawlHandle();
+  dom = getDomHandle();
+  stack = scrawl.findStack('filter-builder-stack');
 
   // // populate module-level variables
-  scrawlHandle = scrawl;
   filterControlsPanel = dom[DOMID.CONTROLS_PANEL];
   filterBuilderAreaHold = dom[DOMID.BUILDER_HOLD];
   imageAssetsHold = dom[DOMID.ASSETS_HOLD];
