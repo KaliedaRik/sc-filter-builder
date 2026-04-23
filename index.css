@@ -477,23 +477,28 @@ main {
     }
   }
 
-  & .preview-selector {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    row-gap: 0.5rem;
-    align-items: center;
-    margin: 0.5rem 0;
-  }
+  & .preview-controls {
 
-  & #preview-warning {
-    font-size: 85%;
-    color: var(--advice-color);
-    display: none;
+    margin: 0.5rem 0 0.75rem;
 
-    &.warning-is-active {
-      display: block;
-      margin-bottom: 0.5rem;
+    & .preview-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      row-gap: 0.5rem;
+      align-items: center;
+      margin: 0.5rem 0;
     }
+
+    & #preview-warning {
+      font-size: 85%;
+      color: var(--advice-color);
+      display: none;
+
+      &.warning-is-active {
+        display: block;
+      }
+    }
+
   }
 
   & details {

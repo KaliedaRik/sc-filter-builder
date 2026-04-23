@@ -104,6 +104,8 @@ export const DOMID = {
   MINIMAP_CONTROLS_CSS: '.minimap-controls',
 };
 
+export const MODIFIED_FILTER_CSS = 'filter-has-been-modified';
+
 export const FLAGS = {
   dirtyFilter: true,
   filterChanged: false,

@@ -1,15 +1,16 @@
 // ------------------------------------------------------------------------
 // Splitter bar management
 // ------------------------------------------------------------------------
-import { DOMID, getScrawlHandle, getDomHandle } from './utilities.js';
+import { DOMID, FLAGS, getScrawlHandle, getDomHandle } from './utilities.js';
 
 let scrawl, dom;
 
-export const initSplitter = () => {
+export const initDomLayout = () => {
 
   scrawl = getScrawlHandle();
   dom = getDomHandle();
 
+  // Initialize the splitter bar
   const splitterBar = dom[DOMID.SPLITTER];
 
   if (!splitterBar) throw new Error('Splitter element not found in DOM mappings (initSplitter function)');
@@ -71,5 +72,22 @@ export const initSplitter = () => {
 
   }, window);
 
+
+  // Image preview selector
+  scrawl.addNativeListener('change', (e) => {
+
+    if (e) e.preventDefault();
+
+    const target = dom[DOMID.PREVIEW_SELECT],
+      value = target.value;
+
+    FLAGS.isBasicPreview = value === 'basic';
+
+    console.log(FLAGS.isBasicPreview);
+
+  }, dom[DOMID.PREVIEW_SELECT]);
+
+
+  // Return object
   return {};
 };

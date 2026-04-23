@@ -1,7 +1,13 @@
 // ------------------------------------------------------------------------
 // Scrawl-canvas boilerplate
 // ------------------------------------------------------------------------
-import { DOMID, FLAGS, setScrawlHandle, setDomHandle } from './js-modules/utilities.js';
+import {
+  DOMID,
+  FLAGS,
+  MODIFIED_FILTER_CSS,
+  setScrawlHandle,
+  setDomHandle,
+} from './js-modules/utilities.js';
 
 import * as scrawl from './js-libraries/scrawl.js';
 
@@ -15,7 +21,7 @@ const builderCanvas = scrawl.findCanvas('filter-builder-canvas');
 // ------------------------------------------------------------------------
 // Module imports
 // ------------------------------------------------------------------------
-import { initSplitter } from './js-modules/dom-layout-ui.js';
+import { initDomLayout } from './js-modules/dom-layout-ui.js';
 import { initModalManagement } from './js-modules/modal-management.js';
 import { initImageImport } from './js-modules/image-import.js';
 import { initImageDisplay } from './js-modules/image-display.js';
@@ -96,23 +102,18 @@ setDomHandle(dom);
 // ------------------------------------------------------------------------
 // Start the page running
 // ------------------------------------------------------------------------
-initSplitter();
-
+initDomLayout();
 initModalManagement();
-
 initImageImport();
 
 const { displayDefaultScreen, checkLiveView } = initImageDisplay();
-
 const { getCurrentWrappedFilter, actionWrapperLibrary } = initFormObjects();
 
 initCanvasComponents(getCurrentWrappedFilter);
-
 initFormBuilder(getCurrentWrappedFilter, actionWrapperLibrary);
-
 initImageDownload(getCurrentWrappedFilter);
 
-initFilterBuilder(scrawl, dom);
+const { checkIfFilterHasChanged } = initFilterBuilder();
 
 
 // Show the default canvas display
@@ -134,11 +135,20 @@ scrawl.makeRender({
   target: builderCanvas,
 });
 
-const commenceFunction = () => {
+const mainEl = document.querySelector('main');
+
+const commence = () => {
 
   checkLiveView();
+  checkIfFilterHasChanged();
 
-  if (FLAGS.dirtyFilter) {
+  const list = mainEl.classList;
+  const { filterChanged, dirtyFilter } = FLAGS;
+
+  if (filterChanged && !list.contains(MODIFIED_FILTER_CSS)) list.add(MODIFIED_FILTER_CSS);
+  if (!filterChanged && list.contains(MODIFIED_FILTER_CSS)) list.remove(MODIFIED_FILTER_CSS);
+
+  if (dirtyFilter) {
 
     FLAGS.dirtyFilter = false;
 
@@ -151,7 +161,7 @@ scrawl.makeRender({
 
   name: 'main-canvas-render',
   target: mainCanvas,
-  commence: commenceFunction,
+  commence,
 });
 
 

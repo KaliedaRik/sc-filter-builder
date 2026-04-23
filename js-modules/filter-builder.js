@@ -9,6 +9,7 @@ import {
   PACKET_DIVIDER,
   FILTER_IDENTIFIER,
   ASSET_IDENTIFIER,
+  MODIFIED_FILTER_CSS,
   FLAGS,
   getScrawlHandle,
   getDomHandle,
@@ -23,26 +24,12 @@ let currentFilterWrapper, currentFilterTitleElement,
   imageAssetsHold, userFiltersArea,
   scrawl, canvas, dom, filterImport;
 
-const mainEl = document.querySelector('main'),
-  filterHasChangedClass = 'filter-has-been-modified';
-
 
 // Filter modification
-// const checkIfFilterHasChanged = () => {
-
-//   if (currentFilterInitialValues !== currentFilterWrapper.toString()) {
-
-//     mainEl.classList.add(filterHasChangedClass);
-//     FLAGS.filterChanged = true;
-//   }
-//   else {
-
-//     mainEl.classList.remove(filterHasChangedClass);
-//     FLAGS.filterChanged = false;
-//   }
-// };
+const checkIfFilterHasChanged = () => FLAGS.filterChanged = currentFilterInitialValues !== currentFilterWrapper.toString();
 
 
+// Starter filter loading
 const requestStarterFilter = (e) => {
 
   // Find button element
@@ -84,7 +71,9 @@ const load = (packet, data) => {
           currentFilterTitleElement.textContent = data.readableName;
 
           FLAGS.filterChanged = false;
-          mainEl.classList.remove(filterHasChangedClass);
+
+          const mainEl = document.querySelector('main');
+          mainEl.classList.remove(MODIFIED_FILTER_CSS);
         }
       }
       // Do nothing for asset metadata
@@ -422,5 +411,5 @@ export const initFilterBuilder = () => {
 
 
   // Return object
-  return {};
+  return { checkIfFilterHasChanged };
 };
