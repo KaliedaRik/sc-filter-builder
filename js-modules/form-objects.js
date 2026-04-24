@@ -1,25 +1,29 @@
 // ------------------------------------------------------------------------
 // Form objects
 // ------------------------------------------------------------------------
+import {
+  generateUuid,
+  DOMID,
+  VIEW,
+  FLAGS,
+  BASIC_PREVIEW,
+  ACCURATE_PREVIEW,
+  setFilterWrapper,
+  getScrawlHandle,
+  getDomHandle,
+} from './utilities.js';
 
-
-// Imports
-// ------------------------------------------------------------------------
 import { getFilterSchema } from './filter-schemas.js';
 import { generateButtonHtml, generateFormHtml } from './form-builder.js';
-import { generateUuid, DOMID } from './utilities.js';
 
 
 // Module-scoped Handles and variables
 // ------------------------------------------------------------------------
-let currentFilter = null,
-  displayFilter = null,
-  getView = null,
-  domHandle = null;
+let basicFilter, accurateFilter, accurateCell, processingLabel, scrawl, dom;
 
 
-// Used in other modules - exported via the init function
-const getCurrentWrappedFilter = () => currentFilter;
+// A little paint buffering
+const nextPaint = () => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
 
 // FilterWrapper object
@@ -28,7 +32,7 @@ const getCurrentWrappedFilter = () => currentFilter;
 const FilterWrapper = function (filter, formSchemaName = '') {
 
   // There can be only one filter (with one or more action objects)!
-  currentFilter = this;
+  setFilterWrapper(this);
 
   this.filter = filter;
   this.name = filter.name;
@@ -147,63 +151,80 @@ F.updateFilter = function () {
   this.filter.set({ actions });
 };
 
-F.updateDisplayFilter = function () {
+F.updateDisplayFilter = async function () {
+
+  processingLabel.classList.add('is-processing');
+  processingLabel.setAttribute('aria-busy', 'true');
+
+  await nextPaint();
 
   this.updateFilter();
 
   const actions = structuredClone(this.filter.get('actions'));
 
-  // We need to manipulate the actions because some are scale and position sensitive
-  // - This is why we separate the working and display filters 
-  const view = getView();
-
-  let warningFlag = false;
-
-  actions.forEach(act => {
-
-    switch (act.action) {
-
-      case 'area-alpha': {
-        correctDisplayFilterAction_areaAlpha(act, view);
-        break;
-      }
-      case 'pixelate': {
-        correctDisplayFilterAction_pixelate(act, view);
-        break;
-      }
-      case 'tiles': {
-        correctDisplayFilterAction_tiles(act, view);
-        break;
-      }
-      case 'blur':
-      case 'corrode':
-      case 'emboss':
-      case 'gaussian-blur':
-      case 'glitch':
-      case 'matrix':
-      case 'offset':
-      case 'newsprint':
-      case 'random-noise':
-      case 'reduce-palette':
-      case 'swirl':
-      case 'unsharp':
-      case 'zoom-blur': {
-        warningFlag = true;
-        break;
-      }
-    }
-  });
-
-  displayFilter.set({ actions });
-
   const warningCss = DOMID.PREVIEW_WARNING_CSS,
-    warn = domHandle[DOMID.PREVIEW_WARNING];
+    warn = dom[DOMID.PREVIEW_WARNING];
 
-  if (warn) {
+  if (FLAGS.isBasicPreview) {
 
-    if (warningFlag) warn.classList.add(warningCss);
-    else warn.classList.remove(warningCss);
+    const view = structuredClone(VIEW);
+
+    let warningFlag = false;
+
+    actions.forEach(act => {
+
+      switch (act.action) {
+
+        case 'area-alpha':
+          correctDisplayFilterAction_areaAlpha(act, view);
+          break;
+
+        case 'pixelate':
+          correctDisplayFilterAction_pixelate(act, view);
+          break;
+
+        case 'tiles':
+          correctDisplayFilterAction_tiles(act, view);
+          break;
+
+        case 'blur':
+        case 'corrode':
+        case 'emboss':
+        case 'gaussian-blur':
+        case 'glitch':
+        case 'matrix':
+        case 'offset':
+        case 'newsprint':
+        case 'random-noise':
+        case 'reduce-palette':
+        case 'swirl':
+        case 'unsharp':
+        case 'zoom-blur':
+          warningFlag = true;
+          break;
+      }
+    });
+
+    basicFilter.set({ actions });
+
+    if (warn) {
+
+      if (warningFlag) warn.classList.add(warningCss);
+      else warn.classList.remove(warningCss);
+    }
   }
+  else {
+
+    accurateFilter.set({ actions });
+
+    accurateCell.clear();
+    accurateCell.compile();
+
+    if (warn.classList.contains(warningCss)) warn.classList.remove(warningCss);
+  }
+
+  processingLabel.classList.remove('is-processing');
+  processingLabel.removeAttribute('aria-busy');
 };
 
 
@@ -354,32 +375,39 @@ export const wrap = (filter, form) => new FilterWrapper(filter, form);
 
 // Export for initialization 
 // ------------------------------------------------------------------------
-export const initFormObjects = (scrawl = null, dom = null, getImageDisplayViews = null) => {
+export const initFormObjects = () => {
 
-  if (!scrawl) throw new Error('Scrawl library not passed to initFormObjects function');
-  if (!dom) throw new Error('DOM handles object not passed to initFormObjects function');
-  if (!getImageDisplayViews) throw new Error('getImageDisplayViews function not passed to initFormObjects function');
-
-
-  // Populate module-level variables
-  domHandle = dom;
-  getView = getImageDisplayViews;
+  scrawl = getScrawlHandle();
+  dom = getDomHandle();
 
 
-  // Create the display filter and add it to picture
-  const picture = scrawl.findEntity('live-view');
+  // Create the display filter and add it to basic picture
+  const basicPicture = scrawl.findEntity(BASIC_PREVIEW);
 
-  displayFilter = scrawl.makeFilter({
-    name: 'eternal-display-filter',
+  basicFilter = scrawl.makeFilter({
+    name: 'basic-display-filter',
     actions: [],
   });
 
-  picture.addFilters(displayFilter);
+  basicPicture.addFilters(basicFilter);
 
+
+  // Create the display filter and add it to accurate picture
+  const accuratePreview = scrawl.findEntity(ACCURATE_PREVIEW);
+
+  accurateFilter = scrawl.makeFilter({
+    name: 'accurate-display-filter',
+    actions: [],
+  });
+
+  accuratePreview.addFilters(accurateFilter);
+
+  accurateCell = scrawl.findCell(`${ACCURATE_PREVIEW}-cell`);
+
+  processingLabel = dom[DOMID.PROCESSING_LABEL];
 
   // Return object
   return {
-    getCurrentWrappedFilter,
     actionWrapperLibrary,
   };
 };

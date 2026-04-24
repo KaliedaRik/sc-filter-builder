@@ -1,18 +1,17 @@
 // ------------------------------------------------------------------------
 // Modal management
 // ------------------------------------------------------------------------
+import { DOMID, getScrawlHandle, getDomHandle } from './utilities.js';
 
-
-// Imports
-import { DOMID } from './utilities.js';
 import {
   buildImageModalList,
   actionImageModalList,
   closeImageModalList,
 } from './image-import.js';
 
-// General 
-let currentModal;
+
+let currentModal, scrawl, dom;
+
 
 const openModal = (modal, fn = null) => {
 
@@ -31,6 +30,7 @@ const openModal = (modal, fn = null) => {
   }, 100);
 };
 
+
 const closeModal = (fn = null) => {
 
   const m = currentModal;
@@ -43,10 +43,11 @@ const closeModal = (fn = null) => {
 
 
 // Export for initialization 
-export const initModalManagement = (scrawl = null, dom = null) => {
+export const initModalManagement = () => {
 
-  if (!scrawl) throw new Error('Scrawl library not passed to initModalManagement function');
-  if (!dom) throw new Error('DOM mappings not passed to initModalManagement function');
+  scrawl = getScrawlHandle();
+  dom = getDomHandle();
+
 
   // Setup: instructions modal
   const instructionsModal = dom[DOMID.INSTRUCTIONS_MODAL],

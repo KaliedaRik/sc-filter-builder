@@ -4,15 +4,20 @@
 
 
 // Imports
-import { DOMID } from './utilities.js';
+import { 
+  DOMID,
+  FLAGS,
+  VIEW,
+  BASIC_PREVIEW,
+  ACCURATE_PREVIEW,
+  getFilterWrapper,
+  getScrawlHandle,
+  getDomHandle,
+} from './utilities.js';
 
 
 // Local handles to SC and DOM
-let scrawlHandle = null,
-  canvasHandle = null;
-
-// Scrawl-canvas boilerplate
-let name = null;
+let scrawl, dom, canvas, name;
 
 
 // Local vars
@@ -20,9 +25,8 @@ let currentlyDisplaying = '';
 
 export const getDisplayedImageId = () => currentlyDisplaying;
 
-let noImagesMessage = null,
-  haveImagesMessage = null,
-  liveView = null;
+let noImagesMessage, haveImagesMessage,
+  basicView, accurateCell, accuratePicture, accurateView;
 
 // Canvas dimensions
 let currentDisplayWidth = 1,
@@ -49,42 +53,20 @@ let minimapWidth = 200,
 
 const maxMinimapCoverage = 0.4;
 
-const view = {
-  x: 0,
-  y: 0,
-  width: 1,
-  height: 1,
-  assetWidth: 1,
-  assetHeight: 1,
-  currentScale: 1,
-};
-
-
-const displayFilterFlag = {
-  flag: true,
-  // reset: () => displayFilterFlag.flag = false,
-  // get: () => displayFilterFlag.flag,
-};
-
-
-const getImageDisplayViews = () => {
-  return {...view};
-};
-
 const recalculateDimensions = () => {
 
-  const [canvasWidth, canvasHeight] = canvasHandle.get('dimensions');
+  const [canvasWidth, canvasHeight] = canvas.get('dimensions');
 
   const maxWidth = canvasWidth * maxMinimapCoverage;
   const maxHeight = canvasHeight * maxMinimapCoverage;
 
   minimapScale = Math.min(
-    maxWidth / view.assetWidth,
-    maxHeight / view.assetHeight,
+    maxWidth / VIEW.assetWidth,
+    maxHeight / VIEW.assetHeight,
   );
 
-  minimapWidth = Math.round(view.assetWidth * minimapScale);
-  minimapHeight = Math.round(view.assetHeight * minimapScale);
+  minimapWidth = Math.round(VIEW.assetWidth * minimapScale);
+  minimapHeight = Math.round(VIEW.assetHeight * minimapScale);
 
   minimapPivot.set({ dimensions: [minimapWidth, minimapHeight] });
   minimapCell.set({ dimensions: [minimapWidth, minimapHeight] });
@@ -99,11 +81,11 @@ const exitMinimapFrameDrag = () => {
   const centerX = x / minimapScale;
   const centerY = y / minimapScale;
 
-  view.x = centerX - view.width / 2;
-  view.y = centerY - view.height / 2;
+  VIEW.x = centerX - VIEW.width / 2;
+  VIEW.y = centerY - VIEW.height / 2;
 
-  view.x = clamp(view.x, 0, view.assetWidth - view.width);
-  view.y = clamp(view.y, 0, view.assetHeight - view.height);
+  VIEW.x = clamp(VIEW.x, 0, VIEW.assetWidth - VIEW.width);
+  VIEW.y = clamp(VIEW.y, 0, VIEW.assetHeight - VIEW.height);
 
   applyView();
 
@@ -133,11 +115,11 @@ const checkMinimapFrameDrag = () => {
     const centerX = x / minimapScale;
     const centerY = y / minimapScale;
 
-    view.x = centerX - view.width / 2;
-    view.y = centerY - view.height / 2;
+    VIEW.x = centerX - VIEW.width / 2;
+    VIEW.y = centerY - VIEW.height / 2;
 
-    view.x = clamp(view.x, 0, view.assetWidth - view.width);
-    view.y = clamp(view.y, 0, view.assetHeight - view.height);
+    VIEW.x = clamp(VIEW.x, 0, VIEW.assetWidth - VIEW.width);
+    VIEW.y = clamp(VIEW.y, 0, VIEW.assetHeight - VIEW.height);
 
     applyView();
 
@@ -151,9 +133,9 @@ const createMinimapFrameDragZone = () => {
 
   if (!minimapFrameDragZone) {
 
-    minimapFrameDragZone = scrawlHandle.makeDragZone({
+    minimapFrameDragZone = scrawl.makeDragZone({
 
-      zone: canvasHandle,
+      zone: canvas,
       collisionGroup: name('minimap-frame-group'),
       coordinateSource: minimapCell,
       endOn: ['up', 'leave'],
@@ -173,8 +155,8 @@ const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 // Calculate liveView (destination) dimensions in CANVAS space
 const calculateLiveViewDimensions = () => {
 
-  const destW = (view.assetWidth < currentDisplayWidth) ? view.assetWidth : '100%';
-  const destH = (view.assetHeight < currentDisplayHeight) ? view.assetHeight : '100%';
+  const destW = (VIEW.assetWidth < currentDisplayWidth) ? VIEW.assetWidth : '100%';
+  const destH = (VIEW.assetHeight < currentDisplayHeight) ? VIEW.assetHeight : '100%';
 
   return [destW, destH];
 };
@@ -183,28 +165,29 @@ const applyLiveViewDimensions = () => {
 
   const [destW, destH] = calculateLiveViewDimensions();
 
-  liveView.set({ dimensions: [destW, destH] });
+  basicView.set({ dimensions: [destW, destH] });
+  accurateView.set({ dimensions: [destW, destH] });
 };
 
 // Numeric (pixel) destination dimensions for the liveView Picture on the canvas
 const calculateLiveViewDestinationPixels = () => {
 
-  const destW = (view.assetWidth < currentDisplayWidth) ? view.assetWidth : currentDisplayWidth;
-  const destH = (view.assetHeight < currentDisplayHeight) ? view.assetHeight : currentDisplayHeight;
+  const destW = (VIEW.assetWidth < currentDisplayWidth) ? VIEW.assetWidth : currentDisplayWidth;
+  const destH = (VIEW.assetHeight < currentDisplayHeight) ? VIEW.assetHeight : currentDisplayHeight;
 
   return [destW, destH];
 };
 
 const calculateViewSize = () => {
 
-  const s = view.currentScale || 1;
+  const s = VIEW.currentScale || 1;
   const [destW, destH] = calculateLiveViewDestinationPixels();
 
   let vw = destW / s;
   let vh = destH / s;
 
-  vw = clamp(vw, 1, view.assetWidth);
-  vh = clamp(vh, 1, view.assetHeight);
+  vw = clamp(vw, 1, VIEW.assetWidth);
+  vh = clamp(vh, 1, VIEW.assetHeight);
 
   return [vw, vh];
 };
@@ -212,28 +195,33 @@ const calculateViewSize = () => {
 const centerView = () => {
 
   const [w, h] = calculateViewSize();
-  view.width = w;
-  view.height = h;
+  VIEW.width = w;
+  VIEW.height = h;
 
-  view.x = (view.assetWidth - w) / 2;
-  view.y = (view.assetHeight - h) / 2;
+  VIEW.x = (VIEW.assetWidth - w) / 2;
+  VIEW.y = (VIEW.assetHeight - h) / 2;
 };
 
 const applyView = () => {
 
   // Canvas
-  liveView.set({
-    copyStart: [view.x, view.y],
-    copyDimensions: [view.width, view.height],
+  basicView.set({
+    copyStart: [VIEW.x, VIEW.y],
+    copyDimensions: [VIEW.width, VIEW.height],
+  });
+
+  accurateView.set({
+    copyStart: [VIEW.x, VIEW.y],
+    copyDimensions: [VIEW.width, VIEW.height],
   });
 
   // Minimap frame should only show when the view is cropping the image
   const [destWpx, destHpx] = calculateLiveViewDestinationPixels();
   
   const shouldShowFrame = 
-    view.assetWidth > destWpx || 
-    view.assetHeight > destHpx ||
-    (view.currentScale || 1) > 1;
+    VIEW.assetWidth > destWpx || 
+    VIEW.assetHeight > destHpx ||
+    (VIEW.currentScale || 1) > 1;
 
   minimapFrame.set({ visibility: shouldShowFrame });
 
@@ -248,18 +236,20 @@ const applyView = () => {
   }
 
   // Minimap frame geometry
-  minimapFrameWidth = view.width * minimapScale;
-  minimapFrameHeight = view.height * minimapScale;
+  minimapFrameWidth = VIEW.width * minimapScale;
+  minimapFrameHeight = VIEW.height * minimapScale;
 
   minimapFrame.set({
     dimensions: [minimapFrameWidth, minimapFrameHeight],
-    startX: (view.x + view.width / 2) * minimapScale,
-    startY: (view.y + view.height / 2) * minimapScale,
+    startX: (VIEW.x + VIEW.width / 2) * minimapScale,
+    startY: (VIEW.y + VIEW.height / 2) * minimapScale,
   });
 
   if (!minimapFrameDragZone) createMinimapFrameDragZone();
 
-  displayFilterFlag.flag = true;
+  // basic preview needs to re-render each time its frame moves
+  // accurate preview needs to re-render only when the filter changes
+  if (FLAGS.isBasicPreview) FLAGS.dirtyFilter = true;
 };
 
 // Export function to display an image
@@ -275,7 +265,8 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
   // Dispose of previous asset if required
   if (oldState) {
 
-    liveView.set({ asset: '' });
+    basicView.set({ asset: '' });
+    accuratePicture.set({ asset: '' });
     minimapPicture.set({ asset: ''});
 
     if (oldState.largeAsset) {
@@ -310,8 +301,10 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
 
   const {width, height, file} = state;
 
-  view.assetWidth = width;
-  view.assetHeight = height;
+  VIEW.assetWidth = width;
+  VIEW.assetHeight = height;
+
+  accurateCell.set({ dimensions: [width, height] });
 
   applyLiveViewDimensions();
   centerView();
@@ -327,16 +320,22 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
       return;
     }
 
-    const [importedName] = scrawlHandle.importImageBitmap({
+    const [importedName] = scrawl.importImageBitmap({
       name: newAssetName,
       src: bitmap,
     });
 
     state.largeAssetName = importedName;
-    state.largeAsset = scrawlHandle.findAsset(importedName);
+    state.largeAsset = scrawl.findAsset(importedName);
     state.largeBitmap = bitmap;
 
-    liveView.set({ asset: importedName });
+    basicView.set({ asset: importedName });
+
+    accuratePicture.set({ asset: importedName });
+    accurateCell.clear();
+    accurateCell.compile();
+
+    FLAGS.dirtyFilter = true;
 
     applyView();
     removeDefaultScreen();
@@ -359,13 +358,13 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
       return;
     }
 
-    const [importedName] = scrawlHandle.importImageBitmap({
+    const [importedName] = scrawl.importImageBitmap({
       name: `${newAssetName}-minimap`,
       src: bitmap,
     });
 
     state.minimapAssetName = importedName;
-    state.minimapAsset = scrawlHandle.findAsset(importedName);
+    state.minimapAsset = scrawl.findAsset(importedName);
     state.minimapBitmap = bitmap;
 
     minimapPicture.set({ asset: importedName });
@@ -376,42 +375,41 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
 // Display cycle liveView updating (will run in the commence hook)
 const checkLiveView = () => {
 
-  if (liveView.get('visibility')) {
+  // Check for changes to the canvas dimensions 
+  // - Cannot do a resize event listener - splitter bar can change canvas dimensions
+  const [w, h] = canvas.get('dimensions');
 
-    // Check for changes to the canvas dimensions 
-    // - Cannot do a resize event listener - splitter bar can change canvas dimensions
-    const [w, h] = canvasHandle.get('dimensions');
+  if (w !== currentDisplayWidth || h !== currentDisplayHeight) {
 
-    if (w !== currentDisplayWidth || h !== currentDisplayHeight) {
+    currentDisplayWidth = w;
+    currentDisplayHeight = h;
 
-      currentDisplayWidth = w;
-      currentDisplayHeight = h;
+    // Preserve center
+    const centerX = VIEW.x + VIEW.width / 2;
+    const centerY = VIEW.y + VIEW.height / 2;
 
-      // Preserve center
-      const centerX = view.x + view.width / 2;
-      const centerY = view.y + view.height / 2;
+    recalculateDimensions();
 
-      recalculateDimensions();
+    applyLiveViewDimensions();
 
-      applyLiveViewDimensions();
+    // Recalculate view size
+    const [width, height] = calculateViewSize();
+    VIEW.width = width;
+    VIEW.height = height;
 
-      // Recalculate view size
-      const [width, height] = calculateViewSize();
-      view.width = width;
-      view.height = height;
+    // Restore center
+    VIEW.x = centerX - width / 2;
+    VIEW.y = centerY - height / 2;
 
-      // Restore center
-      view.x = centerX - width / 2;
-      view.y = centerY - height / 2;
+    // Clamp
+    VIEW.x = clamp(VIEW.x, 0, VIEW.assetWidth - width);
+    VIEW.y = clamp(VIEW.y, 0, VIEW.assetHeight - height);
 
-      // Clamp
-      view.x = clamp(view.x, 0, view.assetWidth - width);
-      view.y = clamp(view.y, 0, view.assetHeight - height);
-
-      applyView();
-    }
-    minimapCell.updateHere();
+    applyView();
   }
+
+  // Update the minimap here object every display cycle
+  minimapCell.updateHere();
 };
 
 
@@ -420,14 +418,17 @@ export const displayDefaultScreen = (imagesAvailable = false) => {
 
   currentlyDisplaying = '';
 
-  liveView.set({ visibility: false });
+  basicView.set({ visibility: false });
+  accurateView.set({ visibility: false });
   minimapCell.set({ shown: false });
 
   if (imagesAvailable) {
+
     noImagesMessage.set({ visibility: false });
     haveImagesMessage.set({ visibility: true });
   }
   else {
+
     noImagesMessage.set({ visibility: true });
     haveImagesMessage.set({ visibility: false });
   }
@@ -438,24 +439,22 @@ const removeDefaultScreen = () => {
   noImagesMessage.set({ visibility: false });
   haveImagesMessage.set({ visibility: false });
 
-  liveView.set({ visibility: true});
+  const isBasicPreview = FLAGS.isBasicPreview;
+
+  basicView.set({ visibility: (isBasicPreview) ? true : false });
+  accurateView.set({ visibility: (isBasicPreview) ? false : true });
+
   minimapCell.set({ shown: true });
 };
 
 // Export for initialization 
-export const initImageDisplay = (scrawl = null, dom = null) => {
+export const initImageDisplay = () => {
 
-  if (!scrawl) throw new Error('Scrawl library not passed to initImageDisplay function');
-  if (!dom) throw new Error('DOM mappings not passed to initImageDisplay function');
-
-
-  const canvas = scrawl.findCanvas('main-canvas');
-
-  // Populate local handles
-  scrawlHandle = scrawl;
-  canvasHandle = canvas;
-
+  scrawl = getScrawlHandle();
+  dom = getDomHandle();
+  canvas = scrawl.findCanvas('main-canvas');
   name = (n) => `${canvas.name}-${n}`;
+
 
   // DOM handles
   minimapShowHide = dom[DOMID.MINIMAP_SHOW];
@@ -524,11 +523,63 @@ export const initImageDisplay = (scrawl = null, dom = null) => {
   });
 
 
-  // Create Picture entity
-  // - displays a filtered portion of the current image's ImageBitmap object
-  liveView = scrawl.makePicture({
+  // Basic and accurate previews
+  FLAGS.isBasicPreview = true;
 
-    name: 'live-view',
+  scrawl.addNativeListener('change', (e) => {
+
+    if (e && e.target) {
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      // The selector gives us 'basic' and 'accurate', but `FLAGS.isBasicPreview` is boolean with true == 'basic'
+      const currentValue = FLAGS.isBasicPreview ? 'basic' : 'accurate',
+        value = e.target.value;
+
+      if (currentValue !== value) {
+
+        const newValue = value === 'basic';
+
+        if (newValue) {
+
+          basicView.set({ visibility: true });
+          accurateView.set({ visibility: false });
+        }
+        else {
+
+          basicView.set({ visibility: false });
+          accurateView.set({ visibility: true });
+
+          accurateCell.clear();
+          accurateCell.compile();
+        }
+
+        FLAGS.isBasicPreview = newValue;
+
+        applyView();
+
+        const currentFilter = getFilterWrapper();
+
+        if (currentFilter) {
+
+          currentFilter.updateDisplayFilter();
+
+          if (!newValue) {
+
+            accurateCell.clear();
+            accurateCell.compile();
+          }
+        }
+      }
+    }
+  }, dom[DOMID.PREVIEW_SELECT]);
+
+
+  // Setup for image preview = 'basic'
+  basicView = scrawl.makePicture({
+
+    name: BASIC_PREVIEW,
     dimensions: ['100%', '100%'],
 
     start: ['center', 'center'],
@@ -537,31 +588,69 @@ export const initImageDisplay = (scrawl = null, dom = null) => {
     copyStart: [1, 1],
     copyDimensions: [1, 1],
 
-    // We'll be building and applying the filter dynamically
     filters: [],
     memoizeFilterOutput: true,
+
+    imageSmoothingEnabled: false,
+    visibility: true,
+  });
+
+
+  // Setup for image preview = 'accurate'
+  accurateCell = canvas.buildCell({
+
+    name: `${ACCURATE_PREVIEW}-cell`,
+    dimensions: [1, 1],
+
+    cleared: false,
+    compiled: false,
+    shown: false,
+  });
+
+  accuratePicture = scrawl.makePicture({
+
+    name: ACCURATE_PREVIEW,
+    group: accurateCell,
+    dimensions: ['100%', '100%'],
+    copyDimensions: ['100%', '100%'],
+    filters: [],
+  });
+
+  accurateView = scrawl.makePicture({
+
+    name: `${ACCURATE_PREVIEW}-filtered-picture`,
+    asset: accurateCell,
+
+    start: ['center', 'center'],
+    handle: ['center', 'center'],
+    dimensions: ['100%', '100%'],
+
+    copyDimensions: [1, 1],
+    copyStart: [0, 0],
 
     imageSmoothingEnabled: false,
     visibility: false,
   });
 
+
+  // Setup scaling functionality
   scrawl.addNativeListener(['input', 'change'], (e) => {
 
     // Only respond to the scale input itself
     const el = e?.target;
-    if (!el || el.id !== 'image-scale') return;
+    if (!el || el.id !== DOMID.PREVIEW_SCALE) return;
 
-    view.currentScale = parseFloat(el.value) || 1;
+    VIEW.currentScale = parseFloat(el.value) || 1;
 
     const [w, h] = calculateViewSize();
-    view.width = w;
-    view.height = h;
+    VIEW.width = w;
+    VIEW.height = h;
 
-    view.x = (view.assetWidth - w) / 2;
-    view.y = (view.assetHeight - h) / 2;
+    VIEW.x = (VIEW.assetWidth - w) / 2;
+    VIEW.y = (VIEW.assetHeight - h) / 2;
 
-    view.x = clamp(view.x, 0, view.assetWidth - w);
-    view.y = clamp(view.y, 0, view.assetHeight - h);
+    VIEW.x = clamp(VIEW.x, 0, VIEW.assetWidth - w);
+    VIEW.y = clamp(VIEW.y, 0, VIEW.assetHeight - h);
 
     applyView();
 
@@ -614,6 +703,7 @@ export const initImageDisplay = (scrawl = null, dom = null) => {
     method: 'fillThenDraw',
     globalAlpha: 0.8,
   });
+
 
   // Event listeners
   scrawl.makeDragZone({
@@ -720,11 +810,11 @@ export const initImageDisplay = (scrawl = null, dom = null) => {
     const centerX = x / minimapScale;
     const centerY = y / minimapScale;
 
-    view.x = centerX - view.width / 2;
-    view.y = centerY - view.height / 2;
+    VIEW.x = centerX - VIEW.width / 2;
+    VIEW.y = centerY - VIEW.height / 2;
 
-    view.x = clamp(view.x, 0, view.assetWidth - view.width);
-    view.y = clamp(view.y, 0, view.assetHeight - view.height);
+    VIEW.x = clamp(VIEW.x, 0, VIEW.assetWidth - VIEW.width);
+    VIEW.y = clamp(VIEW.y, 0, VIEW.assetHeight - VIEW.height);
 
     applyView();
 
@@ -740,11 +830,11 @@ export const initImageDisplay = (scrawl = null, dom = null) => {
     const centerX = x / minimapScale;
     const centerY = y / minimapScale;
 
-    view.x = centerX - view.width / 2;
-    view.y = centerY - view.height / 2;
+    VIEW.x = centerX - VIEW.width / 2;
+    VIEW.y = centerY - VIEW.height / 2;
 
-    view.x = clamp(view.x, 0, view.assetWidth - view.width);
-    view.y = clamp(view.y, 0, view.assetHeight - view.height);
+    VIEW.x = clamp(VIEW.x, 0, VIEW.assetWidth - VIEW.width);
+    VIEW.y = clamp(VIEW.y, 0, VIEW.assetHeight - VIEW.height);
 
     applyView();
 
@@ -757,7 +847,5 @@ export const initImageDisplay = (scrawl = null, dom = null) => {
   return {
     displayDefaultScreen,
     checkLiveView,
-    getImageDisplayViews,
-    displayFilterFlag,
   };
 };

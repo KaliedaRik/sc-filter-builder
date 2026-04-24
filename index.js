@@ -1,9 +1,18 @@
 // ------------------------------------------------------------------------
 // Scrawl-canvas boilerplate
 // ------------------------------------------------------------------------
+import {
+  DOMID,
+  FLAGS,
+  MODIFIED_FILTER_CSS,
+  getFilterWrapper,
+  setScrawlHandle,
+  setDomHandle,
+} from './js-modules/utilities.js';
+
 import * as scrawl from './js-libraries/scrawl.js';
 
-import { DOMID } from './js-modules/utilities.js';
+setScrawlHandle(scrawl);
 
 const mainCanvas = scrawl.findCanvas('main-canvas');
 const builderStack = scrawl.findStack('filter-builder-stack');
@@ -13,7 +22,7 @@ const builderCanvas = scrawl.findCanvas('filter-builder-canvas');
 // ------------------------------------------------------------------------
 // Module imports
 // ------------------------------------------------------------------------
-import { initSplitter } from './js-modules/dom-layout-ui.js';
+import { initDomLayout } from './js-modules/dom-layout-ui.js';
 import { initModalManagement } from './js-modules/modal-management.js';
 import { initImageImport } from './js-modules/image-import.js';
 import { initImageDisplay } from './js-modules/image-display.js';
@@ -58,6 +67,8 @@ const dom = scrawl.initializeDomInputs([
   ['by-id', DOMID.FILTER_BUTTON],
   ['by-id', DOMID.FILTER_IMPORT],
   ['by-id', DOMID.PREVIEW_WARNING],
+  ['select', DOMID.PREVIEW_SELECT, 0],
+  ['by-id', DOMID.PROCESSING_LABEL],
 
   // Capture handles for the downloads modal
   ['button', DOMID.DOWNLOAD_BUTTON, 'Downloads'],
@@ -87,37 +98,24 @@ const dom = scrawl.initializeDomInputs([
   ['input', DOMID.PREVIEW_SCALE, '1'],
 ]);
 
+setDomHandle(dom);
+
 
 // ------------------------------------------------------------------------
 // Start the page running
 // ------------------------------------------------------------------------
-initSplitter(scrawl, dom);
+initDomLayout();
+initModalManagement();
+initImageImport();
 
-initModalManagement(scrawl, dom);
+const { displayDefaultScreen, checkLiveView } = initImageDisplay();
+const { actionWrapperLibrary } = initFormObjects();
 
-initImageImport(scrawl, dom);
+initCanvasComponents();
+initFormBuilder(actionWrapperLibrary);
+initImageDownload();
 
-const {
-  displayDefaultScreen,
-  checkLiveView,
-  getImageDisplayViews,
-  displayFilterFlag,
-} = initImageDisplay(scrawl, dom);
-
-const {
-  getCurrentWrappedFilter,
-  actionWrapperLibrary,
-} = initFormObjects(scrawl, dom, getImageDisplayViews);
-
-initCanvasComponents(scrawl, getCurrentWrappedFilter);
-
-initFormBuilder(scrawl, dom, getCurrentWrappedFilter, actionWrapperLibrary);
-
-initImageDownload(scrawl, dom, getCurrentWrappedFilter);
-
-const {
-  checkIfFilterHasChanged,
-} = initFilterBuilder(scrawl, dom);
+const { checkIfFilterHasChanged } = initFilterBuilder();
 
 
 // Show the default canvas display
@@ -139,32 +137,37 @@ scrawl.makeRender({
   target: builderCanvas,
 });
 
-const commenceFunction = () => {
+const mainEl = document.querySelector('main');
+
+const commence = () => {
 
   checkLiveView();
+  checkIfFilterHasChanged();
 
-  if (displayFilterFlag.flag) {
+  const list = mainEl.classList;
+  const { filterChanged, dirtyFilter } = FLAGS;
 
-    displayFilterFlag.flag = false;
+  if (filterChanged && !list.contains(MODIFIED_FILTER_CSS)) list.add(MODIFIED_FILTER_CSS);
+  if (!filterChanged && list.contains(MODIFIED_FILTER_CSS)) list.remove(MODIFIED_FILTER_CSS);
 
-    const filter = getCurrentWrappedFilter();
+  if (dirtyFilter) {
+
+    FLAGS.dirtyFilter = false;
+
+    const filter = getFilterWrapper();
     filter.updateDisplayFilter();
   }
-
-  checkIfFilterHasChanged();
 };
 
 scrawl.makeRender({
 
   name: 'main-canvas-render',
   target: mainCanvas,
-  commence: commenceFunction,
+  commence,
 });
 
 
 // ------------------------------------------------------------------------
 // Development 
 // ------------------------------------------------------------------------
-checkIfFilterHasChanged();
-
 console.log(scrawl.library);

@@ -1,16 +1,6 @@
 // ------------------------------------------------------------------------
 // Form builder
 // ------------------------------------------------------------------------
-
-
-// Imports
-// ------------------------------------------------------------------------
-import {
-  buildColorCurveComponent,
-  buildToneCurveComponent,
-  buildGradientComponent,
-} from './canvas-ui-components.js'
-
 import {
   generateUniqueString,
   generateShortId,
@@ -18,17 +8,23 @@ import {
   ACCEPTED_IMAGE_TYPES,
   MAX_AREA,
   MAX_DIMENSION,
+  getFilterWrapper,
+  getDomHandle,
+  getScrawlHandle,
 } from './utilities.js';
+
+import {
+  buildColorCurveComponent,
+  buildToneCurveComponent,
+  buildGradientComponent,
+} from './canvas-ui-components.js'
 
 
 // Module-scoped Handles and variables
 // ------------------------------------------------------------------------
-let scrawlHandle = null,
-  filterControlsPanel = null,
-  filterBuilderAreaHold = null,
-  imageAssetsHold = null,
-  getWrapper = null,
-  colorFactory = null;
+let scrawl, dom, stack,
+  filterControlsPanel, filterBuilderAreaHold, 
+  imageAssetsHold, colorFactory;
 
 
 // CSS considerations
@@ -70,7 +66,6 @@ export const generateButtonHtml = (actionWrapper) => {
 // ------------------------------------------------------------------------
 export const generateFormHtml = (actionWrapper) => {
 
-console.log(actionWrapper);
   const id = actionWrapper.formId;
 
   const details = document.createElement('details');
@@ -199,9 +194,9 @@ const createControl_imageAsset = (data, actionWrapper) => {
 
       if (w <= MAX_DIMENSION && h <= MAX_DIMENSION && (w * h) <= MAX_AREA) {
 
-        scrawlHandle.importDomImage(`#${assetId}`);
+        scrawl.importDomImage(`#${assetId}`);
 
-        const myAsset = scrawlHandle.findAsset(assetId);
+        const myAsset = scrawl.findAsset(assetId);
 
         if (myAsset != null) {
 
@@ -228,7 +223,7 @@ const createControl_imageAsset = (data, actionWrapper) => {
               dataUrl: reader.result,
             };
 
-            const currentFilter = getWrapper();
+            const currentFilter = getFilterWrapper();
 
             currentFilter.updateDisplayFilter();
             currentFilter.updateHistory();
@@ -301,7 +296,7 @@ const createControl_imageAsset = (data, actionWrapper) => {
 
   el.appendChild(row2);
 
-  const listener = scrawlHandle.addNativeListener('change', (e) => {
+  const listener = scrawl.addNativeListener('change', (e) => {
 
     if (e && e.target) {
 
@@ -340,7 +335,7 @@ const createControl_swirl = (data, actionWrapper) => {
       ]);
     })
 
-    const currentFilter = getWrapper();
+    const currentFilter = getFilterWrapper();
 
     currentFilter.updateDisplayFilter();
     currentFilter.updateHistory();
@@ -398,11 +393,12 @@ const createControl_swirl = (data, actionWrapper) => {
     button.type = 'button';
     button.id = localSwirlDelete;
 
-    listener = scrawlHandle.addNativeListener('click', (e) => {
+    listener = scrawl.addNativeListener('click', (e) => {
 
       if (e) {
 
         e.preventDefault();
+        e.stopPropagation();
 
         swirlData.localKill.forEach(item => item());
         delete swirlObjects[swirlId];
@@ -453,11 +449,12 @@ const createControl_swirl = (data, actionWrapper) => {
     swirlEl.appendChild(row1);
     swirlEl.appendChild(row2);
 
-    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+    listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
       if (e && e.target) {
 
         e.preventDefault();
+        e.stopPropagation();
 
         const target = e.target,
           value = parseFloat(target.value),
@@ -512,11 +509,12 @@ const createControl_swirl = (data, actionWrapper) => {
     swirlEl.appendChild(row1);
     swirlEl.appendChild(row2);
 
-    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+    listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
       if (e && e.target) {
 
         e.preventDefault();
+        e.stopPropagation();
 
         const target = e.target,
           value = parseFloat(target.value),
@@ -571,11 +569,12 @@ const createControl_swirl = (data, actionWrapper) => {
     swirlEl.appendChild(row1);
     swirlEl.appendChild(row2);
 
-    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+    listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
       if (e && e.target) {
 
         e.preventDefault();
+        e.stopPropagation();
 
         const target = e.target,
           value = parseFloat(target.value),
@@ -630,11 +629,12 @@ const createControl_swirl = (data, actionWrapper) => {
     swirlEl.appendChild(row1);
     swirlEl.appendChild(row2);
 
-    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+    listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
       if (e && e.target) {
 
         e.preventDefault();
+        e.stopPropagation();
 
         const target = e.target,
           value = parseFloat(target.value),
@@ -689,11 +689,12 @@ const createControl_swirl = (data, actionWrapper) => {
     swirlEl.appendChild(row1);
     swirlEl.appendChild(row2);
 
-    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+    listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
       if (e && e.target) {
 
         e.preventDefault();
+        e.stopPropagation();
 
         const target = e.target,
           value = parseFloat(target.value);
@@ -741,11 +742,12 @@ const createControl_swirl = (data, actionWrapper) => {
 
     swirlEl.appendChild(easingInput);
 
-    listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+    listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
       if (e && e.target) {
 
         e.preventDefault();
+        e.stopPropagation();
 
         const target = e.target,
           value = target.value;
@@ -790,11 +792,12 @@ const createControl_swirl = (data, actionWrapper) => {
 
   el.appendChild(addSwirlButton);
 
-  const addSwirlButtonListener = scrawlHandle.addNativeListener('click', (e) => {
+  const addSwirlButtonListener = scrawl.addNativeListener('click', (e) => {
 
     if (e) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       buildSwirlPanel(['50%', '50%', 0, '30%', 0, 'linear'], swirlArrays.length);
 
@@ -920,11 +923,12 @@ const createControl_color = (data, actionWrapper) => {
   el.appendChild(row1);
   el.appendChild(row2);
 
-  const colorListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const colorListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const hexValue = colorInput.value;
 
@@ -940,18 +944,19 @@ const createControl_color = (data, actionWrapper) => {
         [data.alternativeFor[2]]: parseInt(blueValue, 10),
       });
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
     }
   }, colorInput);
 
-  const rgbListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const rgbListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const redValue = parseInt(redInput.value, 10),
         greenValue = parseInt(greenInput.value, 10),
@@ -965,7 +970,7 @@ const createControl_color = (data, actionWrapper) => {
         [data.alternativeFor[2]]: blueValue,
       });
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
@@ -1094,11 +1099,12 @@ const createControl_unitColor = (data, actionWrapper) => {
   el.appendChild(row1);
   el.appendChild(row2);
 
-  const colorListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const colorListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const hexValue = colorInput.value;
 
@@ -1118,18 +1124,19 @@ const createControl_unitColor = (data, actionWrapper) => {
         [data.alternativeFor[2]]: blueValue,
       });
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
     }
   }, colorInput);
 
-  const rgbListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const rgbListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const redValue = parseFloat(redInput.value),
         greenValue = parseFloat(greenInput.value),
@@ -1147,7 +1154,7 @@ const createControl_unitColor = (data, actionWrapper) => {
         [data.alternativeFor[2]]: blueValue,
       });
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
@@ -1293,11 +1300,12 @@ const createControl_colorArray = (data, actionWrapper) => {
   el.appendChild(row1);
   el.appendChild(row2);
 
-  const colorListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const colorListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const hexValue = colorInput.value,
         alphaValue = parseInt(alphaInput.value, 10);
@@ -1310,18 +1318,19 @@ const createControl_colorArray = (data, actionWrapper) => {
 
       actionWrapper.set({ [data.key]: [redValue, greenValue, blueValue, alphaValue] });
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
     }
   }, colorInput);
 
-  const rgbListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const rgbListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const redValue = parseInt(redInput.value, 10),
         greenValue = parseInt(greenInput.value, 10),
@@ -1332,18 +1341,19 @@ const createControl_colorArray = (data, actionWrapper) => {
 
       actionWrapper.set({ [data.key]: [redValue, greenValue, blueValue, alphaValue] });
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
     }
   }, [redInput, greenInput, blueInput]);
 
-  const alphaListener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const alphaListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const redValue = parseInt(redInput.value, 10),
         greenValue = parseInt(greenInput.value, 10),
@@ -1352,7 +1362,7 @@ const createControl_colorArray = (data, actionWrapper) => {
 
       actionWrapper.set({ [data.key]: [redValue, greenValue, blueValue, alphaValue] });
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
@@ -1392,17 +1402,18 @@ const createControl_lineText = (data, actionWrapper) => {
   input.value = value;
   el.appendChild(input);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       actionWrapper.set({
         [data.key]: input.value,
       });
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
@@ -1530,11 +1541,12 @@ const createControl_areaAlpha = (data, actionWrapper) => {
 
   el.appendChild(container);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const topLeftVal = parseInt(topLeftInput.value, 10),
         topRightVal = parseInt(topRightInput.value, 10),
@@ -1545,7 +1557,7 @@ const createControl_areaAlpha = (data, actionWrapper) => {
         [data.key]: [topLeftVal, bottomLeftVal, topRightVal, bottomRightVal],
       });
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
@@ -1585,17 +1597,18 @@ const createControl_text = (data, actionWrapper) => {
   input.value = value;
   el.appendChild(input);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       actionWrapper.set({
         [data.key]: input.value,
       });
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
@@ -1673,11 +1686,12 @@ const createControl_matrixWeights = (data, actionWrapper) => {
   message.classList.add('small-field-message');
   el.appendChild(message);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const val = getCorrectedValue(input.value);
 
@@ -1692,7 +1706,7 @@ const createControl_matrixWeights = (data, actionWrapper) => {
       if (actualLength !== requiredLength || !areAllNumbers) el.classList.add('matrix-incorrect-length');
       else el.classList.remove('matrix-incorrect-length');
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
@@ -1781,11 +1795,12 @@ const createControl_colorRanges = (data, actionWrapper) => {
   message.classList.add('small-field-message');
   el.appendChild(message);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const value = getCorrectedValue(e.target.value);
 
@@ -1793,7 +1808,7 @@ const createControl_colorRanges = (data, actionWrapper) => {
         [data.key]: value,
       });
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
@@ -1866,11 +1881,12 @@ const createControl_channelLevels = (data, actionWrapper) => {
   message.classList.add('small-field-message');
   el.appendChild(message);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const value = getCorrectedValue(e.target.value);
 
@@ -1878,7 +1894,7 @@ const createControl_channelLevels = (data, actionWrapper) => {
         [data.key]: value,
       });
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
@@ -1980,20 +1996,21 @@ const createControl_reducePalette = (data, actionWrapper) => {
   paletteButton.classList.add('copy-current-colors');
   el.appendChild(paletteButton);
 
-  const copier = scrawlHandle.addNativeListener('click', async () => {
+  const copier = scrawl.addNativeListener('click', async () => {
 
-    const palette = scrawlHandle.getLastUsedReducePalette();
+    const palette = scrawl.getLastUsedReducePalette();
 
     try { await navigator.clipboard.writeText(palette); }
     catch (error) { console.log(error.message); }
 
   }, paletteButton);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const value = getCorrectedValue(e.target.value);
 
@@ -2001,7 +2018,7 @@ const createControl_reducePalette = (data, actionWrapper) => {
         [data.key]: value,
       });
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
@@ -2052,11 +2069,12 @@ const createControl_boolean = (data, actionWrapper) => {
 
   el.appendChild(input);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const value = (input.value === '1') ? true : false;
 
@@ -2064,7 +2082,7 @@ const createControl_boolean = (data, actionWrapper) => {
         [data.key]: value,
       });
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
@@ -2122,11 +2140,12 @@ const createControl_number = (data, actionWrapper) => {
   el.appendChild(row1);
   el.appendChild(row2);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const target = e.target;
       const value = (data.step < 1) ? parseFloat(target.value) : parseInt(target.value, 10);
@@ -2139,7 +2158,7 @@ const createControl_number = (data, actionWrapper) => {
 
       displayedValue.textContent = `${value}`;
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
@@ -2198,11 +2217,12 @@ const createControl_percentageNumber = (data, actionWrapper) => {
   el.appendChild(row1);
   el.appendChild(row2);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const target = e.target;
 
@@ -2216,7 +2236,7 @@ const createControl_percentageNumber = (data, actionWrapper) => {
 
       displayedValue.textContent = `${value}%`;
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
@@ -2265,11 +2285,12 @@ const createControl_select = (data, actionWrapper) => {
 
   el.appendChild(input);
 
-  const listener = scrawlHandle.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const value = input.value;
 
@@ -2277,7 +2298,7 @@ const createControl_select = (data, actionWrapper) => {
         [data.key]: value,
       });
 
-      const currentFilter = getWrapper();
+      const currentFilter = getFilterWrapper();
 
       currentFilter.updateDisplayFilter();
       currentFilter.updateHistory();
@@ -2778,27 +2799,18 @@ const createControl_gradient = (data, actionWrapper) => {
 
 // Export for initialization 
 // ------------------------------------------------------------------------
-export const initFormBuilder = (
-  scrawl = null,
-  dom = null,
-  getCurrentWrappedFilter = null,
-  actionWrapperLibrary = null,
-) => {
+export const initFormBuilder = (actionWrapperLibrary = null) => {
 
-  if (!scrawl) throw new Error('Scrawl library not passed to initFormBuilder function');
-  if (!dom) throw new Error('DOM mappings not passed to initFormBuilder function');
-  if (!getCurrentWrappedFilter) throw new Error('getCurrentWrappedFilter not passed to initFormBuilder function');
   if (!actionWrapperLibrary) throw new Error('actionWrapperLibrary not passed to initFormBuilder function');
 
-
-  const stack = scrawl.findStack('filter-builder-stack');
+  scrawl = getScrawlHandle();
+  dom = getDomHandle();
+  stack = scrawl.findStack('filter-builder-stack');
 
   // // populate module-level variables
-  scrawlHandle = scrawl;
   filterControlsPanel = dom[DOMID.CONTROLS_PANEL];
   filterBuilderAreaHold = dom[DOMID.BUILDER_HOLD];
   imageAssetsHold = dom[DOMID.ASSETS_HOLD];
-  getWrapper = getCurrentWrappedFilter;
 
   colorFactory = scrawl.makeColor({
     name: 'form-builder-color-factory',

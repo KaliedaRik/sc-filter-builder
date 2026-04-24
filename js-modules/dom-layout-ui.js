@@ -1,13 +1,16 @@
 // ------------------------------------------------------------------------
 // Splitter bar management
 // ------------------------------------------------------------------------
-import { DOMID } from './utilities.js';
+import { DOMID, FLAGS, getScrawlHandle, getDomHandle } from './utilities.js';
 
-export const initSplitter = (scrawl = null, dom = null) => {
+let scrawl, dom;
 
-  if (!scrawl) throw new Error('Scrawl library not passed to initSplitter function');
-  if (!dom) throw new Error('DOM mappings not passed to initSplitter function');
+export const initDomLayout = () => {
 
+  scrawl = getScrawlHandle();
+  dom = getDomHandle();
+
+  // Initialize the splitter bar
   const splitterBar = dom[DOMID.SPLITTER];
 
   if (!splitterBar) throw new Error('Splitter element not found in DOM mappings (initSplitter function)');
@@ -69,5 +72,6 @@ export const initSplitter = (scrawl = null, dom = null) => {
 
   }, window);
 
+  // Return object
   return {};
 };

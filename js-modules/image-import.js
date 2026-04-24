@@ -1,14 +1,13 @@
 // ------------------------------------------------------------------------
 // Image import management
 // ------------------------------------------------------------------------
-
-
-// Imports
 import {
   DOMID,
   ACCEPTED_IMAGE_TYPES,
   MAX_AREA,
   MAX_DIMENSION,
+  getScrawlHandle,
+  getDomHandle,
 } from './utilities.js';
 
 import { 
@@ -19,17 +18,17 @@ import {
 
 
 // General
-let counter = 0;
+let counter = 0,
+  scrawl, dom, canvas,
+  importCell = null,
+  imageImportsHold = null;
 
-export const imageState = {};
-
-let importCell = null,
-  imageImportsHold = null,
-  scrawlHandle = null,
-  domHandles = null;
 
 // Key information: the thumbnail dimensions - 80px square - get set in CSS. If we change those CSS values, they need to change in this file too
 const THUMBNAIL_DIMENSIONS = 80;
+
+
+export const imageState = {};
 
 
 const ingester = [];
@@ -47,7 +46,7 @@ const ingest = () => {
 
       displayDefaultScreen(Object.keys(imageState).length > 0);
 
-      const panel = domHandles[DOMID.IMAGE_DETAILS];
+      const panel = dom[DOMID.IMAGE_DETAILS];
       panel.setAttribute('open', '');
     }
     return;
@@ -74,7 +73,7 @@ const ingest = () => {
       const btn = document.createElement('button');
       btn.setAttribute('data-target', stateId);
 
-      imageState[stateId].clickListener = scrawlHandle.addNativeListener('click', () => {
+      imageState[stateId].clickListener = scrawl.addNativeListener('click', () => {
 
         const oldStateId = getDisplayedImageId();
         prepareImageForDisplay(stateId, imageState[stateId], imageState[oldStateId])
@@ -198,7 +197,7 @@ export const buildImageModalList = () => {
 
   imageRemovalCandidates.length = 0;
 
-  const target = domHandles[DOMID.BATCH_LIST];
+  const target = dom[DOMID.BATCH_LIST];
   const currentImages = Object.keys(imageState);
   const root = new DocumentFragment();
 
@@ -231,7 +230,7 @@ export const buildImageModalList = () => {
   // DOM manipulation requires time to settle
   setTimeout(() => {
 
-    checkboxListeners = scrawlHandle.addNativeListener(
+    checkboxListeners = scrawl.addNativeListener(
       'click',
       (e) => updateCandidatesArray(e),
       '.removal-checkbox',
@@ -257,7 +256,7 @@ export const actionImageModalList = () => {
   });
 
   // Close the modal
-  const modal = domHandles[DOMID.BATCH_MODAL];
+  const modal = dom[DOMID.BATCH_MODAL];
   modal.close();
 
   if (imageRemovalCandidates.includes(getDisplayedImageId())) {
@@ -265,7 +264,7 @@ export const actionImageModalList = () => {
     displayDefaultScreen(!!Object.keys(imageState).length);
 
     // display the image panel, if closed
-    const panel = domHandles[DOMID.IMAGE_DETAILS];
+    const panel = dom[DOMID.IMAGE_DETAILS];
     panel.setAttribute('open', '');
   }
 
@@ -280,23 +279,19 @@ export const closeImageModalList = () => {
     checkboxListeners = null;
   }
 
-  const target = domHandles[DOMID.BATCH_LIST];
+  const target = dom[DOMID.BATCH_LIST];
 
   target.replaceChildren();
 };
 
 
 // Export for initialization
-export const initImageImport = (scrawl = null, dom = null) => {
+export const initImageImport = () => {
 
-  if (!scrawl) throw new Error('Scrawl library not passed to initImageImport function');
-  if (!dom) throw new Error('DOM mappings not passed to initImageImport function');
+  scrawl = getScrawlHandle();
+  dom = getDomHandle();
+  canvas = scrawl.findCanvas('main-canvas');
 
-  const canvas = scrawl.findCanvas('main-canvas');
-
-  // Make scrawl available to module functions
-  scrawlHandle = scrawl;
-  domHandles = dom;
 
   // Capture DOM elements
   const imageImportButton = dom[DOMID.IMAGE_IMPORT_BUTTON],
