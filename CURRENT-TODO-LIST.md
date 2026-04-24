@@ -2,32 +2,44 @@
 The list is evolving and I do not commit to doing anything in the current order
 
 ## Starter filters work and form building
-Status: initial work done
+Status: initial work complete
 
 ### Image preview
-Status: done
+Status: initial work complete
 
 
 ## User-generated filter import, and download, work
-Status: done
+Status: initial work complete
 
 
 ## Image batch-processing and download
-Status: done
+Status: initial work complete
+
+Bug: 
+- We need to do additional work around process-image filter action, and possibly gradients.
+- In preview, process-image pipes through the normal SC workflow, meaning the images are properly pre-processed and added to the filter engine. 
+- For download, we bypass the SC workflow and invoke the filter engine directly. This means process-image actions don't get properly pre-processed. 
+- This needs to be addressed/fixed
 
 
 ## Image preview enhancement
-Status: in progress
+Status: initial work complete
 
-Currently we show a portion of the image in the preview, to which the filter is applied. When moving around the image (via the minimap), or scaling it, this means the filter needs corrections to make what the user sees approximate the effect the filter will have on that area of the image. It also means that filter actions like random noise continue to show single pixel displacements when the user has zoomed in on the image.
+Preview now comes in 2 forms
 
-We can fix this by having two types of image preview:
-- `basic` - which is what we do now.
-- `advanced` - where instead of grabbing a portion of the image for the preview, we grab the whole image and apply the filter to that; then we can move and scale the filtered Picture entity relative to the main canvas viewport.
+- `basic` - only the visible part of the image is filtered
+  - pro: quicker; more immediate user feedback when they update any filter attribute's value
+  - con: for more intense filters, navigation around the image (using the minimap) may become a little more janky, due to having to re-apply the filter whenever the view moves
+  - con: we have to do additional work to manipulate area/position-influenced filters
 
-The advantages of `advanced` is that we can cut out a lot of the view calculations, and the resulting preview will be "final download" accurate. The disadvantages are that the approach will consume a lot more memory, and we have to apply the filter to a potentially very large image - both of which could damage performance.
+- `accurate` - apply the filter to the whole image
+  - pro: only have to update the filter when the filter or image changes; makes navigation around the image, once the filter work completes, very smooth
+  - the image, when viewed, is entirely in line with what the user will see when they process/download images
+  - con: user may experience one-off multi-second page freezes as they update filter attributes, change image, etc
 
-Giving users the ability to toggle between the image preview types will allow them to do the majority of their work in `basic` (the default preview), but then switch to `advanced` for more detailed assessment of the filter results, if required.
+Further work:
+- review all filters and identify any which are affected by filter incorrectness in basic preview, due to affect offsets, filter origin position, etc
+- fix issues where we can; note issues where such a fix is unrealistic for basic view (eg: matrix-based filters; pixel-based displacements such as random-moise, etc)
 
 ## Filter construction
 The last major piece of work will be around user-driven filter construction and experimentation. The Use Case is as follows:
