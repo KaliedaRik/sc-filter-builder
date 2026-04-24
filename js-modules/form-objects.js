@@ -154,6 +154,7 @@ F.updateFilter = function () {
 F.updateDisplayFilter = async function () {
 
   processingLabel.classList.add('is-processing');
+  processingLabel.setAttribute('aria-busy', 'true');
 
   await nextPaint();
 
@@ -223,6 +224,7 @@ F.updateDisplayFilter = async function () {
   }
 
   processingLabel.classList.remove('is-processing');
+  processingLabel.removeAttribute('aria-busy');
 };
 
 
