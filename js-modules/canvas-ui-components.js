@@ -4,11 +4,15 @@
 
 
 // Imports
-import { generateUniqueString, getScrawlHandle } from './utilities.js';
+import {
+  generateUniqueString,
+  getScrawlHandle,
+  getFilterWrapper,
+} from './utilities.js';
 
 
 // Module variables
-let scrawl, getWrapper, monochromeGrayGradient, picture;
+let scrawl, monochromeGrayGradient, picture;
 
 
 // Gradient builder canvas UI
@@ -203,6 +207,7 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
       if (e && e.target) {
 
         e.preventDefault();
+        e.stopPropagation();
         gradientState.colorSpace = e.target.value;
         updateGradient();
       }
@@ -213,6 +218,7 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
       if (e && e.target) {
 
         e.preventDefault();
+        e.stopPropagation();
         gradientState.precision = parseInt(e.target.value, 10);
         updateGradient();
       }
@@ -223,6 +229,7 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
       if (e && e.target) {
 
         e.preventDefault();
+        e.stopPropagation();
         gradientState.easing = e.target.value;
         updateGradient();
       }
@@ -292,6 +299,7 @@ export const buildGradientComponent = (actionWrapper, canvas, colorFactory) => {
       if (e && e.target) {
 
         e.preventDefault();
+        e.stopPropagation();
 
         const stopId = generateUniqueString(),
           stopData = {};
@@ -632,6 +640,7 @@ const createControl_colorStop = (wrapper, data, factory, update, kill) => {
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const hexValue = colorInput.value;
 
@@ -659,6 +668,7 @@ const createControl_colorStop = (wrapper, data, factory, update, kill) => {
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const red = parseInt(redInput.value, 10),
         green = parseInt(greenInput.value, 10),
@@ -686,6 +696,7 @@ const createControl_colorStop = (wrapper, data, factory, update, kill) => {
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const index = parseInt(stopInput.value, 10);
       const startX = `${((index / 10) * 0.9) + 5}%`;
@@ -704,6 +715,7 @@ const createControl_colorStop = (wrapper, data, factory, update, kill) => {
     if (e && e.target) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       data.colorListener();
       data.rgbaListener();
@@ -962,7 +974,10 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
 
   const channelSelector = scrawl.addNativeListener('change', (e) => {
 
-    if (e) e.preventDefault();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
 
     currentChannel = selector.value;
 
@@ -1035,6 +1050,7 @@ export const buildColorCurveComponent = (actionWrapper, canvas) => {
     if (e && e.target && e.target.id.indexOf(id) > 0) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const input = e.target,
         name = e.target.id;
@@ -1237,7 +1253,7 @@ const recalculateColorWeights = function (actionWrapper, weights) {
       weights: [...weights],
     });
 
-    const currentFilter = getWrapper();
+    const currentFilter = getFilterWrapper();
 
     currentFilter.updateDisplayFilter();
     currentFilter.updateHistory();
@@ -1483,7 +1499,10 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
   // Form event listeners 
   const channelSelector = scrawl.addNativeListener('change', (e) => {
 
-    if (e) e.preventDefault();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
 
     currentChannel = selector.value;
 
@@ -1534,6 +1553,7 @@ export const buildToneCurveComponent = (actionWrapper, canvas) => {
     if (e && e.target && e.target.id.indexOf(id) > 0) {
 
       e.preventDefault();
+      e.stopPropagation();
 
       const input = e.target,
         name = e.target.id;
@@ -1745,7 +1765,7 @@ const recalculateToneCurves = function (actionWrapper) {
 
     actionWrapper.set({ curves: curvesForFilter });
 
-    const currentFilter = getWrapper();
+    const currentFilter = getFilterWrapper();
 
     currentFilter.updateDisplayFilter();
     currentFilter.updateHistory();
@@ -1755,15 +1775,12 @@ const recalculateToneCurves = function (actionWrapper) {
 
 // Export for initialization 
 // ------------------------------------------------------------------------
-export const initCanvasComponents = ( getCurrentWrappedFilter = null ) => {
-
-  if (!getCurrentWrappedFilter) throw new Error('getCurrentWrappedFilter not passed to initCurveComponents function');
-
+export const initCanvasComponents = () => {
 
   // Initialise module level variables
   scrawl = getScrawlHandle();
-  getWrapper = getCurrentWrappedFilter;
 
+  // Additional work for gradients
   monochromeGrayGradient = scrawl.makeGradient({
 
     name: 'monochrome-gray-gradient',
@@ -1777,6 +1794,8 @@ export const initCanvasComponents = ( getCurrentWrappedFilter = null ) => {
 
   // We need access to the Picture entity to get around SC aggressive caching
   // - While filter changes get picked up and actioned, gradient changes are not so lucky
+
+  // TODO: TEST + FIX - live view no longer a thing!!!!!
   picture = scrawl.findEntity('live-view');
 
 

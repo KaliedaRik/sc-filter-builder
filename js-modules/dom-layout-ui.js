@@ -72,22 +72,6 @@ export const initDomLayout = () => {
 
   }, window);
 
-
-  // Image preview selector
-  scrawl.addNativeListener('change', (e) => {
-
-    if (e) e.preventDefault();
-
-    const target = dom[DOMID.PREVIEW_SELECT],
-      value = target.value;
-
-    FLAGS.isBasicPreview = value === 'basic';
-
-    console.log(FLAGS.isBasicPreview);
-
-  }, dom[DOMID.PREVIEW_SELECT]);
-
-
   // Return object
   return {};
 };

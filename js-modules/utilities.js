@@ -70,6 +70,7 @@ export const DOMID = {
   PREVIEW_WARNING: 'preview-warning',
   PREVIEW_WARNING_CSS: 'warning-is-active',
   PREVIEW_SELECT: 'preview-select',
+  PROCESSING_LABEL: 'processing-label',
 
   // Capture handles for the downloads modal
   DOWNLOAD_BUTTON: 'downloads-modal-button',
@@ -105,6 +106,8 @@ export const DOMID = {
 };
 
 export const MODIFIED_FILTER_CSS = 'filter-has-been-modified';
+export const BASIC_PREVIEW = 'basic-preview';
+export const ACCURATE_PREVIEW = 'accurate-preview';
 
 export const FLAGS = {
   dirtyFilter: true,
@@ -130,3 +133,6 @@ let domHandle = null;
 export const setDomHandle = (handle) => domHandle = handle;
 export const getDomHandle = () => domHandle;
 
+let filterWrapper = null;
+export const setFilterWrapper = (item) => filterWrapper = item;
+export const getFilterWrapper = () => filterWrapper;

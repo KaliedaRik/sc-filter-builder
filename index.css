@@ -499,6 +499,15 @@ main {
       }
     }
 
+    & #processing-label {
+
+      opacity: 0.2;
+
+      &.is-processing {
+
+        opacity: 0.8;
+      }
+    }
   }
 
   & details {

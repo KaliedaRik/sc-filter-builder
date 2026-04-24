@@ -5,6 +5,7 @@ import {
   DOMID,
   FLAGS,
   MODIFIED_FILTER_CSS,
+  getFilterWrapper,
   setScrawlHandle,
   setDomHandle,
 } from './js-modules/utilities.js';
@@ -67,6 +68,7 @@ const dom = scrawl.initializeDomInputs([
   ['by-id', DOMID.FILTER_IMPORT],
   ['by-id', DOMID.PREVIEW_WARNING],
   ['select', DOMID.PREVIEW_SELECT, 0],
+  ['by-id', DOMID.PROCESSING_LABEL],
 
   // Capture handles for the downloads modal
   ['button', DOMID.DOWNLOAD_BUTTON, 'Downloads'],
@@ -107,11 +109,11 @@ initModalManagement();
 initImageImport();
 
 const { displayDefaultScreen, checkLiveView } = initImageDisplay();
-const { getCurrentWrappedFilter, actionWrapperLibrary } = initFormObjects();
+const { actionWrapperLibrary } = initFormObjects();
 
-initCanvasComponents(getCurrentWrappedFilter);
-initFormBuilder(getCurrentWrappedFilter, actionWrapperLibrary);
-initImageDownload(getCurrentWrappedFilter);
+initCanvasComponents();
+initFormBuilder(actionWrapperLibrary);
+initImageDownload();
 
 const { checkIfFilterHasChanged } = initFilterBuilder();
 
@@ -152,7 +154,7 @@ const commence = () => {
 
     FLAGS.dirtyFilter = false;
 
-    const filter = getCurrentWrappedFilter();
+    const filter = getFilterWrapper();
     filter.updateDisplayFilter();
   }
 };

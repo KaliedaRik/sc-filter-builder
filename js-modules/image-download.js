@@ -1,13 +1,20 @@
 // ------------------------------------------------------------------------
 // Image processing and download management
 // ------------------------------------------------------------------------
-import { generateFileDate, DOMID, getScrawlHandle, getDomHandle } from './utilities.js';
+import {
+  generateFileDate,
+  DOMID,
+  getFilterWrapper,
+  getScrawlHandle,
+  getDomHandle,
+} from './utilities.js';
+
 import { downloadZip } from '../js-libraries/client-zip.js';
 import { imageState } from './image-import.js';
 
 
 // Modal level variables
-let scrawl, dom, canvas, downloadCell, downloadsList, downloadButton, getFilter;
+let scrawl, dom, canvas, downloadCell, downloadsList, downloadButton;
 
 const exportSupport = {
   png: false,
@@ -69,7 +76,7 @@ const processImages = async () => {
   const list = [],
     zipItems = [];
 
-  const filterWrapper = getFilter();
+  const filterWrapper = getFilterWrapper();
 
   while (downloadsList.firstChild) {
     downloadsList.removeChild(downloadsList.firstChild);
@@ -243,13 +250,10 @@ const processImage = async (item, filter, zipItems) => {
 
 
 // Export for initialization
-export const initImageDownload = (filterGetter = null) => {
-
-  if (!filterGetter) throw new Error('getFilterWrapper function not passed to initImageDownload function');
+export const initImageDownload = () => {
 
   scrawl = getScrawlHandle();
   dom = getDomHandle();
-  getFilter = filterGetter;
   canvas = scrawl.findCanvas('main-canvas');
 
   downloadCell = canvas.buildCell({

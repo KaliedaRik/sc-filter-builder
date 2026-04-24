@@ -4,7 +4,16 @@
 
 
 // Imports
-import { DOMID, FLAGS, VIEW, getScrawlHandle, getDomHandle } from './utilities.js';
+import { 
+  DOMID,
+  FLAGS,
+  VIEW,
+  BASIC_PREVIEW,
+  ACCURATE_PREVIEW,
+  getFilterWrapper,
+  getScrawlHandle,
+  getDomHandle,
+} from './utilities.js';
 
 
 // Local handles to SC and DOM
@@ -16,9 +25,8 @@ let currentlyDisplaying = '';
 
 export const getDisplayedImageId = () => currentlyDisplaying;
 
-let noImagesMessage = null,
-  haveImagesMessage = null,
-  basicView = null;
+let noImagesMessage, haveImagesMessage,
+  basicView, accurateCell, accuratePicture, accurateView;
 
 // Canvas dimensions
 let currentDisplayWidth = 1,
@@ -158,6 +166,7 @@ const applyLiveViewDimensions = () => {
   const [destW, destH] = calculateLiveViewDimensions();
 
   basicView.set({ dimensions: [destW, destH] });
+  accurateView.set({ dimensions: [destW, destH] });
 };
 
 // Numeric (pixel) destination dimensions for the liveView Picture on the canvas
@@ -201,6 +210,11 @@ const applyView = () => {
     copyDimensions: [VIEW.width, VIEW.height],
   });
 
+  accurateView.set({
+    copyStart: [VIEW.x, VIEW.y],
+    copyDimensions: [VIEW.width, VIEW.height],
+  });
+
   // Minimap frame should only show when the view is cropping the image
   const [destWpx, destHpx] = calculateLiveViewDestinationPixels();
   
@@ -233,7 +247,9 @@ const applyView = () => {
 
   if (!minimapFrameDragZone) createMinimapFrameDragZone();
 
-  FLAGS.dirtyFilter = true;
+  // basic preview needs to re-render each time its frame moves
+  // accurate preview needs to re-render only when the filter changes
+  if (FLAGS.isBasicPreview) FLAGS.dirtyFilter = true;
 };
 
 // Export function to display an image
@@ -250,6 +266,7 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
   if (oldState) {
 
     basicView.set({ asset: '' });
+    accuratePicture.set({ asset: '' });
     minimapPicture.set({ asset: ''});
 
     if (oldState.largeAsset) {
@@ -287,6 +304,8 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
   VIEW.assetWidth = width;
   VIEW.assetHeight = height;
 
+  accurateCell.set({ dimensions: [width, height] });
+
   applyLiveViewDimensions();
   centerView();
 
@@ -311,6 +330,12 @@ export const prepareImageForDisplay = (selectedKey, state, oldState) => {
     state.largeBitmap = bitmap;
 
     basicView.set({ asset: importedName });
+
+    accuratePicture.set({ asset: importedName });
+    accurateCell.clear();
+    accurateCell.compile();
+
+    FLAGS.dirtyFilter = true;
 
     applyView();
     removeDefaultScreen();
@@ -394,6 +419,7 @@ export const displayDefaultScreen = (imagesAvailable = false) => {
   currentlyDisplaying = '';
 
   basicView.set({ visibility: false });
+  accurateView.set({ visibility: false });
   minimapCell.set({ shown: false });
 
   if (imagesAvailable) {
@@ -413,7 +439,11 @@ const removeDefaultScreen = () => {
   noImagesMessage.set({ visibility: false });
   haveImagesMessage.set({ visibility: false });
 
-  basicView.set({ visibility: true });
+  const isBasicPreview = FLAGS.isBasicPreview;
+
+  basicView.set({ visibility: (isBasicPreview) ? true : false });
+  accurateView.set({ visibility: (isBasicPreview) ? false : true });
+
   minimapCell.set({ shown: true });
 };
 
@@ -498,16 +528,58 @@ export const initImageDisplay = () => {
 
   scrawl.addNativeListener('change', (e) => {
 
-    e.preventDefault();
+    if (e && e.target) {
 
+      e.preventDefault();
+      e.stopPropagation();
 
-  })
+      // The selector gives us 'basic' and 'accurate', but `FLAGS.isBasicPreview` is boolean with true == 'basic'
+      const currentValue = FLAGS.isBasicPreview ? 'basic' : 'accurate',
+        value = e.target.value;
+
+      if (currentValue !== value) {
+
+        const newValue = value === 'basic';
+
+        if (newValue) {
+
+          basicView.set({ visibility: true });
+          accurateView.set({ visibility: false });
+        }
+        else {
+
+          basicView.set({ visibility: false });
+          accurateView.set({ visibility: true });
+
+          accurateCell.clear();
+          accurateCell.compile();
+        }
+
+        FLAGS.isBasicPreview = newValue;
+
+        applyView();
+
+        const currentFilter = getFilterWrapper();
+
+        if (currentFilter) {
+
+          currentFilter.updateDisplayFilter();
+
+          if (!newValue) {
+
+            accurateCell.clear();
+            accurateCell.compile();
+          }
+        }
+      }
+    }
+  }, dom[DOMID.PREVIEW_SELECT]);
 
 
   // Setup for image preview = 'basic'
   basicView = scrawl.makePicture({
 
-    name: 'live-view',
+    name: BASIC_PREVIEW,
     dimensions: ['100%', '100%'],
 
     start: ['center', 'center'],
@@ -516,9 +588,45 @@ export const initImageDisplay = () => {
     copyStart: [1, 1],
     copyDimensions: [1, 1],
 
-    // We'll be building and applying the filter dynamically
     filters: [],
     memoizeFilterOutput: true,
+
+    imageSmoothingEnabled: false,
+    visibility: true,
+  });
+
+
+  // Setup for image preview = 'accurate'
+  accurateCell = canvas.buildCell({
+
+    name: `${ACCURATE_PREVIEW}-cell`,
+    dimensions: [1, 1],
+
+    cleared: false,
+    compiled: false,
+    shown: false,
+  });
+
+  accuratePicture = scrawl.makePicture({
+
+    name: ACCURATE_PREVIEW,
+    group: accurateCell,
+    dimensions: ['100%', '100%'],
+    copyDimensions: ['100%', '100%'],
+    filters: [],
+  });
+
+  accurateView = scrawl.makePicture({
+
+    name: `${ACCURATE_PREVIEW}-filtered-picture`,
+    asset: accurateCell,
+
+    start: ['center', 'center'],
+    handle: ['center', 'center'],
+    dimensions: ['100%', '100%'],
+
+    copyDimensions: [1, 1],
+    copyStart: [0, 0],
 
     imageSmoothingEnabled: false,
     visibility: false,
@@ -530,7 +638,7 @@ export const initImageDisplay = () => {
 
     // Only respond to the scale input itself
     const el = e?.target;
-    if (!el || el.id !== 'image-scale') return;
+    if (!el || el.id !== DOMID.PREVIEW_SCALE) return;
 
     VIEW.currentScale = parseFloat(el.value) || 1;
 
@@ -595,6 +703,7 @@ export const initImageDisplay = () => {
     method: 'fillThenDraw',
     globalAlpha: 0.8,
   });
+
 
   // Event listeners
   scrawl.makeDragZone({

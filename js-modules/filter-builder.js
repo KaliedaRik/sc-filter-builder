@@ -80,6 +80,8 @@ const load = (packet, data) => {
       else if (p.includes(ASSET_IDENTIFIER)) {}
       else canvas.actionPacket(p);
     });
+
+    FLAGS.dirtyFilter = true;
   }
 };
 
@@ -397,6 +399,7 @@ export const initFilterBuilder = () => {
   scrawl.addNativeListener('change', async (e) => {
 
     e.preventDefault();
+    e.stopPropagation();
 
     for (const file of filterImport.files) {
 
