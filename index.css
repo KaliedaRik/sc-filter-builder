@@ -678,6 +678,21 @@ main {
           }
         }
 
+        & .image-asset-presentation {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          grid-column-gap: 2px;
+          justify-content: start;
+          align-items: center;
+
+          & select {
+            width: calc(100% - 0.25rem);
+            margin: 0.5rem 0 0;
+            padding: 0.125rem 0.5rem;
+            border-radius: 5px;
+          }
+        }
+
         /* filter-schema.js - controlType: 'select' */
         & .action-control-inputs-for-select {
           display: grid;

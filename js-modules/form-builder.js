@@ -159,6 +159,7 @@ const createControl = (data, actionWrapper) => {
     case 'bespoke-map-to-gradient': return createControl_gradient(data, actionWrapper);
     case 'bespoke-swirl': return createControl_swirl(data, actionWrapper);
     case 'bespoke-file-loader': return createControl_imageAsset(data, actionWrapper);
+    case 'bespoke-process-asset-presentation': return createControl_assetPresentation(data, actionWrapper);
     default:
       const el = document.createElement('div');
       el.textContent = `No function for ${actionWrapper.formId} - ${data.label}`;
@@ -311,6 +312,216 @@ const createControl_imageAsset = (data, actionWrapper) => {
   }, input);
 
   killList.push(listener);
+
+  return el;
+};
+
+const createControl_assetPresentation = (data, actionWrapper) => {
+
+  const updateIdentifier = () => {
+
+    const a = actionWrapper.action,
+      libraryAsset = scrawl.library.asset,
+      asset = libraryAsset[a.asset];
+
+    console.log(a);
+
+    let identifier;
+
+    if (!asset || !asset.name) identifier = '';
+
+    else identifier = `user-image_${asset.name}_${a.copyStartX}_${a.copyStartY}_${a.copyWidth}_${a.copyHeight}_${a.scale}_${a.fit}_${a.backgroundColor}_${a.smoothing}`;
+
+    a.identifier = identifier;
+  };
+
+  // Main function
+  const {formId, killList } = actionWrapper;
+
+  const localId = `${formId}_${data.key}`;
+
+  let opt, label;
+
+  const el = document.createElement('div');
+  el.classList.add('image-asset-presentation');
+  el.dataset.localId = localId;
+
+  const localId_smoothing = `${localId}_smoothing`;
+
+  label = document.createElement('label');
+  label.textContent = 'Smoothing';
+  label.setAttribute('for', localId_smoothing);
+  el.appendChild(label);
+
+  const smoothingInput = document.createElement('select');
+  smoothingInput.id = localId_smoothing;
+  smoothingInput.name = localId_smoothing;
+
+  opt = document.createElement('option');
+  opt.value = '0';
+  opt.textContent = 'False';
+  smoothingInput.appendChild(opt);
+
+  opt = document.createElement('option');
+  opt.value = '1';
+  opt.textContent = 'True';
+  smoothingInput.appendChild(opt);
+
+  let smoothingValue = actionWrapper.action['smoothing'];
+  if (smoothingValue == null) smoothingValue = data.default;
+  smoothingValue = (smoothingValue) ? '1' : '0';
+
+  smoothingInput.options.selectedIndex = smoothingValue;
+
+  el.appendChild(smoothingInput);
+
+  const smoothingListener = scrawl.addNativeListener('change', (e) => {
+
+    if (e && e.target) {
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      const value = (smoothingInput.value === '1') ? true : false;
+
+      actionWrapper.set({
+        smoothing: value,
+      });
+
+      updateIdentifier();
+
+      const currentFilter = getFilterWrapper();
+
+      currentFilter.updateDisplayFilter();
+      currentFilter.updateHistory();
+    }
+  }, smoothingInput);
+
+  killList.push(smoothingListener);
+
+  const localId_background = `${localId}_background`;
+
+  label = document.createElement('label');
+  label.textContent = 'Background color';
+  label.setAttribute('for', localId_background);
+  el.appendChild(label);
+
+  const backgroundInput = document.createElement('select');
+  backgroundInput.id = localId_background;
+  backgroundInput.name = localId_background;
+
+  opt = document.createElement('option');
+  opt.value = 'rgb(0 0 0 / 0)';
+  opt.textContent = 'Transparent';
+  backgroundInput.appendChild(opt);
+
+  opt = document.createElement('option');
+  opt.value = 'rgb(127 127 127 / 1)';
+  opt.textContent = 'Gray';
+  backgroundInput.appendChild(opt);
+
+  backgroundInput.value = actionWrapper.action['backgroundColor'];
+
+  el.appendChild(backgroundInput);
+
+  const backgroundListener = scrawl.addNativeListener('change', (e) => {
+
+    if (e && e.target) {
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      actionWrapper.set({
+        backgroundColor: backgroundInput.value,
+      });
+
+      updateIdentifier();
+
+      const currentFilter = getFilterWrapper();
+
+      currentFilter.updateDisplayFilter();
+      currentFilter.updateHistory();
+    }
+  }, backgroundInput);
+
+  killList.push(backgroundListener);
+
+  const localId_fit = `${localId}_fit`;
+
+  label = document.createElement('label');
+  label.textContent = 'Image fit';
+  label.setAttribute('for', localId_fit);
+  el.appendChild(label);
+
+  const fitInput = document.createElement('select');
+  fitInput.id = localId_fit;
+  fitInput.name = localId_fit;
+
+  opt = document.createElement('option');
+  opt.value = 'none';
+  opt.textContent = 'None';
+  fitInput.appendChild(opt);
+
+  opt = document.createElement('option');
+  opt.value = 'contain';
+  opt.textContent = 'Contain';
+  fitInput.appendChild(opt);
+
+  opt = document.createElement('option');
+  opt.value = 'cover';
+  opt.textContent = 'Cover';
+  fitInput.appendChild(opt);
+
+  opt = document.createElement('option');
+  opt.value = 'stretch';
+  opt.textContent = 'Stretch';
+  fitInput.appendChild(opt);
+
+  fitInput.value = actionWrapper.action['fit'];
+
+  el.appendChild(fitInput);
+
+  const fitListener = scrawl.addNativeListener('change', (e) => {
+
+    if (e && e.target) {
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      actionWrapper.set({
+        fit: fitInput.value,
+      });
+
+      updateIdentifier();
+
+      const currentFilter = getFilterWrapper();
+
+      currentFilter.updateDisplayFilter();
+      currentFilter.updateHistory();
+    }
+  }, fitInput);
+
+  killList.push(fitListener);
+
+  const regionScaleListener = scrawl.addNativeListener(['change', 'input'], (e) => {
+
+    if (e) {
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      setTimeout(() => {
+
+        updateIdentifier();
+
+        const currentFilter = getFilterWrapper();
+        currentFilter.updateDisplayFilter();
+
+      }, 50);
+    }
+  }, `#${localId} .process-image-connected-inputs`);
+
+  killList.push(regionScaleListener);
 
   return el;
 };
@@ -2135,6 +2346,7 @@ const createControl_number = (data, actionWrapper) => {
   rangeInput.max = `${data.maxValue}`;
   rangeInput.step = `${data.step}`;
   rangeInput.value = `${value}`;
+  if (data.connectingClass) rangeInput.classList.add(data.connectingClass);
   row2.appendChild(rangeInput);
 
   el.appendChild(row1);
@@ -2212,6 +2424,7 @@ const createControl_percentageNumber = (data, actionWrapper) => {
   rangeInput.max = `${data.maxValue}`;
   rangeInput.step = `${data.step}`;
   rangeInput.value = `${value}`;
+  if (data.connectingClass) rangeInput.classList.add(data.connectingClass);
   row2.appendChild(rangeInput);
 
   el.appendChild(row1);

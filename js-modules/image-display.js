@@ -614,6 +614,7 @@ export const initImageDisplay = () => {
     dimensions: ['100%', '100%'],
     copyDimensions: ['100%', '100%'],
     filters: [],
+    memoizeFilterOutput: true,
   });
 
   accurateView = scrawl.makePicture({

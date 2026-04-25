@@ -183,6 +183,22 @@ const processImage = async (item, filter, zipItems) => {
 
   const bitmap = await createImageBitmap(file);
 
+  // Pre-processing for the `process-image` filter action
+  // const actions = [...filter.actions];
+  // console.log('processImage - actions', actions);
+
+  // actions.forEach(item => {
+
+  //   switch (item.action) {
+
+  //     case 'process-image': {
+
+  //       console.log('processImage - process-image', item);
+  //       break;
+  //     }
+  //   }
+  // });
+
   try {
 
     element.width = width;
@@ -192,6 +208,8 @@ const processImage = async (item, filter, zipItems) => {
     engine.drawImage(bitmap, 0, 0, width, height);
 
     const imageData = engine.getImageData(0, 0, width, height);
+
+    downloadCell.preprocessFilters(filter, width, height);
 
     const modifiedImageData = scrawl.filterEngine.action({
       filters: [filter],

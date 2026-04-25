@@ -1820,6 +1820,7 @@ const actionSchemas = {
         step: 0.05,
         label: 'Copy width',
         description: '',
+        connectingClass: 'process-image-connected-inputs'
       },
       copyHeight: {
         controlType: 'percentage-number',
@@ -1830,6 +1831,7 @@ const actionSchemas = {
         step: 0.05,
         label: 'Copy height',
         description: '',
+        connectingClass: 'process-image-connected-inputs'
       },
       copyStartX: {
         controlType: 'percentage-number',
@@ -1838,8 +1840,9 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 99.95,
         step: 0.05,
-        label: 'Copy horizontal start',
+        label: 'Copy X start',
         description: '',
+        connectingClass: 'process-image-connected-inputs'
       },
       copyStartY: {
         controlType: 'percentage-number',
@@ -1848,16 +1851,9 @@ const actionSchemas = {
         minValue: 0,
         maxValue: 99.95,
         step: 0.05,
-        label: 'Copy vertical start',
+        label: 'Copy Y start',
         description: '',
-      },
-      fit: {
-        controlType: 'select',
-        default: 'none',
-        key: 'fit',
-        options: ['none', 'contain', 'cover', 'stretch'],
-        label: 'Image fit',
-        description: '',
+        connectingClass: 'process-image-connected-inputs'
       },
       scale: {
         controlType: 'number',
@@ -1866,23 +1862,9 @@ const actionSchemas = {
         minValue: 0.1,
         maxValue: 10,
         step: 0.1,
-        label: 'Image scale',
+        label: 'Copy scale',
         description: '',
-      },
-      smoothing: {
-        controlType: 'boolean',
-        default: false,
-        key: 'smoothing',
-        label: 'Image smoothing',
-        description: '',
-      },
-      backgroundColor: {
-        controlType: 'select',
-        default: 'rgb(0 0 0 / 0)',
-        key: 'backgroundColor',
-        options: ['rgb(0 0 0 / 0)', 'rgb(127 127 127 / 1)'],
-        label: 'Background color',
-        description: '',
+        connectingClass: 'process-image-connected-inputs'
       },
     },
   },
@@ -3229,17 +3211,13 @@ F.presentation = [{
     openOnLoad: true,
     inputs: ['lineIn', 'lineMix', 'lineOut'],
   },{
-    header: 'Horizontal controls',
-    openOnLoad: false,
-    inputs: ['channelX', 'offsetX', 'strengthX'],
+    header: 'Offset and strength',
+    openOnLoad: true,
+    inputs: ['offsetX', 'offsetY', 'strengthX', 'strengthY'],
   },{
-    header: 'Vertical controls',
+    header: 'Channels and flags',
     openOnLoad: false,
-    inputs: ['channelY', 'offsetY', 'strengthY'],
-  },{
-    header: 'Flags',
-    openOnLoad: false,
-    inputs: ['transparentEdges', 'useInputAsMask'],
+    inputs: ['channelX', 'channelY', 'transparentEdges', 'useInputAsMask'],
   },{
     header: 'Impact',
     openOnLoad: true,
@@ -3382,18 +3360,25 @@ F.controls.import = {
   label: 'Current asset',
   description: '',
 };
+F.controls.assetPresentation = {
+  controlType: 'bespoke-process-asset-presentation',
+  default: '',
+  key: 'assetPresentation',
+  label: 'Asset presentation',
+  description: '',
+};
 F.presentation = [{
     header: 'Connections',
     openOnLoad: true,
     inputs: ['import', 'lineOut'],
   },{
-    header: 'Copy area',
+    header: 'Asset region and scale',
     openOnLoad: false,
-    inputs: ['copyStartX', 'copyStartY', 'copyWidth', 'copyHeight'],
+    inputs: ['copyStartX', 'copyStartY', 'copyWidth', 'copyHeight', 'scale'],
   },{
-    header: 'Copy display',
-    openOnLoad: false,
-    inputs: ['fit', 'scale', 'smoothing', 'backgroundColor'],
+    header: 'Asset presentation',
+    openOnLoad: true,
+    inputs: ['assetPresentation'],
 }];
 
 // invert
@@ -3764,64 +3749,6 @@ F.presentation = [...defaultPresentation];
 // - swirl arrays then get pushed into the `swirls` attribute
 // - Might be easier to just feed the arguments into the `makeFilter({method: 'swirl'}) function and extract what we need`
 F = filterSchemas.swirl = structuredClone(actionSchemas['swirl']);
-// F.controls.startX = {
-//   controlType: 'percentage-number',
-//   default: '50',
-//   key: 'startX',
-//   minValue: '-20',
-//   maxValue: '120',
-//   step: 0.001,
-//   label: 'Horizontal start',
-//   description: '',
-// };
-// F.controls.startY = {
-//   controlType: 'percentage-number',
-//   default: '50',
-//   key: 'startY',
-//   minValue: '-20',
-//   maxValue: '120',
-//   step: 1,
-//   label: 'Vertical start',
-//   description: '',
-// };
-// F.controls.innerRadius = {
-//   controlType: 'percentage-number',
-//   default: '0',
-//   key: 'innerRadius',
-//   minValue: '0',
-//   maxValue: '120',
-//   step: 1,
-//   label: 'Inner radius',
-//   description: '',
-// };
-// F.controls.outerRadius = {
-//   controlType: 'percentage-number',
-//   default: '30',
-//   key: 'outerRadius',
-//   minValue: '0',
-//   maxValue: '120',
-//   step: 1,
-//   label: 'Outer radius',
-//   description: '',
-// };
-// F.controls.angle = {
-//   controlType: 'number',
-//   default: 0,
-//   key: 'angle',
-//   minValue: 0,
-//   maxValue: 360,
-//   step: 0.1,
-//   label: 'Angle',
-//   description: '',
-// };
-// F.controls.easing = {
-//   controlType: 'select',
-//   default: 'linear',
-//   key: 'easing',
-//   options: ['linear', 'easeOut', 'easeOutIn', 'easeInOut', 'easeIn'],
-//   label: 'Easing',
-//   description: '',
-// };
 F.presentation = [{
     header: 'Connections',
     openOnLoad: false,
