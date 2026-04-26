@@ -1861,8 +1861,48 @@ const actionSchemas = {
         key: 'scale',
         minValue: 0.1,
         maxValue: 10,
-        step: 0.1,
-        label: 'Copy scale',
+        step: 0.01,
+        label: 'Paste scale',
+        description: '',
+        connectingClass: 'process-image-connected-inputs'
+      },
+      offsetX: {
+        controlType: 'percentage-number',
+        default: 0,
+        key: 'offsetX',
+        minValue: -100,
+        maxValue: 100,
+        step: 0.05,
+        label: 'Paste offset X',
+        description: '',
+        connectingClass: 'process-image-connected-inputs'
+      },
+      offsetY: {
+        controlType: 'percentage-number',
+        default: 0,
+        key: 'offsetY',
+        minValue: -100,
+        maxValue: 100,
+        step: 0.05,
+        label: 'Paste offset Y',
+        description: '',
+        connectingClass: 'process-image-connected-inputs'
+      },
+      positionX: {
+        controlType: 'select',
+        default: 'center',
+        key: 'positionX',
+        options: ['left', 'center', 'right'],
+        label: 'Paste position X',
+        description: '',
+        connectingClass: 'process-image-connected-inputs'
+      },
+      positionY: {
+        controlType: 'select',
+        default: 'center',
+        key: 'positionY',
+        options: ['top', 'center', 'bottom'],
+        label: 'Paste position Y',
         description: '',
         connectingClass: 'process-image-connected-inputs'
       },
@@ -3372,9 +3412,13 @@ F.presentation = [{
     openOnLoad: true,
     inputs: ['import', 'lineOut'],
   },{
-    header: 'Asset region and scale',
+    header: 'Copy region',
     openOnLoad: false,
-    inputs: ['copyStartX', 'copyStartY', 'copyWidth', 'copyHeight', 'scale'],
+    inputs: ['copyStartX', 'copyStartY', 'copyWidth', 'copyHeight'],
+  },{
+    header: 'Paste position and scale',
+    openOnLoad: false,
+    inputs: ['positionX', 'positionY', 'offsetX', 'offsetY', 'scale'],
   },{
     header: 'Asset presentation',
     openOnLoad: true,

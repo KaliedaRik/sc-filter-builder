@@ -324,13 +324,11 @@ const createControl_assetPresentation = (data, actionWrapper) => {
       libraryAsset = scrawl.library.asset,
       asset = libraryAsset[a.asset];
 
-    console.log(a);
-
     let identifier;
 
     if (!asset || !asset.name) identifier = '';
 
-    else identifier = `user-image_${asset.name}_${a.copyStartX}_${a.copyStartY}_${a.copyWidth}_${a.copyHeight}_${a.scale}_${a.fit}_${a.backgroundColor}_${a.smoothing}`;
+    else identifier = `user-image_${asset.name}_${a.copyStartX}_${a.copyStartY}_${a.copyWidth}_${a.copyHeight}_${a.scale}_${a.fit}_${a.backgroundColor}_${a.smoothing}_${a.positionX}_${a.positionY}_${a.offsetX}_${a.offsetY}`;
 
     a.identifier = identifier;
   };
@@ -503,25 +501,26 @@ const createControl_assetPresentation = (data, actionWrapper) => {
 
   killList.push(fitListener);
 
-  const regionScaleListener = scrawl.addNativeListener(['change', 'input'], (e) => {
+  // This connecting listener has to wait for all the other form elements to be added to the DOM before it can successfully run
+  setTimeout(() => {
 
-    if (e) {
+    const regionScaleListener = scrawl.addNativeListener(['change', 'input'], (e) => {
 
-      e.preventDefault();
-      e.stopPropagation();
+      if (e) {
 
-      setTimeout(() => {
+        e.preventDefault();
+        e.stopPropagation();
 
         updateIdentifier();
 
         const currentFilter = getFilterWrapper();
         currentFilter.updateDisplayFilter();
+      }
+    }, `#${formId} .process-image-connected-inputs`);
 
-      }, 50);
-    }
-  }, `#${localId} .process-image-connected-inputs`);
+    killList.push(regionScaleListener);
 
-  killList.push(regionScaleListener);
+  }, 200);
 
   return el;
 };
@@ -2482,6 +2481,7 @@ const createControl_select = (data, actionWrapper) => {
   input.id = localId;
   input.name = localId;
   input.classList.add(listenId);
+  if (data.connectingClass) input.classList.add(data.connectingClass);
 
   data.options.forEach(val => {
 
