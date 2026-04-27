@@ -23,12 +23,9 @@ Status: will not implement
 ## Image preview enhancements
 Status: DONE
 
-Further work:
-- fix issues where we can; note issues where such a fix is unrealistic for basic view (eg: matrix-based filters; pixel-based displacements such as random-noise, etc)
-
 
 ## Filter graph visualisation
-Status: not started
+Status: in development
 
 Read the current filter action list and render it as a connected graph. Initial version is view-only, except for node dragging.
 
