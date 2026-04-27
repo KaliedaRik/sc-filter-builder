@@ -1254,9 +1254,7 @@ const recalculateColorWeights = function (actionWrapper, weights) {
     });
 
     const currentFilter = getFilterWrapper();
-
     currentFilter.updateDisplayFilter();
-    currentFilter.updateHistory();
   }
 };
 
@@ -1766,9 +1764,7 @@ const recalculateToneCurves = function (actionWrapper) {
     actionWrapper.set({ curves: curvesForFilter });
 
     const currentFilter = getFilterWrapper();
-
     currentFilter.updateDisplayFilter();
-    currentFilter.updateHistory();
   }
 };
 

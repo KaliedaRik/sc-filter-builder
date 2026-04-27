@@ -225,9 +225,7 @@ const createControl_imageAsset = (data, actionWrapper) => {
             };
 
             const currentFilter = getFilterWrapper();
-
             currentFilter.updateDisplayFilter();
-            currentFilter.updateHistory();
           };
 
           reader.readAsDataURL(file);
@@ -389,9 +387,7 @@ const createControl_assetPresentation = (data, actionWrapper) => {
       updateIdentifier();
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, smoothingInput);
 
@@ -436,9 +432,7 @@ const createControl_assetPresentation = (data, actionWrapper) => {
       updateIdentifier();
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, backgroundInput);
 
@@ -493,9 +487,7 @@ const createControl_assetPresentation = (data, actionWrapper) => {
       updateIdentifier();
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, fitInput);
 
@@ -546,9 +538,7 @@ const createControl_swirl = (data, actionWrapper) => {
     })
 
     const currentFilter = getFilterWrapper();
-
     currentFilter.updateDisplayFilter();
-    currentFilter.updateHistory();
   };
 
   const buildSwirlPanel = (swirl, index) => {
@@ -1155,9 +1145,7 @@ const createControl_color = (data, actionWrapper) => {
       });
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, colorInput);
 
@@ -1181,9 +1169,7 @@ const createControl_color = (data, actionWrapper) => {
       });
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, [redInput, greenInput, blueInput]);
 
@@ -1335,9 +1321,7 @@ const createControl_unitColor = (data, actionWrapper) => {
       });
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, colorInput);
 
@@ -1365,9 +1349,7 @@ const createControl_unitColor = (data, actionWrapper) => {
       });
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, [redInput, greenInput, blueInput]);
 
@@ -1529,9 +1511,7 @@ const createControl_colorArray = (data, actionWrapper) => {
       actionWrapper.set({ [data.key]: [redValue, greenValue, blueValue, alphaValue] });
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, colorInput);
 
@@ -1552,9 +1532,7 @@ const createControl_colorArray = (data, actionWrapper) => {
       actionWrapper.set({ [data.key]: [redValue, greenValue, blueValue, alphaValue] });
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, [redInput, greenInput, blueInput]);
 
@@ -1573,9 +1551,7 @@ const createControl_colorArray = (data, actionWrapper) => {
       actionWrapper.set({ [data.key]: [redValue, greenValue, blueValue, alphaValue] });
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, [alphaInput]);
 
@@ -1624,9 +1600,7 @@ const createControl_lineText = (data, actionWrapper) => {
       });
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, input);
 
@@ -1768,9 +1742,7 @@ const createControl_areaAlpha = (data, actionWrapper) => {
       });
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, [topLeftInput, topRightInput, bottomLeftInput, bottomRightInput]);
 
@@ -1819,9 +1791,7 @@ const createControl_text = (data, actionWrapper) => {
       });
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, input);
 
@@ -1917,9 +1887,7 @@ const createControl_matrixWeights = (data, actionWrapper) => {
       else el.classList.remove('matrix-incorrect-length');
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, input);
 
@@ -2019,9 +1987,7 @@ const createControl_colorRanges = (data, actionWrapper) => {
       });
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, input);
 
@@ -2105,9 +2071,7 @@ const createControl_channelLevels = (data, actionWrapper) => {
       });
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, input);
 
@@ -2229,9 +2193,7 @@ const createControl_reducePalette = (data, actionWrapper) => {
       });
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, input);
 
@@ -2293,9 +2255,7 @@ const createControl_boolean = (data, actionWrapper) => {
       });
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, input);
 
@@ -2370,9 +2330,7 @@ const createControl_number = (data, actionWrapper) => {
       displayedValue.textContent = `${value}`;
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, rangeInput);
 
@@ -2449,9 +2407,7 @@ const createControl_percentageNumber = (data, actionWrapper) => {
       displayedValue.textContent = `${value}%`;
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, rangeInput);
 
@@ -2512,9 +2468,7 @@ const createControl_select = (data, actionWrapper) => {
       });
 
       const currentFilter = getFilterWrapper();
-
       currentFilter.updateDisplayFilter();
-      currentFilter.updateHistory();
     }
   }, input);
 
@@ -3127,8 +3081,3 @@ export const initFormBuilder = (actionWrapperLibrary = null) => {
   // Return object
   return {};
 };
-
-
-// Development
-// ------------------------------------------------------------------------
-

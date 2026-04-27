@@ -37,12 +37,7 @@ const FilterWrapper = function (filter, formSchemaName = '') {
   this.filter = filter;
   this.name = filter.name;
   this.formSchemaName = formSchemaName;
-  this.undoArray = [];
-  this.redoArray = [];
   this.actions = [];
-
-  // Dirty flags
-  this.dirtySort = true;
 
   const actObjects = filter.actions;
 
@@ -54,7 +49,6 @@ const FilterWrapper = function (filter, formSchemaName = '') {
     const wrapper = new FilterActionWrapper({
       id,
       formId: `form_${id}`,
-      order: 0,
       action: actObjects[0],
       formSchema: getFilterSchema(this.formSchemaName),
     });
@@ -71,7 +65,6 @@ const FilterWrapper = function (filter, formSchemaName = '') {
       const wrapper = new FilterActionWrapper({
         id,
         formId: `form_${id}`,
-        order: index,
         action: act,
         formSchema: getFilterSchema(this.formSchemaName[index]),
       });
@@ -79,9 +72,6 @@ const FilterWrapper = function (filter, formSchemaName = '') {
       this.actions.push(wrapper);
     });
   }
-
-  this.undoArray.push(this.toString());
-
   return this;
 };
 
@@ -92,41 +82,6 @@ const F = FilterWrapper.prototype = Object.create(Object.prototype);
 F.toString = function () {
 
   return `[${this.actions.map(act => act.toString()).join(',')}]`;
-};
-
-
-// Undo-redo functionality
-let lastRecordedAction = 0;
-const recordedActionChoke = 200;
-
-F.updateHistory = function () {
-
-  const now = Date.now();
-
-  if (lastRecordedAction + recordedActionChoke < now) {
-
-    const undoArray = this.undoArray,
-      lastUpdate = (undoArray.length) ? undoArray[undoArray.length - 1] : '',
-      newUpdate = this.toString();
-
-    if (lastUpdate !== newUpdate) {
-
-      undoArray.push(newUpdate);
-      lastRecordedAction = now;
-    }
-  }
-};
-F.undo = function () {};
-F.redo = function () {};
-
-F.sort = function () {
-
-  if (this.dirtySort) {
-
-    this.dirtySort = false;
-
-    // Perform sort
-  }
 };
 
 F.kill = function () {
@@ -143,8 +98,6 @@ F.kill = function () {
 };
 
 F.updateFilter = function () {
-
-  this.sort();
 
   const actions = this.actions.map(act => act.action);
 
@@ -322,7 +275,6 @@ const FilterActionWrapper = function (items) {
 
   this.id = items.id;
   this.formId = items.formId;
-  this.order = items.order;
   this.action = items.action;
   this.formSchema = items.formSchema;
 
