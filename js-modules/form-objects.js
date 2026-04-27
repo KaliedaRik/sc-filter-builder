@@ -19,8 +19,8 @@ import { generateButtonHtml, generateFormHtml } from './form-builder.js';
 
 // Module-scoped Handles and variables
 // ------------------------------------------------------------------------
-let basicFilter, accurateFilter, accurateCell, processingLabel, scrawl, dom;
-
+let basicFilter, accurateFilter, accurateCell, processingLabel, scrawl, dom,
+  warningCss, scaledWarningCss, warn, scaledWarn;
 
 // A little paint buffering
 const nextPaint = () => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
@@ -162,11 +162,6 @@ F.updateDisplayFilter = async function () {
 
   const actions = structuredClone(this.filter.get('actions'));
 
-  const warningCss = DOMID.PREVIEW_WARNING_CSS,
-    scaledWarningCss = DOMID.PREVIEW_SCALED_WARNING_CSS,
-    warn = dom[DOMID.PREVIEW_WARNING],
-    scaledWarn = dom[DOMID.PREVIEW_SCALED_WARNING];
-
   if (FLAGS.isBasicPreview) {
 
     const view = structuredClone(VIEW);
@@ -180,14 +175,17 @@ F.updateDisplayFilter = async function () {
 
         case 'area-alpha':
           correctDisplayFilterAction_areaAlpha(act, view);
+          warningFlag = true;
           break;
 
         case 'pixelate':
           correctDisplayFilterAction_pixelate(act, view);
+          scaledWarningFlag = true;
           break;
 
         case 'tiles':
           correctDisplayFilterAction_tiles(act, view);
+          scaledWarningFlag = true;
           break;
 
         case 'corrode':
@@ -212,8 +210,6 @@ F.updateDisplayFilter = async function () {
           break;
       }
     });
-
-    console.log('warningFlag', warningFlag, 'scaledWarningFlag', scaledWarningFlag)
 
     basicFilter.set({ actions });
 
@@ -422,6 +418,10 @@ export const initFormObjects = () => {
   accurateCell = scrawl.findCell(`${ACCURATE_PREVIEW}-cell`);
 
   processingLabel = dom[DOMID.PROCESSING_LABEL];
+  warningCss = DOMID.PREVIEW_WARNING_CSS;
+  scaledWarningCss = DOMID.PREVIEW_SCALED_WARNING_CSS;
+  warn = dom[DOMID.PREVIEW_WARNING];
+  scaledWarn = dom[DOMID.PREVIEW_SCALED_WARNING];
 
   // Return object
   return {

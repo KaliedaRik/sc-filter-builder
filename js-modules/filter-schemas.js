@@ -1722,7 +1722,7 @@ const actionSchemas = {
     label: 'Pixelate',
     description: '',
     action: 'pixelate',
-    viewportAccuracy: 'poor',
+    viewportAccuracy: 'scale-poor',
     hasOrigin: true,
     controls: {
       ...requiredControls,
@@ -2326,7 +2326,7 @@ const actionSchemas = {
     label: 'Tiles',
     description: '',
     action: 'tiles',
-    viewportAccuracy: 'poor',
+    viewportAccuracy: 'scale-poor',
     hasOrigin: true,
     controls: {
       ...requiredControls,
