@@ -2388,14 +2388,14 @@ const actionSchemas = {
         label: 'Radius [hex]',
         description: '',
       },
-      randomCount: {
-        controlType: 'number',
-        default: 1000,
-        key: 'randomCount',
-        minValue: 10,
-        maxValue: 10000,
-        step: 10,
-        label: 'Random points [random]',
+      density: {
+        controlType: 'percentage-number',
+        default: 1,
+        key: 'density',
+        minValue: 0,
+        maxValue: 8,
+        step: 0.005,
+        label: 'Density [random]',
         description: '',
       },
       pointsData: {
@@ -3876,7 +3876,7 @@ F.presentation = [{
   },{
     header: 'Random controls',
     openOnLoad: false,
-    inputs: ['randomCount', 'seed'],
+    inputs: ['density', 'seed'],
   },{
     header: 'Spiral controls',
     openOnLoad: false,
