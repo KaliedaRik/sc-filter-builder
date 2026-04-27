@@ -31,7 +31,7 @@ let scrawl, dom, stack,
 // ------------------------------------------------------------------------
 const actionGroupCSS = {
   good: 'viewport-good-marker',
-  reasonable: 'viewport-reasonable-marker',
+  ['scale-poor']: 'viewport-reasonable-marker',
   poor: 'viewport-poor-marker'
 };
 

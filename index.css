@@ -499,6 +499,16 @@ main {
       }
     }
 
+    & #scaled-preview-warning {
+      font-size: 85%;
+      color: var(--advice-color);
+      display: none;
+
+      &.scaled-warning-is-active {
+        display: block;
+      }
+    }
+
     & #processing-label {
 
       opacity: 0.2;

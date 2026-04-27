@@ -163,13 +163,16 @@ F.updateDisplayFilter = async function () {
   const actions = structuredClone(this.filter.get('actions'));
 
   const warningCss = DOMID.PREVIEW_WARNING_CSS,
-    warn = dom[DOMID.PREVIEW_WARNING];
+    scaledWarningCss = DOMID.PREVIEW_SCALED_WARNING_CSS,
+    warn = dom[DOMID.PREVIEW_WARNING],
+    scaledWarn = dom[DOMID.PREVIEW_SCALED_WARNING];
 
   if (FLAGS.isBasicPreview) {
 
     const view = structuredClone(VIEW);
 
-    let warningFlag = false;
+    let warningFlag = false,
+      scaledWarningFlag = false;
 
     actions.forEach(act => {
 
@@ -187,12 +190,8 @@ F.updateDisplayFilter = async function () {
           correctDisplayFilterAction_tiles(act, view);
           break;
 
-        case 'blur':
         case 'corrode':
-        case 'emboss':
-        case 'gaussian-blur':
         case 'glitch':
-        case 'matrix':
         case 'offset':
         case 'newsprint':
         case 'random-noise':
@@ -202,15 +201,29 @@ F.updateDisplayFilter = async function () {
         case 'zoom-blur':
           warningFlag = true;
           break;
+
+        case 'blur':
+        case 'emboss':
+        case 'gaussian-blur':
+        case 'edge-detect':
+        case 'matrix':
+        case 'sharpen':
+          scaledWarningFlag = true;
+          break;
       }
     });
 
+    console.log('warningFlag', warningFlag, 'scaledWarningFlag', scaledWarningFlag)
+
     basicFilter.set({ actions });
 
-    if (warn) {
+    if (warn && scaledWarn) {
+
+      if (warn.classList.contains(warningCss)) warn.classList.remove(warningCss);
+      if (scaledWarn.classList.contains(scaledWarningCss)) scaledWarn.classList.remove(scaledWarningCss);
 
       if (warningFlag) warn.classList.add(warningCss);
-      else warn.classList.remove(warningCss);
+      else if (scaledWarningFlag) scaledWarn.classList.add(scaledWarningCss);
     }
   }
   else {
@@ -220,7 +233,11 @@ F.updateDisplayFilter = async function () {
     accurateCell.clear();
     accurateCell.compile();
 
-    if (warn.classList.contains(warningCss)) warn.classList.remove(warningCss);
+    if (warn && scaledWarn) {
+
+      if (warn.classList.contains(warningCss)) warn.classList.remove(warningCss);
+      if (scaledWarn.classList.contains(scaledWarningCss)) scaledWarn.classList.remove(scaledWarningCss);
+    }
   }
 
   processingLabel.classList.remove('is-processing');

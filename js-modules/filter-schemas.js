@@ -303,7 +303,7 @@ const actionSchemas = {
     label: 'Box blur',
     description: '',
     action: 'blur',
-    viewportAccuracy: 'poor',
+    viewportAccuracy: 'scale-poor',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -856,7 +856,7 @@ const actionSchemas = {
     label: 'Emboss',
     description: '',
     action: 'emboss',
-    viewportAccuracy: 'poor',
+    viewportAccuracy: 'scale-poor',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -969,7 +969,7 @@ const actionSchemas = {
     label: 'Gaussian blur',
     description: '',
     action: 'gaussian-blur',
-    viewportAccuracy: 'poor',
+    viewportAccuracy: 'scale-poor',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -1329,7 +1329,7 @@ const actionSchemas = {
     label: 'Matrix',
     description: '',
     action: 'matrix',
-    viewportAccuracy: 'poor',
+    viewportAccuracy: 'scale-poor',
     hasOrigin: false,
     controls: {
       ...requiredControls,
@@ -3267,7 +3267,7 @@ F.presentation = [{
 // edgeDetect ('matrix' variant)
 F = filterSchemas.edgeDetect = structuredClone(actionSchemas['matrix']);
 F.label = 'Edge detect';
-F.viewportAccuracy = 'poor';
+F.viewportAccuracy = 'scale-poor';
 F.description = '';
 F.controls.weights.default = [0, 1, 0, 1, -4, 1, 0, 1, 0];
 F.presentation = [...defaultPresentation];
@@ -3781,7 +3781,7 @@ F.presentation = [{
 // sharpen ('matrix' variant)
 F = filterSchemas.sharpen = structuredClone(actionSchemas['matrix']);
 F.label = 'Sharpen';
-F.viewportAccuracy = 'poor';
+F.viewportAccuracy = 'scale-poor';
 F.description = '';
 F.controls.weights.default = [0, -1, 0, -1, 5, -1, 0, -1, 0];
 F.presentation = [...defaultPresentation];
