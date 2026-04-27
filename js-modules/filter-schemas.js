@@ -126,7 +126,7 @@ const actionSchemas = {
     label: 'Area alpha',
     description: 'Places a tile schema across the input, quarters each tile and then sets the alpha channels of the pixels in selected quarters of each tile to the appropriate value specified in the areaAlphaLevels attribute.',
     action: 'area-alpha',
-    viewportAccuracy: 'poor',
+    viewportAccuracy: 'scale-poor',
     hasOrigin: true,
     controls: {
       ...requiredControls,
@@ -856,7 +856,7 @@ const actionSchemas = {
     label: 'Emboss',
     description: '',
     action: 'emboss',
-    viewportAccuracy: 'scale-poor',
+    viewportAccuracy: 'poor',
     hasOrigin: false,
     controls: {
       ...requiredControls,

@@ -86,9 +86,6 @@ F.toString = function () {
 
 F.kill = function () {
 
-  this.undoArray.length = 0;
-  this.redoArray.length = 0;
-
   this.actions.forEach(act => act.kill());
   this.actions.length = 0;
 
@@ -128,7 +125,7 @@ F.updateDisplayFilter = async function () {
 
         case 'area-alpha':
           correctDisplayFilterAction_areaAlpha(act, view);
-          warningFlag = true;
+          scaledWarningFlag = true;
           break;
 
         case 'pixelate':
@@ -142,6 +139,7 @@ F.updateDisplayFilter = async function () {
           break;
 
         case 'corrode':
+        case 'emboss':
         case 'glitch':
         case 'offset':
         case 'newsprint':
@@ -154,7 +152,6 @@ F.updateDisplayFilter = async function () {
           break;
 
         case 'blur':
-        case 'emboss':
         case 'gaussian-blur':
         case 'edge-detect':
         case 'matrix':
