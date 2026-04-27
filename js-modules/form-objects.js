@@ -19,8 +19,8 @@ import { generateButtonHtml, generateFormHtml } from './form-builder.js';
 
 // Module-scoped Handles and variables
 // ------------------------------------------------------------------------
-let basicFilter, accurateFilter, accurateCell, processingLabel, scrawl, dom;
-
+let basicFilter, accurateFilter, accurateCell, processingLabel, scrawl, dom,
+  warningCss, scaledWarningCss, warn, scaledWarn;
 
 // A little paint buffering
 const nextPaint = () => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
@@ -37,12 +37,7 @@ const FilterWrapper = function (filter, formSchemaName = '') {
   this.filter = filter;
   this.name = filter.name;
   this.formSchemaName = formSchemaName;
-  this.undoArray = [];
-  this.redoArray = [];
   this.actions = [];
-
-  // Dirty flags
-  this.dirtySort = true;
 
   const actObjects = filter.actions;
 
@@ -54,7 +49,6 @@ const FilterWrapper = function (filter, formSchemaName = '') {
     const wrapper = new FilterActionWrapper({
       id,
       formId: `form_${id}`,
-      order: 0,
       action: actObjects[0],
       formSchema: getFilterSchema(this.formSchemaName),
     });
@@ -71,7 +65,6 @@ const FilterWrapper = function (filter, formSchemaName = '') {
       const wrapper = new FilterActionWrapper({
         id,
         formId: `form_${id}`,
-        order: index,
         action: act,
         formSchema: getFilterSchema(this.formSchemaName[index]),
       });
@@ -79,9 +72,6 @@ const FilterWrapper = function (filter, formSchemaName = '') {
       this.actions.push(wrapper);
     });
   }
-
-  this.undoArray.push(this.toString());
-
   return this;
 };
 
@@ -94,45 +84,7 @@ F.toString = function () {
   return `[${this.actions.map(act => act.toString()).join(',')}]`;
 };
 
-
-// Undo-redo functionality
-let lastRecordedAction = 0;
-const recordedActionChoke = 200;
-
-F.updateHistory = function () {
-
-  const now = Date.now();
-
-  if (lastRecordedAction + recordedActionChoke < now) {
-
-    const undoArray = this.undoArray,
-      lastUpdate = (undoArray.length) ? undoArray[undoArray.length - 1] : '',
-      newUpdate = this.toString();
-
-    if (lastUpdate !== newUpdate) {
-
-      undoArray.push(newUpdate);
-      lastRecordedAction = now;
-    }
-  }
-};
-F.undo = function () {};
-F.redo = function () {};
-
-F.sort = function () {
-
-  if (this.dirtySort) {
-
-    this.dirtySort = false;
-
-    // Perform sort
-  }
-};
-
 F.kill = function () {
-
-  this.undoArray.length = 0;
-  this.redoArray.length = 0;
 
   this.actions.forEach(act => act.kill());
   this.actions.length = 0;
@@ -143,8 +95,6 @@ F.kill = function () {
 };
 
 F.updateFilter = function () {
-
-  this.sort();
 
   const actions = this.actions.map(act => act.action);
 
@@ -162,14 +112,12 @@ F.updateDisplayFilter = async function () {
 
   const actions = structuredClone(this.filter.get('actions'));
 
-  const warningCss = DOMID.PREVIEW_WARNING_CSS,
-    warn = dom[DOMID.PREVIEW_WARNING];
-
   if (FLAGS.isBasicPreview) {
 
     const view = structuredClone(VIEW);
 
-    let warningFlag = false;
+    let warningFlag = false,
+      scaledWarningFlag = false;
 
     actions.forEach(act => {
 
@@ -177,22 +125,22 @@ F.updateDisplayFilter = async function () {
 
         case 'area-alpha':
           correctDisplayFilterAction_areaAlpha(act, view);
+          scaledWarningFlag = true;
           break;
 
         case 'pixelate':
           correctDisplayFilterAction_pixelate(act, view);
+          scaledWarningFlag = true;
           break;
 
         case 'tiles':
           correctDisplayFilterAction_tiles(act, view);
+          scaledWarningFlag = true;
           break;
 
-        case 'blur':
         case 'corrode':
         case 'emboss':
-        case 'gaussian-blur':
         case 'glitch':
-        case 'matrix':
         case 'offset':
         case 'newsprint':
         case 'random-noise':
@@ -202,15 +150,26 @@ F.updateDisplayFilter = async function () {
         case 'zoom-blur':
           warningFlag = true;
           break;
+
+        case 'blur':
+        case 'gaussian-blur':
+        case 'edge-detect':
+        case 'matrix':
+        case 'sharpen':
+          scaledWarningFlag = true;
+          break;
       }
     });
 
     basicFilter.set({ actions });
 
-    if (warn) {
+    if (warn && scaledWarn) {
+
+      if (warn.classList.contains(warningCss)) warn.classList.remove(warningCss);
+      if (scaledWarn.classList.contains(scaledWarningCss)) scaledWarn.classList.remove(scaledWarningCss);
 
       if (warningFlag) warn.classList.add(warningCss);
-      else warn.classList.remove(warningCss);
+      else if (scaledWarningFlag) scaledWarn.classList.add(scaledWarningCss);
     }
   }
   else {
@@ -220,7 +179,11 @@ F.updateDisplayFilter = async function () {
     accurateCell.clear();
     accurateCell.compile();
 
-    if (warn.classList.contains(warningCss)) warn.classList.remove(warningCss);
+    if (warn && scaledWarn) {
+
+      if (warn.classList.contains(warningCss)) warn.classList.remove(warningCss);
+      if (scaledWarn.classList.contains(scaledWarningCss)) scaledWarn.classList.remove(scaledWarningCss);
+    }
   }
 
   processingLabel.classList.remove('is-processing');
@@ -309,7 +272,6 @@ const FilterActionWrapper = function (items) {
 
   this.id = items.id;
   this.formId = items.formId;
-  this.order = items.order;
   this.action = items.action;
   this.formSchema = items.formSchema;
 
@@ -405,6 +367,10 @@ export const initFormObjects = () => {
   accurateCell = scrawl.findCell(`${ACCURATE_PREVIEW}-cell`);
 
   processingLabel = dom[DOMID.PROCESSING_LABEL];
+  warningCss = DOMID.PREVIEW_WARNING_CSS;
+  scaledWarningCss = DOMID.PREVIEW_SCALED_WARNING_CSS;
+  warn = dom[DOMID.PREVIEW_WARNING];
+  scaledWarn = dom[DOMID.PREVIEW_SCALED_WARNING];
 
   // Return object
   return {

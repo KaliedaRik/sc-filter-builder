@@ -76,9 +76,8 @@ const processImages = async () => {
   const list = [],
     zipItems = [];
 
-  const filterWrapper = getFilterWrapper();
-
   while (downloadsList.firstChild) {
+
     downloadsList.removeChild(downloadsList.firstChild);
   }
 
@@ -87,6 +86,10 @@ const processImages = async () => {
     if (exportCandidates.length) {
 
       if (Object.keys(imageState).length) {
+
+        const filterWrapper = getFilterWrapper();
+
+        if (filterWrapper) filterWrapper.updateFilter();
 
         preProcess(list, filterWrapper.name);
 
@@ -176,6 +179,16 @@ const process = async (list, filter, zipItems) => {
 
 const canvasToBlob = (canvas, type, quality) => new Promise(resolve => canvas.toBlob(resolve, type, quality));
 
+const preprocessFilterImagesForDownload = (filter, width, height) => {
+
+  const actions = filter.get('actions');
+
+  actions.forEach(action => {
+
+    if (action.action === 'process-image') downloadCell.preprocessImageFilter(action, width, height);
+  });
+};
+
 const processImage = async (item, filter, zipItems) => {
 
   const { element, engine } = downloadCell;
@@ -187,6 +200,8 @@ const processImage = async (item, filter, zipItems) => {
 
     element.width = width;
     element.height = height;
+
+    preprocessFilterImagesForDownload(filter, width, height);
 
     engine.clearRect(0, 0, width, height);
     engine.drawImage(bitmap, 0, 0, width, height);

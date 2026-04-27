@@ -8,7 +8,7 @@ export const starterFilters = {
     title: 'Image asset',
     readableName: 'Image asset starter',
     formSchemaName: ['image'],
-    packet: `["SC-starter-filter_image-asset","Filter","filter",{"name":"SC-starter-filter_image-asset","actions":[{"action":"process-image","lineOut":"","asset":"","copyWidth":"100%","copyHeight":"100%","copyX":"0%","copyY":"0%"}]}]`,
+    packet: `["SC-starter-filter_image-asset","Filter","filter",{"name":"SC-starter-filter_image-asset","actions":[{{"action":"process-image","lineOut":"","asset":"","copyWidth":"100%","copyHeight":"100%","copyStartX":0,"copyStartY":0,"backgroundColor":"rgb(0 0 0 / 0)","fit":"none","scale":1,"smoothing":false,"positionX":"center","positionY":"center","offsetX":0,"offsetY":0}}]}]`,
     imageSource: 'assets/thumb/starter-thumb_blank.png',
   },
 
@@ -352,7 +352,7 @@ export const starterFilters = {
     title: 'Tiles',
     readableName: 'Tiles starter',
     formSchemaName: ['tiles'],
-    packet: `["SC-starter-filter_tiles","Filter","filter",{"name":"SC-starter-filter_tiles","actions":[{"action":"tiles","lineIn":"","lineOut":"","opacity":1,"mode":"hex","originX":"50%","originY":"50%","rectWidth":10,"rectHeight":10,"hexRadius":5,"randomCount":10,"pointsData":[],"angle":0,"spiralStrength":0,"seed":"any_random_string_will_do","includeRed":true,"includeGreen":true,"includeBlue":true,"includeAlpha":false,"premultiply":true,"useInputAsMask":false}]}]`,
+    packet: `["SC-starter-filter_tiles","Filter","filter",{"name":"SC-starter-filter_tiles","actions":[{"action":"tiles","lineIn":"","lineOut":"","opacity":1,"mode":"hex","originX":"50%","originY":"50%","rectWidth":10,"rectHeight":10,"hexRadius":5,"density":"1%","pointsData":[],"angle":0,"spiralStrength":0,"seed":"any_random_string_will_do","includeRed":true,"includeGreen":true,"includeBlue":true,"includeAlpha":false,"premultiply":true,"useInputAsMask":false}]}]`,
     imageSource: 'assets/thumb/starter-thumb_tiles.png',
   },
 

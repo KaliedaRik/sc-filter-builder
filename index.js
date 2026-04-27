@@ -67,6 +67,7 @@ const dom = scrawl.initializeDomInputs([
   ['by-id', DOMID.FILTER_BUTTON],
   ['by-id', DOMID.FILTER_IMPORT],
   ['by-id', DOMID.PREVIEW_WARNING],
+  ['by-id', DOMID.PREVIEW_SCALED_WARNING],
   ['select', DOMID.PREVIEW_SELECT, 0],
   ['by-id', DOMID.PROCESSING_LABEL],
 

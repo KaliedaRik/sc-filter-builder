@@ -69,6 +69,8 @@ export const DOMID = {
   FILTER_IMPORT: 'import-filter',
   PREVIEW_WARNING: 'preview-warning',
   PREVIEW_WARNING_CSS: 'warning-is-active',
+  PREVIEW_SCALED_WARNING: 'scaled-preview-warning',
+  PREVIEW_SCALED_WARNING_CSS: 'scaled-warning-is-active',
   PREVIEW_SELECT: 'preview-select',
   PROCESSING_LABEL: 'processing-label',
 
