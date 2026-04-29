@@ -15,6 +15,7 @@ import {
 
 import { getFilterSchema } from './filter-schemas.js';
 import { generateButtonHtml, generateFormHtml } from './form-builder.js';
+import { buildGraphData } from './graph-manager.js';
 
 
 // Module-scoped Handles and variables
@@ -48,6 +49,7 @@ const FilterWrapper = function (filter, formSchemaName = '') {
     // Starter filters come with convenience method forms
     const wrapper = new FilterActionWrapper({
       id,
+      buttonId: `button_${id}`,
       formId: `form_${id}`,
       action: actObjects[0],
       formSchema: getFilterSchema(this.formSchemaName),
@@ -64,6 +66,7 @@ const FilterWrapper = function (filter, formSchemaName = '') {
 
       const wrapper = new FilterActionWrapper({
         id,
+        buttonId: `button_${id}`,
         formId: `form_${id}`,
         action: act,
         formSchema: getFilterSchema(this.formSchemaName[index]),
@@ -72,6 +75,11 @@ const FilterWrapper = function (filter, formSchemaName = '') {
       this.actions.push(wrapper);
     });
   }
+
+  this.graphData = buildGraphData(this.actions);
+
+console.log('FilterWrapper', this);
+
   return this;
 };
 
@@ -272,6 +280,7 @@ const FilterActionWrapper = function (items) {
 
   this.id = items.id;
   this.formId = items.formId;
+  this.buttonId = items.buttonId;
   this.action = items.action;
   this.formSchema = items.formSchema;
 

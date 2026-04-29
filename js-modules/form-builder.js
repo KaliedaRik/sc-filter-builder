@@ -41,7 +41,7 @@ const actionGroupCSS = {
 export const generateButtonHtml = (actionWrapper) => {
 
   const button = document.createElement('button');
-  button.id = `button_${actionWrapper.id}`;
+  button.id = actionWrapper.buttonId;
   button.classList.add('graph-action-button');
   button.classList.add(actionGroupCSS[actionWrapper.formSchema.viewportAccuracy]);
   button.setAttribute('data-action-wrapper', actionWrapper.id);
