@@ -7,7 +7,14 @@ import {
   getDomHandle,
 } from './utilities.js';
 
-let scrawl, dom;
+import {
+  IN_OUT,
+  IN_MIX_OUT,
+  OUT_TOP,
+  socketDetails,
+} from './filter-schemas.js';
+
+let scrawl, canvas;
 
 const ZERO_STR = '',
   SOURCE = 'source',
@@ -398,8 +405,119 @@ const getEdgeSource = (label, namedOutputs, workSource) => {
 };
 
 
+export const addSocketsToButton = (actionWrapper) => {
+
+  setTimeout(() => {
+
+    console.log('addSocketsToButton', actionWrapper);
+
+    const { buttonId, action: filterAction, killList } = actionWrapper
+
+    const action = filterAction.action,
+      elWrapper = scrawl.findElement(actionWrapper.buttonId),
+      socketRequirements = socketDetails[action];
+
+    if (socketRequirements === OUT_TOP) {
+
+      const outSocket = scrawl.makeWheel({
+
+        name: `${buttonId}_out`,
+        group: canvas.base,
+        handle: ['center', 'center'],
+        radius: 10,
+
+        pivot: elWrapper,
+        pivotCorner: 'topLeft',
+        lockTo: 'pivot',
+        offsetX: 100,
+        offsetY: -4,
+      });
+
+      killList.push(outSocket);
+    }
+    else if (socketRequirements === IN_MIX_OUT) {
+
+      const inSocket = scrawl.makeWheel({
+
+        name: `${buttonId}_in`,
+        group: canvas.base,
+        handle: ['center', 'center'],
+        radius: 10,
+
+        pivot: elWrapper,
+        pivotCorner: 'topLeft',
+        lockTo: 'pivot',
+        offsetY: 20, 
+      });
+
+      const mixSocket = scrawl.makeWheel({
+
+        name: `${buttonId}_mix`,
+        group: canvas.base,
+        handle: ['center', 'center'],
+        radius: 10,
+
+        pivot: elWrapper,
+        pivotCorner: 'topLeft',
+        lockTo: 'pivot',
+        offsetY: 50,
+      });
+
+      const outSocket = scrawl.makeWheel({
+
+        name: `${buttonId}_out`,
+        group: canvas.base,
+        handle: ['center', 'center'],
+        radius: 10,
+
+        pivot: elWrapper,
+        pivotCorner: 'topRight',
+        lockTo: 'pivot',
+        offsetY: 35, 
+      });
+
+      killList.push(inSocket, mixSocket, outSocket);
+    }
+    else {
+
+      const inSocket = scrawl.makeWheel({
+
+        name: `${buttonId}_in`,
+        group: canvas.base,
+        handle: ['center', 'center'],
+        radius: 10,
+
+        pivot: elWrapper,
+        pivotCorner: 'topLeft',
+        lockTo: 'pivot',
+        offsetY: 35, 
+      });
+
+      const outSocket = scrawl.makeWheel({
+
+        name: `${buttonId}_out`,
+        group: canvas.base,
+        handle: ['center', 'center'],
+        radius: 10,
+
+        pivot: elWrapper,
+        pivotCorner: 'topRight',
+        lockTo: 'pivot',
+        offsetY: 35, 
+      });
+
+      killList.push(inSocket, outSocket);
+    }
+  }, 0);
+
+  // canvas.render();
+};
+
+
 export const initGraphManager = () => {
 
   scrawl = getScrawlHandle();
-  dom = getDomHandle();
+  canvas = scrawl.findCanvas('filter-builder-canvas');
+
+  console.log('initGraphManager', canvas);
 };

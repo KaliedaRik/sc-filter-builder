@@ -35,6 +35,7 @@ const FilterWrapper = function (filter, formSchemaName = '') {
   // There can be only one filter (with one or more action objects)!
   setFilterWrapper(this);
 
+console.log('filter', filter)
   this.filter = filter;
   this.name = filter.name;
   this.formSchemaName = formSchemaName;
@@ -77,8 +78,6 @@ const FilterWrapper = function (filter, formSchemaName = '') {
   }
 
   this.graphData = buildGraphData(this.actions);
-
-console.log('FilterWrapper', this);
 
   return this;
 };

@@ -17,12 +17,14 @@ import {
   buildColorCurveComponent,
   buildToneCurveComponent,
   buildGradientComponent,
-} from './canvas-ui-components.js'
+} from './canvas-ui-components.js';
+
+import { addSocketsToButton } from './graph-manager.js';
 
 
 // Module-scoped Handles and variables
 // ------------------------------------------------------------------------
-let scrawl, dom, stack,
+let scrawl, dom, stack, canvas,
   filterControlsPanel, filterBuilderAreaHold, 
   imageAssetsHold, colorFactory;
 
@@ -2973,6 +2975,7 @@ export const initFormBuilder = (actionWrapperLibrary = null) => {
   scrawl = getScrawlHandle();
   dom = getDomHandle();
   stack = scrawl.findStack('filter-builder-stack');
+  canvas = scrawl.findCanvas('filter-builder-canvas');
 
   // // populate module-level variables
   filterControlsPanel = dom[DOMID.CONTROLS_PANEL];
@@ -3034,8 +3037,10 @@ export const initFormBuilder = (actionWrapperLibrary = null) => {
                 });
 
                 stackDragGroup.addArtefacts(el);
+                
+                addSocketsToButton(actionWrapper);
 
-                actionWrapper.killList.push(el)
+                actionWrapper.killList.push(el);
                 actionWrapper.buttonElement = el.domElement;
               }
             }

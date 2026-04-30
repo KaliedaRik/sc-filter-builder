@@ -108,12 +108,12 @@ setDomHandle(dom);
 // ------------------------------------------------------------------------
 initDomLayout();
 initModalManagement();
-initGraphManager();
 initImageImport();
 
 const { displayDefaultScreen, checkLiveView } = initImageDisplay();
 const { actionWrapperLibrary } = initFormObjects();
 
+initGraphManager();
 initCanvasComponents();
 initFormBuilder(actionWrapperLibrary);
 initImageDownload();
