@@ -15,7 +15,11 @@ import {
 
 import { getFilterSchema } from './filter-schemas.js';
 import { generateButtonHtml, generateFormHtml } from './form-builder.js';
-import { buildGraphData } from './graph-manager.js';
+
+import {
+  buildGraphData,
+  wireGraph,
+} from './graph-manager.js';
 
 
 // Module-scoped Handles and variables
@@ -35,7 +39,6 @@ const FilterWrapper = function (filter, formSchemaName = '') {
   // There can be only one filter (with one or more action objects)!
   setFilterWrapper(this);
 
-console.log('filter', filter)
   this.filter = filter;
   this.name = filter.name;
   this.formSchemaName = formSchemaName;
@@ -78,6 +81,9 @@ console.log('filter', filter)
   }
 
   this.graphData = buildGraphData(this.actions);
+
+  // Putting this in a setTimeout to give things time to settle
+  setTimeout(() => wireGraph(this), 100);
 
   return this;
 };

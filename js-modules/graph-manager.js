@@ -14,25 +14,38 @@ import {
   socketDetails,
 } from './filter-schemas.js';
 
-let scrawl, canvas;
+let scrawl, canvas, sourceSocket, sourceAlphaSocket, resultSocket;
 
 const ZERO_STR = '',
   SOURCE = 'source',
   SOURCE_ALPHA = 'source-alpha',
   RESULT = 'result',
+
+  WIRE_GRAPH = 'wire-graph',
+  
   L_SOURCE = '[source]',
   L_SOURCE_ALPHA = '[source-alpha]',
   L_WORK = '[work]',
   L_RESULT = '[result]',
   L_BAD_LINE = '[bad-line]',
   L_SOURCES = [L_SOURCE, L_SOURCE_ALPHA],
+  
   PROCESS_IMAGE = 'process-image',
   DISPLACE = 'displace',
   COMPOSITES = ['compose', 'blend'],
   NONE = 'none',
+
   IN = 'in',
   MIX = 'mix',
-  DIRECT = 'direct';
+  DIRECT = 'direct',
+  SOCKET_TOP_X = 100,
+  SOCKET_TOP_Y = -4,
+  SOCKET_DOUBLE_TOP = 20,
+  SOCKET_DOUBLE_BOTTOM = 50,
+  SOCKET_SINGLE = 35,
+  SOCKET_RADIUS = 8;
+
+const endSockets = {};
 
 
 export const buildGraphData = (actionsArray) => {
@@ -407,110 +420,415 @@ const getEdgeSource = (label, namedOutputs, workSource) => {
 
 export const addSocketsToButton = (actionWrapper) => {
 
-  setTimeout(() => {
+  const { buttonId, action: filterAction, killList } = actionWrapper
 
-    console.log('addSocketsToButton', actionWrapper);
+  const action = filterAction.action,
+    elWrapper = scrawl.findElement(actionWrapper.buttonId),
+    socketRequirements = socketDetails[action];
 
-    const { buttonId, action: filterAction, killList } = actionWrapper
+  const sockets = actionWrapper.sockets = {};
 
-    const action = filterAction.action,
-      elWrapper = scrawl.findElement(actionWrapper.buttonId),
-      socketRequirements = socketDetails[action];
+  if (socketRequirements === OUT_TOP) {
 
-    if (socketRequirements === OUT_TOP) {
+    const outSocket = scrawl.makeWheel({
 
-      const outSocket = scrawl.makeWheel({
+      name: `${buttonId}_out`,
+      group: canvas.base,
+      handle: ['center', 'center'],
+      radius: SOCKET_RADIUS,
 
-        name: `${buttonId}_out`,
-        group: canvas.base,
-        handle: ['center', 'center'],
-        radius: 10,
+      pivot: elWrapper,
+      pivotCorner: 'topLeft',
+      lockTo: 'pivot',
+      offsetX: SOCKET_TOP_X,
+      offsetY: SOCKET_TOP_Y,
+    });
 
-        pivot: elWrapper,
-        pivotCorner: 'topLeft',
-        lockTo: 'pivot',
-        offsetX: 100,
-        offsetY: -4,
-      });
+    sockets.out = outSocket;
 
-      killList.push(outSocket);
+    killList.push(outSocket);
+  }
+  else if (socketRequirements === IN_MIX_OUT) {
+
+    const inSocket = scrawl.makeWheel({
+
+      name: `${buttonId}_in`,
+      group: canvas.base,
+      handle: ['center', 'center'],
+      radius: SOCKET_RADIUS,
+
+      pivot: elWrapper,
+      pivotCorner: 'topLeft',
+      lockTo: 'pivot',
+      offsetY: SOCKET_DOUBLE_TOP, 
+    });
+
+    const mixSocket = scrawl.makeWheel({
+
+      name: `${buttonId}_mix`,
+      group: canvas.base,
+      handle: ['center', 'center'],
+      radius: SOCKET_RADIUS,
+
+      pivot: elWrapper,
+      pivotCorner: 'topLeft',
+      lockTo: 'pivot',
+      offsetY: SOCKET_DOUBLE_BOTTOM,
+    });
+
+    const outSocket = scrawl.makeWheel({
+
+      name: `${buttonId}_out`,
+      group: canvas.base,
+      handle: ['center', 'center'],
+      radius: SOCKET_RADIUS,
+
+      pivot: elWrapper,
+      pivotCorner: 'topRight',
+      lockTo: 'pivot',
+      offsetY: SOCKET_SINGLE, 
+    });
+
+    sockets.in = inSocket;
+    sockets.mix = mixSocket;
+    sockets.out = outSocket;
+
+    killList.push(inSocket, mixSocket, outSocket);
+  }
+  else {
+
+    const inSocket = scrawl.makeWheel({
+
+      name: `${buttonId}_in`,
+      group: canvas.base,
+      handle: ['center', 'center'],
+      radius: SOCKET_RADIUS,
+
+      pivot: elWrapper,
+      pivotCorner: 'topLeft',
+      lockTo: 'pivot',
+      offsetY: SOCKET_SINGLE, 
+    });
+
+    const outSocket = scrawl.makeWheel({
+
+      name: `${buttonId}_out`,
+      group: canvas.base,
+      handle: ['center', 'center'],
+      radius: SOCKET_RADIUS,
+
+      pivot: elWrapper,
+      pivotCorner: 'topRight',
+      lockTo: 'pivot',
+      offsetY: SOCKET_SINGLE, 
+    });
+
+    sockets.in = inSocket;
+    sockets.out = outSocket;
+
+    killList.push(inSocket, outSocket);
+  }
+};
+
+
+export const calculateButtonPositions = (wrapper) => {
+
+  const { nodes, edges } = wrapper.graphData;
+
+  const realNodes = nodes.filter(n => n && n.id && n.action !== NONE);
+  if (!realNodes.length) return;
+
+  const nodeById = Object.fromEntries(realNodes.map(n => [n.id, n]));
+
+  const incoming = {};
+  const outgoing = {};
+
+  realNodes.forEach(n => {
+    incoming[n.id] = [];
+    outgoing[n.id] = [];
+  });
+
+  edges.forEach(edge => {
+
+    const { from, to } = edge;
+
+    if (to && nodeById[to]) incoming[to].push(edge);
+    if (from && nodeById[from]) outgoing[from].push(edge);
+  });
+
+  const levelCache = new Map();
+  const resolving = new Set();
+
+  const getLevel = (id) => {
+
+    if (levelCache.has(id)) return levelCache.get(id);
+
+    // Cycle protection; shouldn't happen, but bad imported packets may surprise us
+    if (resolving.has(id)) return 1;
+
+    resolving.add(id);
+
+    const upstreamNodeIds = incoming[id]
+      .map(e => e.from)
+      .filter(from => from && nodeById[from]);
+
+    let level = 1;
+
+    if (upstreamNodeIds.length) {
+      level = Math.max(...upstreamNodeIds.map(from => getLevel(from) + 1));
     }
-    else if (socketRequirements === IN_MIX_OUT) {
 
-      const inSocket = scrawl.makeWheel({
+    resolving.delete(id);
+    levelCache.set(id, level);
 
-        name: `${buttonId}_in`,
-        group: canvas.base,
-        handle: ['center', 'center'],
-        radius: 10,
+    return level;
+  };
 
-        pivot: elWrapper,
-        pivotCorner: 'topLeft',
-        lockTo: 'pivot',
-        offsetY: 20, 
-      });
+  realNodes.forEach(n => {
+    n.graphLevel = getLevel(n.id);
+  });
 
-      const mixSocket = scrawl.makeWheel({
+  const maxLevel = Math.max(...realNodes.map(n => n.graphLevel));
 
-        name: `${buttonId}_mix`,
-        group: canvas.base,
-        handle: ['center', 'center'],
-        radius: 10,
+  const columns = new Map();
 
-        pivot: elWrapper,
-        pivotCorner: 'topLeft',
-        lockTo: 'pivot',
-        offsetY: 50,
-      });
+  realNodes.forEach(n => {
 
-      const outSocket = scrawl.makeWheel({
+    if (!columns.has(n.graphLevel)) columns.set(n.graphLevel, []);
+    columns.get(n.graphLevel).push(n);
+  });
 
-        name: `${buttonId}_out`,
-        group: canvas.base,
-        handle: ['center', 'center'],
-        radius: 10,
+  const getLaneBias = (node) => {
 
-        pivot: elWrapper,
-        pivotCorner: 'topRight',
-        lockTo: 'pivot',
-        offsetY: 35, 
-      });
+    const ins = incoming[node.id] || [];
+    const outs = outgoing[node.id] || [];
 
-      killList.push(inSocket, mixSocket, outSocket);
+    // What this node consumes
+    if (ins.some(e => e.from === SOURCE_ALPHA || e.from === L_SOURCE_ALPHA)) return 2;
+    if (ins.some(e => e.from === SOURCE || e.from === L_SOURCE)) return 0;
+
+    // What this node feeds
+    if (outs.some(e => e.socket === MIX)) return 2;
+    if (outs.some(e => e.socket === IN)) return 0;
+
+    return 1;
+  };
+
+  const getPredecessorAverageY = (node) => {
+
+    const preds = (incoming[node.id] || [])
+      .map(e => e.from)
+      .filter(id => id && nodeById[id] && Number.isFinite(nodeById[id].graphY));
+
+    if (!preds.length) return null;
+
+    return preds.reduce((sum, id) => sum + nodeById[id].graphY, 0) / preds.length;
+  };
+
+  const getPreferredY = (node) => {
+
+    const predY = getPredecessorAverageY(node);
+    if (predY != null) return predY;
+
+    const bias = getLaneBias(node);
+
+    if (bias === 0) return 35;
+    if (bias === 2) return 65;
+
+    return 50;
+  };
+
+  const left = 18;
+  const right = 82;
+  const top = 24;
+  const bottom = 76;
+
+  [...columns.keys()].sort((a, b) => a - b).forEach(level => {
+
+    const column = columns.get(level);
+
+    column.sort((a, b) => {
+
+      const aPredY = getPredecessorAverageY(a);
+      const bPredY = getPredecessorAverageY(b);
+
+      if (aPredY != null && bPredY != null && aPredY !== bPredY) {
+        return aPredY - bPredY;
+      }
+
+      const laneBias = getLaneBias(a) - getLaneBias(b);
+      if (laneBias) return laneBias;
+
+      return a.index - b.index;
+    });
+
+    const x = (maxLevel === 1)
+      ? 50
+      : left + ((level - 1) / (maxLevel - 1)) * (right - left);
+
+    const count = column.length;
+
+    column.forEach((node, i) => {
+
+      const y = (count === 1)
+        ? getPreferredY(node)
+        : top + (i / (count - 1)) * (bottom - top);
+
+      node.graphX = x;
+      node.graphY = y;
+
+      const button = scrawl.findElement(node.buttonId);
+
+      if (button) {
+        button.set({
+          start: [`${x}%`, `${y}%`],
+        });
+      }
+    });
+  });
+};
+
+export const wireGraph = (wrapper) => {
+
+  const getPivot = (val, isFrom, socket) => {
+
+    if (val === SOURCE || val === L_SOURCE) return sourceSocket;
+    if (val === SOURCE_ALPHA || val === L_SOURCE_ALPHA) return sourceAlphaSocket;
+    if (val === RESULT || val === L_RESULT) return resultSocket;
+    if (nodesObject[val]) {
+
+      const name = nodesObject[val].buttonId;
+      if (isFrom) return scrawl.findArtefact(`${name}_out`);
+      if (socket === IN) return scrawl.findArtefact(`${name}_in`);
+      if (socket === MIX) return scrawl.findArtefact(`${name}_mix`);
     }
-    else {
+    return null;
+  };
 
-      const inSocket = scrawl.makeWheel({
+  const getLabel = (edgeLabel, startId, endId) => {
 
-        name: `${buttonId}_in`,
+    const start = nodesObject[startId],
+      end = nodesObject[endId];
+
+    if (!start || !end) return edgeLabel;
+
+    if (start.lineOutLabel === end.lineInLabel) return start.lineOutLabel;
+    if (start.lineOutLabel === end.lineMixLabel) return start.lineOutLabel;
+
+    return '[unknown]';
+  };
+
+  // Get rid of all previous SC wiregraph artefacts 
+  scrawl.purge(WIRE_GRAPH);
+
+  const nodesObject = {}
+
+  const nodes = wrapper.graphData.nodes,
+    edges = wrapper.graphData.edges;
+
+  nodes.forEach(node => nodesObject[node.id] = node);
+
+  if (edges.length) {
+
+    edges.forEach(edge => {
+
+      const { from: fromId, to: toId, socket, label } = edge;
+
+      const fromPivot = getPivot(fromId, true),
+        toPivot = getPivot(toId, false, socket);
+
+      const line = scrawl.makeLine({
+
+        name: `${WIRE_GRAPH}_${fromId}_${toId}_line`,
         group: canvas.base,
-        handle: ['center', 'center'],
-        radius: 10,
-
-        pivot: elWrapper,
-        pivotCorner: 'topLeft',
+        pivot: fromPivot,
+        endPivot: toPivot,
         lockTo: 'pivot',
-        offsetY: 35, 
+        endLockTo: 'pivot',
+        useAsPath: true,
+        useStartAsControlPoint: true,
+        method: 'none',
       });
 
-      const outSocket = scrawl.makeWheel({
+      const h1Pin = scrawl.makeBlock({
 
-        name: `${buttonId}_out`,
+        name: `${WIRE_GRAPH}_${fromId}_${toId}_control-pin-from`,
         group: canvas.base,
+        pivot: fromPivot,
+        path: line,
+        lockTo: ['path', 'pivot'],
+        pathPosition: 0.5,
+        method: 'fill',
+        fillStyle: 'green',
         handle: ['center', 'center'],
-        radius: 10,
-
-        pivot: elWrapper,
-        pivotCorner: 'topRight',
-        lockTo: 'pivot',
-        offsetY: 35, 
+        dimensions: [8, 8],
       });
 
-      killList.push(inSocket, outSocket);
-    }
-  }, 0);
+      const h2Pin = scrawl.makeBlock({
 
-  // canvas.render();
+        name: `${WIRE_GRAPH}_${fromId}_${toId}_control-pin-to`,
+        group: canvas.base,
+        pivot: toPivot,
+        path: line,
+        lockTo: ['path', 'pivot'],
+        pathPosition: 0.5,
+        method: 'fill',
+        fillStyle: 'blue',
+        handle: ['center', 'center'],
+        dimensions: [8, 8],
+      });
+
+      const bezier = scrawl.makeBezier({
+
+        name: `${WIRE_GRAPH}_${fromId}_${toId}_bezier`,
+        group: canvas.base,
+        pivot: fromPivot,
+        lockTo: 'pivot',
+        useStartAsControlPoint: true,
+        startControlPivot: h1Pin,
+        startControlLockTo: 'pivot',
+        endControlPivot: h2Pin,
+        endControlLockTo: 'pivot',
+        endPivot: toPivot,
+        endLockTo: 'pivot',
+        lineWidth: 2,
+        method: 'draw',
+        useAsPath: true,
+      });
+
+      scrawl.makeEnhancedLabel({
+
+        name: `${WIRE_GRAPH}_${fromId}_${toId}_label`,
+        group: canvas.base.name,
+        fontString: '15px bold Arial, sans-serif',
+        text: getLabel(label, fromId, toId),
+        textHandle: ['center', 'bottom'],
+        breakTextOnSpaces: false,
+        layoutTemplate: bezier,
+        useLayoutTemplateAsPath: true,
+        pathPosition: 0.45,
+      });
+    });
+  }
+  else {
+
+    // We just need a line from source to result
+    scrawl.makeLine({
+
+      name: `${WIRE_GRAPH}-direct-line`,
+      group: canvas.base,
+      pivot: sourceSocket,
+      endPivot: resultSocket,
+      lockTo: 'pivot',
+      endLockTo: 'pivot',
+      useAsPath: false,
+      useStartAsControlPoint: true,
+      method: 'draw',
+    });
+  }
+
+  // Wiring is just plumbing - we can work out where the buttons should be after wiring completes
+  calculateButtonPositions(wrapper);
 };
 
 
@@ -519,5 +837,78 @@ export const initGraphManager = () => {
   scrawl = getScrawlHandle();
   canvas = scrawl.findCanvas('filter-builder-canvas');
 
-  console.log('initGraphManager', canvas);
+  sourceSocket = scrawl.makeOval({
+
+    name: 'source-socket',
+    group: canvas.base,
+    start: [0, '25%'],
+    handle: ['center', 'center'],
+    order: 1,
+    radiusX: 60,
+    radiusY: '20%',
+    fillStyle: 'white',
+  });
+
+  sourceAlphaSocket = scrawl.makeOval({
+
+    name: 'source-alpha-socket',
+    group: canvas.base,
+    start: [0, '75%'],
+    handle: ['center', 'center'],
+    order: 1,
+    radiusX: 60,
+    radiusY: '20%',
+    fillStyle: 'black',
+  });
+
+  resultSocket = scrawl.makeOval({
+
+    name: 'result-socket',
+    group: canvas.base,
+    start: ['100%', '50%'],
+    handle: ['center', 'center'],
+    order: 1,
+    radiusX: 60,
+    radiusY: '20%',
+    fillStyle: 'white',
+  });
+
+  endSockets.source = sourceSocket;
+  endSockets.sourceAlpha = sourceAlphaSocket;
+  endSockets.result = resultSocket;
+
+  scrawl.makeLabel({
+
+    name: 'source-socket-label',
+    group: canvas.base,
+    order: 2,
+    fontString: '12px Arial, sans-serif',
+    text: 'SOURCE',
+    handle: ['center', -5],
+    fillStyle: 'black',
+    pivot: sourceSocket,
+    lockTo: 'pivot',
+    roll: -90,
+
+  }).clone({
+
+    name: 'result-socket-label',
+    text: 'RESULT',
+    pivot: resultSocket,
+    roll: 90,
+
+  }).clone({
+
+    name: 'source-alpha-socket-1-label',
+    text: 'SOURCE',
+    fillStyle: 'white',
+    pivot: sourceAlphaSocket,
+    roll: -90,
+
+  }).clone({
+
+    name: 'source-alpha-socket-2-label',
+    text: 'ALPHA',
+    handleY: -20,
+  });
 };
