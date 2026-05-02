@@ -8,7 +8,8 @@ export const starterFilters = {
     title: 'Image asset',
     readableName: 'Image asset starter',
     formSchemaName: ['image'],
-    packet: `["SC-starter-filter_image-asset","Filter","filter",{"name":"SC-starter-filter_image-asset","actions":[{{"action":"process-image","lineOut":"","asset":"","copyWidth":"100%","copyHeight":"100%","copyStartX":0,"copyStartY":0,"backgroundColor":"rgb(0 0 0 / 0)","fit":"none","scale":1,"smoothing":false,"positionX":"center","positionY":"center","offsetX":0,"offsetY":0}}]}]`,
+    packet: `["SC-starter-filter_image-asset","Filter","filter",{  "name":"SC-starter-filter_image-asset",
+      "actions":[{"action":"process-image","lineOut":"","asset":"","copyWidth":"100%","copyHeight":"100%","copyStartX":0,"copyStartY":0,"backgroundColor":"rgb(0 0 0 / 0)","fit":"none","scale":1,"smoothing":false,"positionX":"center","positionY":"center","offsetX":0,"offsetY":0}]}]`,
     imageSource: 'assets/thumb/starter-thumb_blank.png',
   },
 

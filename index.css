@@ -580,6 +580,11 @@ main {
           & input {
             width: calc(100% - 0.5rem);
           }
+
+          & .is-in-error {
+            border-color: var(--advice-color);
+            border-width: 2px;
+          }
         }
 
         /* filter-schema.js - controlType: 'swirl' */

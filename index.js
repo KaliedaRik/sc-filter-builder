@@ -24,6 +24,7 @@ const builderCanvas = scrawl.findCanvas('filter-builder-canvas');
 // ------------------------------------------------------------------------
 import { initDomLayout } from './js-modules/dom-layout-ui.js';
 import { initModalManagement } from './js-modules/modal-management.js';
+import { initGraphManager } from './js-modules/graph-manager.js';
 import { initImageImport } from './js-modules/image-import.js';
 import { initImageDisplay } from './js-modules/image-display.js';
 import { initFilterBuilder } from './js-modules/filter-builder.js';
@@ -112,6 +113,7 @@ initImageImport();
 const { displayDefaultScreen, checkLiveView } = initImageDisplay();
 const { actionWrapperLibrary } = initFormObjects();
 
+initGraphManager();
 initCanvasComponents();
 initFormBuilder(actionWrapperLibrary);
 initImageDownload();
