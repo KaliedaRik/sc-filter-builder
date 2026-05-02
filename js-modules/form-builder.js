@@ -66,7 +66,24 @@ export const generateButtonHtml = (actionWrapper) => {
   // - This happens in the MutationObserver function, created during module initialization
   filterBuilderAreaHold.appendChild(button);
 
+  scrawl.addNativeListener('click', () => openOnlyRelatedForm(actionWrapper), button);
+
   return button;
+};
+
+const openOnlyRelatedForm = (wrapper) => {
+
+  const panels = [...document.querySelectorAll(`#${DOMID.CONTROLS_PANEL} > details`)];
+
+  panels.forEach(panel => panel.removeAttribute('open'));
+
+  const el = wrapper.formElement;
+
+  el.setAttribute('open', '');
+
+  const summary = el.querySelector('summary');
+
+  if (summary) summary.focus();
 };
 
 
