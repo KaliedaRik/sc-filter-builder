@@ -2,13 +2,9 @@
 // Graph manager
 // ------------------------------------------------------------------------
 
-import {
-  getScrawlHandle,
-  getDomHandle,
-} from './utilities.js';
+import { getScrawlHandle } from './utilities.js';
 
 import {
-  IN_OUT,
   IN_MIX_OUT,
   OUT_ONLY,
   socketDetails,
@@ -35,8 +31,9 @@ const ZERO_STR = '',
   COMPOSITES = ['compose', 'blend'],
   NONE = 'none',
 
-  IN = 'in',
-  MIX = 'mix',
+  IN = 'lineIn',
+  MIX = 'lineMix',
+  OUT = 'lineOut',
   DIRECT = 'direct',
   SOCKET_DOUBLE_TOP = 20,
   SOCKET_DOUBLE_BOTTOM = 50,
@@ -310,6 +307,7 @@ const generateSimpleEdgesData = (nodes) => {
     to: n.id,
     socket: IN,
     label: null,
+    error: L_BAD_LINE,
   });
   else if (n.lineInLabel) edges.push({
     from: (n.lineInLabel === L_SOURCE_ALPHA) ? SOURCE_ALPHA : SOURCE,
@@ -323,6 +321,7 @@ const generateSimpleEdgesData = (nodes) => {
     to: n.id,
     socket: MIX,
     label: null,
+    error: L_BAD_LINE,
   });
   else if (n.lineMixLabel) edges.push({
     from: (n.lineMixLabel === L_SOURCE_ALPHA) ? SOURCE_ALPHA : SOURCE,
@@ -334,13 +333,14 @@ const generateSimpleEdgesData = (nodes) => {
   if (L_BAD_LINE === n.lineOutLabel) edges.push({
     from: n.id,
     to: null,
-    socket: null,
+    socket: OUT,
     label: null,
+    error: L_BAD_LINE,
   });
   else edges.push({
     from: n.id,
     to: RESULT,
-    socket: IN,
+    socket: OUT,
     label: n.lineOutLabel,
   });
 
@@ -390,13 +390,13 @@ const generateEdgesData = (nodes) => {
     if (L_BAD_LINE === n.lineOutLabel) edges.push({
       from: n.id,
       to: null,
-      socket: null,
+      socket: OUT,
       label: null,
     });
     else if (n.lineOutLabel === L_RESULT) edges.push({
       from: n.id,
       to: RESULT,
-      socket: IN,
+      socket: OUT,
       label: n.lineOutLabel,
     });
     else if (n.lineOutLabel === L_WORK) workSource = n.id;
@@ -790,6 +790,27 @@ export const wireGraph = (wrapper) => {
     return '[unknown]';
   };
 
+  const makeErrorMarker = (edge, pivot, isFrom = false) => {
+
+    if (!pivot) return;
+
+    const { from, to, socket, error } = edge;
+
+    scrawl.makeLabel({
+
+      name: `${WIRE_GRAPH}_${from}_${to}_${socket}_error-label`,
+      group: canvas.base,
+      pivot,
+      lockTo: 'pivot',
+      handleX: isFrom ? 'left' : 'right',
+      offsetX: isFrom ? 12 : -12,
+      handleY: 'center',
+      fontString: '15px bold Arial, sans-serif',
+      text: error,
+      fillStyle: 'red',
+    });
+  };
+
   // Get rid of all previous SC wiregraph artefacts 
   scrawl.purge(WIRE_GRAPH);
 
@@ -808,6 +829,14 @@ export const wireGraph = (wrapper) => {
 
       const fromPivot = getPivot(fromId, true),
         toPivot = getPivot(toId, false, socket);
+
+      if (!fromPivot || !toPivot) {
+
+        if (!fromPivot) makeErrorMarker(edge, toPivot, false);
+        else makeErrorMarker(edge, fromPivot, true);
+
+        return;
+      }
 
       const line = scrawl.makeLine({
 

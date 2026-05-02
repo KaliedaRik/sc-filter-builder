@@ -19,7 +19,11 @@ import {
   buildGradientComponent,
 } from './canvas-ui-components.js';
 
-import { addSocketsToButton } from './graph-manager.js';
+import {
+  addSocketsToButton,
+  buildGraphData,
+  wireGraph,
+} from './graph-manager.js';
 
 
 // Module-scoped Handles and variables
@@ -36,6 +40,8 @@ const actionGroupCSS = {
   ['scale-poor']: 'viewport-reasonable-marker',
   poor: 'viewport-poor-marker'
 };
+
+const IS_IN_ERROR = 'is-in-error';
 
 
 // Generate the HTML for the builder area button for a filter action
@@ -1590,18 +1596,42 @@ const createControl_lineText = (data, actionWrapper) => {
   input.value = value;
   el.appendChild(input);
 
-  const listener = scrawl.addNativeListener(['change', 'input'], (e) => {
+  const listener = scrawl.addNativeListener('change', (e) => {
 
     if (e && e.target) {
 
       e.preventDefault();
       e.stopPropagation();
 
+      const target = e.target;
+
+      if (target.classList.contains(IS_IN_ERROR)) target.classList.remove(IS_IN_ERROR);
+
       actionWrapper.set({
         [data.key]: input.value,
       });
 
       const currentFilter = getFilterWrapper();
+
+      const graphData = buildGraphData(currentFilter.actions);
+
+      // Error marking
+      if (graphData.errorFlag) {
+
+        const id = target.id,
+          idParts = id.split('_'),
+          line = idParts[idParts.length - 1];
+
+        const edge = graphData.edges.filter(edge => edge.socket === line)[0];
+
+        if (edge.error != null) target.classList.add(IS_IN_ERROR);
+      }
+
+      // Updating the graph
+      currentFilter.graphData = graphData;
+      wireGraph(currentFilter);
+
+      // Updating the filter
       currentFilter.updateDisplayFilter();
     }
   }, input);
