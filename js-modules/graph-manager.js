@@ -10,7 +10,7 @@ import {
 import {
   IN_OUT,
   IN_MIX_OUT,
-  OUT_TOP,
+  OUT_ONLY,
   socketDetails,
 } from './filter-schemas.js';
 
@@ -38,8 +38,6 @@ const ZERO_STR = '',
   IN = 'in',
   MIX = 'mix',
   DIRECT = 'direct',
-  SOCKET_TOP_X = 100,
-  SOCKET_TOP_Y = -4,
   SOCKET_DOUBLE_TOP = 20,
   SOCKET_DOUBLE_BOTTOM = 50,
   SOCKET_SINGLE = 35,
@@ -428,7 +426,7 @@ export const addSocketsToButton = (actionWrapper) => {
 
   const sockets = actionWrapper.sockets = {};
 
-  if (socketRequirements === OUT_TOP) {
+  if (socketRequirements === OUT_ONLY) {
 
     const outSocket = scrawl.makeWheel({
 
@@ -438,10 +436,9 @@ export const addSocketsToButton = (actionWrapper) => {
       radius: SOCKET_RADIUS,
 
       pivot: elWrapper,
-      pivotCorner: 'topLeft',
+      pivotCorner: 'topRight',
       lockTo: 'pivot',
-      offsetX: SOCKET_TOP_X,
-      offsetY: SOCKET_TOP_Y,
+      offsetY: SOCKET_SINGLE, 
     });
 
     sockets.out = outSocket;
@@ -533,32 +530,6 @@ export const addSocketsToButton = (actionWrapper) => {
 
 export const calculateButtonPositions = (wrapper) => {
 
-  const { nodes, edges } = wrapper.graphData;
-
-  const realNodes = nodes.filter(n => n && n.id && n.action !== NONE);
-  if (!realNodes.length) return;
-
-  const nodeById = Object.fromEntries(realNodes.map(n => [n.id, n]));
-
-  const incoming = {};
-  const outgoing = {};
-
-  realNodes.forEach(n => {
-    incoming[n.id] = [];
-    outgoing[n.id] = [];
-  });
-
-  edges.forEach(edge => {
-
-    const { from, to } = edge;
-
-    if (to && nodeById[to]) incoming[to].push(edge);
-    if (from && nodeById[from]) outgoing[from].push(edge);
-  });
-
-  const levelCache = new Map();
-  const resolving = new Set();
-
   const getLevel = (id) => {
 
     if (levelCache.has(id)) return levelCache.get(id);
@@ -575,6 +546,7 @@ export const calculateButtonPositions = (wrapper) => {
     let level = 1;
 
     if (upstreamNodeIds.length) {
+
       level = Math.max(...upstreamNodeIds.map(from => getLevel(from) + 1));
     }
 
@@ -584,19 +556,27 @@ export const calculateButtonPositions = (wrapper) => {
     return level;
   };
 
-  realNodes.forEach(n => {
-    n.graphLevel = getLevel(n.id);
-  });
+  const getColumnX = (level, maxLevel) => {
 
-  const maxLevel = Math.max(...realNodes.map(n => n.graphLevel));
+    if (maxLevel === 1) return 50;
 
-  const columns = new Map();
+    // Better spacing for simple two-node graphs
+    if (maxLevel === 2) {
 
-  realNodes.forEach(n => {
+      return (level === 1) ? 32 : 68;
+    }
 
-    if (!columns.has(n.graphLevel)) columns.set(n.graphLevel, []);
-    columns.get(n.graphLevel).push(n);
-  });
+    // Three-node graphs also benefit from not hugging the sockets
+    if (maxLevel === 3) {
+
+      return [0, 24, 50, 76][level];
+    }
+
+    const left = 18;
+    const right = 82;
+
+    return left + ((level - 1) / (maxLevel - 1)) * (right - left);
+  };
 
   const getLaneBias = (node) => {
 
@@ -628,6 +608,7 @@ export const calculateButtonPositions = (wrapper) => {
   const getPreferredY = (node) => {
 
     const predY = getPredecessorAverageY(node);
+
     if (predY != null) return predY;
 
     const bias = getLaneBias(node);
@@ -638,8 +619,95 @@ export const calculateButtonPositions = (wrapper) => {
     return 50;
   };
 
-  const left = 18;
-  const right = 82;
+  const getNeighbourAverageY = (node, direction) => {
+
+    const links = (direction === 'incoming') ? incoming[node.id] : outgoing[node.id];
+
+    const ys = links
+      .map(e => (direction === 'incoming') ? e.from : e.to)
+      .filter(id => id && nodeById[id] && Number.isFinite(nodeById[id].graphY))
+      .map(id => nodeById[id].graphY);
+
+    if (!ys.length) return null;
+
+    return ys.reduce((sum, y) => sum + y, 0) / ys.length;
+  };
+
+  const refineColumnOrder = (direction) => {
+
+    const levels = [...columns.keys()].sort((a, b) => a - b);
+
+    if (direction === 'right-to-left') levels.reverse();
+
+    levels.forEach(level => {
+
+      const column = columns.get(level);
+
+      if (!column || column.length < 2) return;
+
+      column.sort((a, b) => {
+
+        const aY = getNeighbourAverageY(a, direction === 'left-to-right' ? 'incoming' : 'outgoing');
+        const bY = getNeighbourAverageY(b, direction === 'left-to-right' ? 'incoming' : 'outgoing');
+
+        if (aY != null && bY != null && aY !== bY) return aY - bY;
+
+        const laneBias = getLaneBias(a) - getLaneBias(b);
+
+        if (laneBias) return laneBias;
+
+        return a.index - b.index;
+      });
+
+      const count = column.length;
+
+      column.forEach((node, i) => {
+
+        node.graphY = top + (i / (count - 1)) * (bottom - top);
+      });
+    });
+  };
+
+  const { nodes, edges } = wrapper.graphData;
+
+  const realNodes = nodes.filter(n => n && n.id && n.action !== NONE);
+  if (!realNodes.length) return;
+
+  const nodeById = Object.fromEntries(realNodes.map(n => [n.id, n]));
+
+  const incoming = {};
+  const outgoing = {};
+
+  realNodes.forEach(n => {
+
+    incoming[n.id] = [];
+    outgoing[n.id] = [];
+  });
+
+  edges.forEach(edge => {
+
+    const { from, to } = edge;
+
+    if (to && nodeById[to]) incoming[to].push(edge);
+    if (from && nodeById[from]) outgoing[from].push(edge);
+  });
+
+  const levelCache = new Map();
+  const resolving = new Set();
+
+  realNodes.forEach(n => n.graphLevel = getLevel(n.id));
+
+  const maxLevel = Math.max(...realNodes.map(n => n.graphLevel));
+
+  const columns = new Map();
+
+  realNodes.forEach(n => {
+
+    if (!columns.has(n.graphLevel)) columns.set(n.graphLevel, []);
+
+    columns.get(n.graphLevel).push(n);
+  });
+
   const top = 24;
   const bottom = 76;
 
@@ -652,19 +720,16 @@ export const calculateButtonPositions = (wrapper) => {
       const aPredY = getPredecessorAverageY(a);
       const bPredY = getPredecessorAverageY(b);
 
-      if (aPredY != null && bPredY != null && aPredY !== bPredY) {
-        return aPredY - bPredY;
-      }
+      if (aPredY != null && bPredY != null && aPredY !== bPredY) return aPredY - bPredY;
 
       const laneBias = getLaneBias(a) - getLaneBias(b);
+
       if (laneBias) return laneBias;
 
       return a.index - b.index;
     });
 
-    const x = (maxLevel === 1)
-      ? 50
-      : left + ((level - 1) / (maxLevel - 1)) * (right - left);
+    const x = getColumnX(level, maxLevel);
 
     const count = column.length;
 
@@ -676,15 +741,22 @@ export const calculateButtonPositions = (wrapper) => {
 
       node.graphX = x;
       node.graphY = y;
-
-      const button = scrawl.findElement(node.buttonId);
-
-      if (button) {
-        button.set({
-          start: [`${x}%`, `${y}%`],
-        });
-      }
     });
+  });
+
+  refineColumnOrder('left-to-right');
+  refineColumnOrder('right-to-left');
+  refineColumnOrder('left-to-right');
+
+  realNodes.forEach(node => {
+
+    const button = scrawl.findElement(node.buttonId);
+
+    if (button) {
+      button.set({
+        start: [`${node.graphX}%`, `${node.graphY}%`],
+      });
+    }
   });
 };
 
@@ -758,10 +830,7 @@ export const wireGraph = (wrapper) => {
         path: line,
         lockTo: ['path', 'pivot'],
         pathPosition: 0.5,
-        method: 'fill',
-        fillStyle: 'green',
-        handle: ['center', 'center'],
-        dimensions: [8, 8],
+        method: 'none',
       });
 
       const h2Pin = scrawl.makeBlock({
@@ -772,10 +841,7 @@ export const wireGraph = (wrapper) => {
         path: line,
         lockTo: ['path', 'pivot'],
         pathPosition: 0.5,
-        method: 'fill',
-        fillStyle: 'blue',
-        handle: ['center', 'center'],
-        dimensions: [8, 8],
+        method: 'none',
       });
 
       const bezier = scrawl.makeBezier({
@@ -796,17 +862,36 @@ export const wireGraph = (wrapper) => {
         useAsPath: true,
       });
 
-      scrawl.makeEnhancedLabel({
+      const lineName = scrawl.makeLabel({
 
         name: `${WIRE_GRAPH}_${fromId}_${toId}_label`,
-        group: canvas.base.name,
+        group: canvas.base,
+        calculateOrder: 1,
+        stampOrder: 2,
         fontString: '15px bold Arial, sans-serif',
         text: getLabel(label, fromId, toId),
-        textHandle: ['center', 'bottom'],
-        breakTextOnSpaces: false,
-        layoutTemplate: bezier,
-        useLayoutTemplateAsPath: true,
-        pathPosition: 0.45,
+        handle: ['center', 'center'],
+        path: bezier,
+        lockTo: 'path',
+        pathPosition: 0.5,
+      });
+
+      scrawl.makeBlock({
+
+        name: `${WIRE_GRAPH}_${fromId}_${toId}_label-background`,
+        group: canvas.base,
+        calculateOrder: 2,
+        stampOrder: 1,
+        mimic: lineName,
+        lockTo: 'mimic',
+        useMimicDimensions: true,
+        useMimicStart: true,
+        useMimicHandle: true,
+        addOwnDimensionsToMimic: true,
+        addOwnOffsetToMimic: true,
+        dimensions: [4, 4],
+        offset: [-2, -3],
+        fillStyle: 'white',
       });
     });
   }
@@ -843,7 +928,7 @@ export const initGraphManager = () => {
     group: canvas.base,
     start: [0, '25%'],
     handle: ['center', 'center'],
-    order: 1,
+    order: 3,
     radiusX: 60,
     radiusY: '20%',
     fillStyle: 'white',
@@ -855,7 +940,7 @@ export const initGraphManager = () => {
     group: canvas.base,
     start: [0, '75%'],
     handle: ['center', 'center'],
-    order: 1,
+    order: 3,
     radiusX: 60,
     radiusY: '20%',
     fillStyle: 'black',
@@ -867,7 +952,7 @@ export const initGraphManager = () => {
     group: canvas.base,
     start: ['100%', '50%'],
     handle: ['center', 'center'],
-    order: 1,
+    order: 3,
     radiusX: 60,
     radiusY: '20%',
     fillStyle: 'white',
@@ -881,7 +966,7 @@ export const initGraphManager = () => {
 
     name: 'source-socket-label',
     group: canvas.base,
-    order: 2,
+    order: 4,
     fontString: '12px Arial, sans-serif',
     text: 'SOURCE',
     handle: ['center', -5],

@@ -4064,7 +4064,7 @@ export const reconciliation = {
 
 export const IN_OUT = 'in-out';
 export const IN_MIX_OUT = 'in-mix-out';
-export const OUT_TOP = 'out-top';
+export const OUT_ONLY = 'out-only';
 
 export const socketDetails = {
   ['alpha-to-channels']: IN_OUT,
@@ -4099,7 +4099,7 @@ export const socketDetails = {
   ['offset']: IN_OUT,
   ['ok-perceptual-curves']: IN_OUT,
   ['pixelate']: IN_OUT,
-  ['process-image']: OUT_TOP,
+  ['process-image']: OUT_ONLY,
   ['random-noise']: IN_OUT,
   ['reduce-palette']: IN_OUT,
   ['rotate-hue']: IN_OUT,
