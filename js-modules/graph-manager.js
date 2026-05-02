@@ -752,11 +752,7 @@ export const calculateButtonPositions = (wrapper) => {
 
     const button = scrawl.findElement(node.buttonId);
 
-    if (button) {
-      button.set({
-        start: [`${node.graphX}%`, `${node.graphY}%`],
-      });
-    }
+    if (button) button.set({ start: [`${node.graphX}%`, `${node.graphY}%`] });
   });
 };
 

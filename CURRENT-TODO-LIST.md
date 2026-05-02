@@ -36,4 +36,3 @@ Use two new modals for this work, rather than adding (many!) "add" and "delete" 
 - **Add action** - opens the add-action modal. Will be a form with two selectors. The first selector will allow the user to choose which filter action they want to add. The second selector will list existing actions, plus `[source]`, `[source-alpha]` and `[none]` (only available for `process-image` actions, where it will be the only available "after" option)
 
 - **Remove action** - opens the remove-action modal. Will list all the current actions in the filters, with checkboxes next to each one. If selected, the selected action(s) will be removed from the filter
-
