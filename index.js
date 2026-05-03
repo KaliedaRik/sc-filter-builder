@@ -89,6 +89,20 @@ const dom = scrawl.initializeDomInputs([
   ['by-id', DOMID.FILTER_CURRENT],
   ['by-id', DOMID.FILTER_USERS],
 
+  // Capture handles for the add action modal
+  ['button', DOMID.ADD_ACTION_BUTTON, 'Add action'],
+  ['button', DOMID.ADD_ACTION_CLOSE, 'Close'],
+  ['by-id', DOMID.ADD_ACTION_MODAL],
+  ['button', DOMID.ADD_ACTION_PROCESS, 'Process request'],
+  ['by-id', DOMID.ADD_ACTION_LIST],
+
+  // Capture handles for the remove action modal
+  ['button', DOMID.REMOVE_ACTION_BUTTON, 'Remove action'],
+  ['button', DOMID.REMOVE_ACTION_CLOSE, 'Close'],
+  ['by-id', DOMID.REMOVE_ACTION_MODAL],
+  ['button', DOMID.REMOVE_ACTION_PROCESS, 'Process request'],
+  ['by-id', DOMID.REMOVE_ACTION_LIST],
+
   // Capture handles to the minimap HTML elements
   ['input', DOMID.MINIMAP_X, '50'],
   ['input', DOMID.MINIMAP_Y, '50'],

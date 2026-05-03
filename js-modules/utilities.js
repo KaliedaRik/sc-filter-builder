@@ -101,6 +101,20 @@ export const DOMID = {
   NAVIGATION_CENTER: 'navigation-center',
   PREVIEW_SCALE: 'image-scale',
 
+  // Capture handles for the add action modal
+  ADD_ACTION_BUTTON: 'add-action-modal-button',
+  ADD_ACTION_CLOSE: 'add-action-modal-close',
+  ADD_ACTION_MODAL: 'add-action-modal',
+  ADD_ACTION_PROCESS: 'add-action-process',
+  ADD_ACTION_LIST: 'add-action-modal-area',
+
+  // Capture handles for the remove action modal
+  REMOVE_ACTION_BUTTON: 'remove-action-modal-button',
+  REMOVE_ACTION_CLOSE: 'remove-action-modal-close',
+  REMOVE_ACTION_MODAL: 'remove-action-modal',
+  REMOVE_ACTION_PROCESS: 'remove-action-process',
+  REMOVE_ACTION_LIST: 'remove-action-modal-area',
+
   // CSS classes used for control identification
   SCALE_CONTROLS_CSS: '.scale-controls',
   NAVIGATION_CONTROLS_CSS: '.navigation-controls',

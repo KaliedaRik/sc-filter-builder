@@ -94,5 +94,23 @@ export const initModalManagement = () => {
   scrawl.addNativeListener('click', closeModal, changeFiltersCloseButton);
   scrawl.addNativeListener('close', closeModal, changeFiltersModal);
 
+  // Setup: addAction modal
+  const addActionModal = dom[DOMID.ADD_ACTION_MODAL],
+    addActionButton = dom[DOMID.ADD_ACTION_BUTTON],
+    addActionCloseButton = dom[DOMID.ADD_ACTION_CLOSE];
+
+  scrawl.addNativeListener('click', () => openModal(addActionModal), addActionButton);
+  scrawl.addNativeListener('click', closeModal, addActionCloseButton);
+  scrawl.addNativeListener('close', closeModal, addActionModal);
+
+  // Setup: removeAction modal
+  const removeActionModal = dom[DOMID.REMOVE_ACTION_MODAL],
+    removeActionButton = dom[DOMID.REMOVE_ACTION_BUTTON],
+    removeActionCloseButton = dom[DOMID.REMOVE_ACTION_CLOSE];
+
+  scrawl.addNativeListener('click', () => openModal(removeActionModal), removeActionButton);
+  scrawl.addNativeListener('click', closeModal, removeActionCloseButton);
+  scrawl.addNativeListener('close', closeModal, removeActionModal);
+
   return {};
 };
