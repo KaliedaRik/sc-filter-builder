@@ -9,6 +9,15 @@ import {
   closeImageModalList,
 } from './image-import.js';
 
+import {
+  buildAddActionSelect,
+  actionAddActionSelect,
+  closeAddActionSelect,
+  buildRemoveActionSelect,
+  actionRemoveActionSelect,
+  closeRemoveActionSelect,
+} from './filter-builder.js';
+
 
 let currentModal, scrawl, dom;
 
@@ -97,20 +106,24 @@ export const initModalManagement = () => {
   // Setup: addAction modal
   const addActionModal = dom[DOMID.ADD_ACTION_MODAL],
     addActionButton = dom[DOMID.ADD_ACTION_BUTTON],
-    addActionCloseButton = dom[DOMID.ADD_ACTION_CLOSE];
+    addActionCloseButton = dom[DOMID.ADD_ACTION_CLOSE],
+    addActionProcess = dom[DOMID.ADD_ACTION_PROCESS];
 
-  scrawl.addNativeListener('click', () => openModal(addActionModal), addActionButton);
-  scrawl.addNativeListener('click', closeModal, addActionCloseButton);
-  scrawl.addNativeListener('close', closeModal, addActionModal);
+  scrawl.addNativeListener('click', () => openModal(addActionModal, buildAddActionSelect), addActionButton);
+  scrawl.addNativeListener('click', () => closeModal(closeAddActionSelect), addActionCloseButton);
+  scrawl.addNativeListener('close', () => closeModal(closeAddActionSelect), addActionModal);
+  scrawl.addNativeListener('click', actionAddActionSelect, addActionProcess);
 
   // Setup: removeAction modal
   const removeActionModal = dom[DOMID.REMOVE_ACTION_MODAL],
     removeActionButton = dom[DOMID.REMOVE_ACTION_BUTTON],
-    removeActionCloseButton = dom[DOMID.REMOVE_ACTION_CLOSE];
+    removeActionCloseButton = dom[DOMID.REMOVE_ACTION_CLOSE],
+    removeActionProcess = dom[DOMID.REMOVE_ACTION_PROCESS];
 
-  scrawl.addNativeListener('click', () => openModal(removeActionModal), removeActionButton);
-  scrawl.addNativeListener('click', closeModal, removeActionCloseButton);
-  scrawl.addNativeListener('close', closeModal, removeActionModal);
+  scrawl.addNativeListener('click', () => openModal(removeActionModal, buildRemoveActionSelect), removeActionButton);
+  scrawl.addNativeListener('click', () => closeModal(closeRemoveActionSelect), removeActionCloseButton);
+  scrawl.addNativeListener('close', () => closeModal(closeRemoveActionSelect), removeActionModal);
+  scrawl.addNativeListener('click', actionRemoveActionSelect, removeActionProcess);
 
   return {};
 };

@@ -102,6 +102,7 @@ const dom = scrawl.initializeDomInputs([
   ['by-id', DOMID.REMOVE_ACTION_MODAL],
   ['button', DOMID.REMOVE_ACTION_PROCESS, 'Process request'],
   ['by-id', DOMID.REMOVE_ACTION_LIST],
+  ['by-id', DOMID.REMOVE_ACTION_SELECT],
 
   // Capture handles to the minimap HTML elements
   ['input', DOMID.MINIMAP_X, '50'],

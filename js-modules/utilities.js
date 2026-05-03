@@ -114,6 +114,7 @@ export const DOMID = {
   REMOVE_ACTION_MODAL: 'remove-action-modal',
   REMOVE_ACTION_PROCESS: 'remove-action-process',
   REMOVE_ACTION_LIST: 'remove-action-modal-area',
+  REMOVE_ACTION_SELECT: 'remove-action-modal-select',
 
   // CSS classes used for control identification
   SCALE_CONTROLS_CSS: '.scale-controls',

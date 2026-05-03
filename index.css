@@ -1591,7 +1591,7 @@ dialog {
 }
 
 /* Add action to filter */
-#add-action-modal {
+/*#add-action-modal {
 
   width: 60vw;
   max-width: 60rem;
@@ -1614,6 +1614,105 @@ dialog {
       background-color: var(--dialog-cta-button-background);
       color: var(--dialog-cta-button-color);
     }
+  }
+}
+*/
+#add-action-modal {
+  width: 78vw;
+  max-width: 72rem;
+
+  & button#add-action-process {
+    text-align: center;
+    width: 100%;
+    font-size: 1.2rem;
+    border: 1px solid var(--dialog-button-border);
+    background-color: var(--dialog-button-background);
+    border-radius: 5px;
+    padding: 0.25rem 0.5rem;
+    margin: 1rem 0 0;
+
+    &:hover {
+      background-color: var(--dialog-cta-button-background);
+      color: var(--dialog-cta-button-color);
+    }
+  }
+
+  & #add-action-modal-area {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+    clear: both;
+  }
+
+  & fieldset {
+    border: 1px solid var(--dialog-border);
+    border-radius: 5px;
+    padding: 0.75rem;
+    margin: 0;
+  }
+
+  & #available-actions-wrapper fieldset {
+    max-height: 50vh;
+    overflow-y: auto;
+    display: grid;
+    gap: 0.5rem;
+    background: var(--details-background);
+  }
+
+  & .filter-action-card {
+    display: grid;
+    grid-template-columns: 96px 1fr 2rem;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.5rem;
+    border: 1px solid var(--dialog-button-border);
+    border-radius: 8px;
+    background: var(--filter-card-background);
+  }
+
+  & .filter-action-card:has(input:checked) {
+    outline: var(--outline-width) solid var(--outline-color);
+    background: var(--row-is-selected-background);
+  }
+
+  & .filter-action-image img {
+    display: block;
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+
+  & .filter-action-description label {
+    display: block;
+    font-weight: bold;
+    color: var(--summary-text);
+  }
+
+  & .filter-action-description p {
+    margin: 0.25rem 0 0;
+    font-size: 90%;
+    line-height: 1.25;
+  }
+
+  & .filter-action-radio {
+    display: flex;
+    justify-content: center;
+  }
+
+  & .filter-action-radio input {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  & #current-selector-wrapper {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  & #currentAction {
+    width: 100%;
+    font-size: 100%;
   }
 }
 

@@ -4010,6 +4010,8 @@ export const getFilterSchema = (name) => {
   return null;
 };
 
+export const filterSchemaKeys = Object.keys(filterSchemas).sort();
+
 export const getActionSchema = (name) => {
 
   if (actionSchemas[name]) return structuredClone(actionSchemas[name]);
@@ -4110,4 +4112,4 @@ export const socketDetails = {
   ['tint-channels']: IN_OUT,
   ['unsharp']: IN_OUT,
   ['zoom-blur']: IN_OUT,
-}
+};

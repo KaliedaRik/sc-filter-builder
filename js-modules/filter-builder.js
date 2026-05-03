@@ -11,18 +11,32 @@ import {
   ASSET_IDENTIFIER,
   MODIFIED_FILTER_CSS,
   FLAGS,
+  getFilterWrapper,
   getScrawlHandle,
   getDomHandle,
 } from './utilities.js';
 
-import { starterFilters, filterGroups } from './starter-filters.js';
+import {
+  starterFilters,
+  filterGroups,
+  filterImages,
+} from './starter-filters.js';
+
 import { wrap } from './form-objects.js';
-import { reconciliation } from './filter-schemas.js';
+
+import {
+  reconciliation,
+  getFilterSchema,
+  filterSchemaKeys,
+} from './filter-schemas.js';
+
 
 let currentFilterWrapper, currentFilterTitleElement,
   currentFilterInitialValues,
   imageAssetsHold, userFiltersArea,
-  scrawl, canvas, dom, filterImport;
+  scrawl, canvas, dom, filterImport,
+  currentActionSelectEl, removeActionSelectEl,
+  removeActionProcessEl;
 
 
 // Filter modification
@@ -326,6 +340,223 @@ const downloadFilter = () => {
 };
 
 
+// Filter action add and remove modals
+const buildAddFilterActionModal = () => {
+
+  const parent = dom[DOMID.ADD_ACTION_LIST];
+
+  const availableActionsWrapper = document.createElement('div');
+  availableActionsWrapper.id = 'available-actions-wrapper';
+
+  const availableTitle = document.createElement('h3');
+  availableTitle.textContent = 'Available actions';
+  availableActionsWrapper.appendChild(availableTitle);
+
+  const availableFieldset = document.createElement('fieldset');
+  availableFieldset.classList.add('available-actions-fieldset');
+
+  filterSchemaKeys.forEach((key, index) => {
+
+    const schema = getFilterSchema(key),
+      imageUrl = filterImages[key];
+
+    const card = document.createElement('label');
+    card.classList.add('filter-action-card');
+    card.htmlFor = key;
+
+    const imageWrapper = document.createElement('div');
+    imageWrapper.classList.add('filter-action-image');
+
+    const imageEl = document.createElement('img');
+    imageEl.alt = "";
+    imageEl.src = imageUrl;
+
+    imageWrapper.appendChild(imageEl);
+    card.appendChild(imageWrapper);
+
+    const descriptionWrapper = document.createElement('div');
+    descriptionWrapper.classList.add('filter-action-description');
+
+    const title = document.createElement('h4');
+    title.textContent = schema.label;
+
+    const description = document.createElement('p');
+    description.textContent = schema.description;
+
+    descriptionWrapper.appendChild(title);
+    descriptionWrapper.appendChild(description);
+    card.appendChild(descriptionWrapper);
+
+    const radioInputWrapper = document.createElement('div');
+    radioInputWrapper.classList.add('filter-action-radio');
+
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.id = key;
+    input.name = 'availableActions';
+    input.value = key;
+
+    radioInputWrapper.appendChild(input);
+    card.appendChild(radioInputWrapper);
+
+    availableFieldset.appendChild(card);
+  });
+
+  availableActionsWrapper.appendChild(availableFieldset);
+
+  const currentActionsWrapper = document.createElement('div');
+  currentActionsWrapper.id = 'current-actions-wrapper';
+
+  const currentTitle = document.createElement('h3');
+  currentTitle.textContent = 'Place after';
+  currentActionsWrapper.appendChild(currentTitle);
+
+  const currentFieldset = document.createElement('fieldset');
+
+  const selectorWrapper = document.createElement('div');
+  selectorWrapper.id = 'current-selector-wrapper';
+
+  const selectLabel = document.createElement('label');
+  selectLabel.textContent = 'Action';
+  selectLabel.htmlFor = 'currentAction';
+  selectorWrapper.appendChild(selectLabel);
+
+  const select = document.createElement('select');
+  select.id = 'currentAction';
+  select.name = 'currentAction';
+  select.value = '';
+
+  currentActionSelectEl = select;
+  selectorWrapper.appendChild(select);
+
+  currentFieldset.appendChild(selectorWrapper);
+  currentActionsWrapper.appendChild(currentFieldset);
+
+  parent.appendChild(availableActionsWrapper);
+  parent.appendChild(currentActionsWrapper);
+};
+
+export const buildAddActionSelect = () => {
+
+  const wrapper = getFilterWrapper();
+
+  console.log('buildAddActionSelect invoked', wrapper);
+
+  const makeOption = (text, value) => {
+
+    const opt = document.createElement('option');
+    opt.textContent = text;
+    opt.value = value;
+    return opt;
+  };
+
+  const fragment = document.createDocumentFragment();
+
+  fragment.append(
+    makeOption('[source]', ''),
+    makeOption('[source-alpha]', 'source-alpha'),
+    makeOption('[none] (for process-image only)', 'none'),
+  );
+
+  const actions = wrapper.actions;
+
+  actions.forEach(item => {
+
+    const id = item.id,
+      shortId = id.substring(0, 8),
+      label = item.formSchema.label;
+
+    fragment.append(makeOption(`${label} (${shortId})`, id));
+  });
+
+  currentActionSelectEl.replaceChildren(fragment);
+};
+
+export const actionAddActionSelect = () => {
+
+  const wrapper = getFilterWrapper();
+
+  console.log('actionAddActionSelect invoked', wrapper);
+
+  // We need to do work here to insert the new action, then recalculate graph etc. 
+  // - The simplest approach will be to insert the action
+  // - Remember to modify lineIn/lineOut (though we may not be able to reach perfection here)
+  // - We can pretend we're downloading the current adjusted filter
+  // - But we don't actually download it
+  // - Instead we take the generated packet and "upload" and "select" it as the current filter
+  // - In this way we preserve any amendments user already made to other filter actions
+  // - And we get to use existing functionality to rebuild control forms and the graph
+
+  // Reading the currentActionSelectEl value is easy enough
+  // - But how do we discover which available filter action has been selected (bunch of radiobutton inputs linked by `input.name = 'availableActions'`)
+
+  // Always rebuild the current actions selector as the final action
+  // - We don't close the modal in case user wants to add another filter action
+  buildAddActionSelect();
+};
+
+export const closeAddActionSelect = () => currentActionSelectEl.replaceChildren();
+
+export const buildRemoveActionSelect = () => {
+
+  const wrapper = getFilterWrapper();
+
+  console.log('buildRemoveActionSelect invoked', wrapper);
+
+  const makeOption = (text, value) => {
+
+    const opt = document.createElement('option');
+    opt.textContent = text;
+    opt.value = value;
+    return opt;
+  };
+
+  const fragment = document.createDocumentFragment(),
+    actions = wrapper.actions;
+
+  // We will need a check in case the actions array is empty
+  // - Can't remove an action if there's no action to remove
+  // - Disable both the (empty) selector and the Process button
+  if (actions.length) {
+
+    removeActionSelectEl.removeAttribute('disabled');
+    removeActionProcessEl.removeAttribute('disabled');
+
+    actions.forEach(item => {
+
+      const id = item.id,
+        shortId = id.substring(0, 8),
+        label = item.formSchema.label;
+
+      fragment.append(makeOption(`${label} (${shortId})`, id));
+    });
+
+    removeActionSelectEl.replaceChildren(fragment);
+  }
+  else {
+
+    removeActionSelectEl.setAttribute('disabled', '');
+    removeActionProcessEl.setAttribute('disabled', '');
+  }
+};
+
+export const actionRemoveActionSelect = () => {
+
+  const wrapper = getFilterWrapper();
+
+  console.log('actionRemoveActionSelect invoked', wrapper);
+
+  // Will follow the same sequence as for actionAddActionSelect
+  // - Except here we're deleting an action from the filter
+
+  // Always rebuild the current actions selector as the final action
+  // - We don't close the modal in case user wants to remove another filter action
+  buildRemoveActionSelect();
+};
+
+export const closeRemoveActionSelect = () => removeActionSelectEl.replaceChildren();
+
+
 // Init function
 export const initFilterBuilder = () => {
 
@@ -337,8 +568,7 @@ export const initFilterBuilder = () => {
   imageAssetsHold = dom[DOMID.ASSETS_HOLD];
 
 
-
-  const frag = new DocumentFragment(),
+  const frag = document.createDocumentFragment(),
     starterFiltersArea = dom[DOMID.FILTER_STARTERS];
 
   filterGroups.forEach(grp => {
@@ -412,6 +642,12 @@ export const initFilterBuilder = () => {
 
   scrawl.addNativeListener('click', downloadFilter, dom[DOMID.FILTER_DOWNLOAD]);
 
+
+  // Build out the permanent parts of addFilterAction modal
+  buildAddFilterActionModal();
+
+  removeActionSelectEl = dom[DOMID.REMOVE_ACTION_SELECT];
+  removeActionProcessEl = dom[DOMID.REMOVE_ACTION_PROCESS];
 
   // Return object
   return { checkIfFilterHasChanged };
