@@ -3118,7 +3118,7 @@ export const initFormBuilder = (actionWrapperLibrary = null) => {
                   el.set({ dimensions: [200, 80] });
                   stackDragGroup.addArtefacts(el);
 
-                }, 250);
+                }, 350);
               }
             }
 
