@@ -1,4 +1,7 @@
-
+/* 
+VARIABLES 
+---------
+*/
 :root {
   /* Root font size (rem) */
   font: 16px Arial, sans-serif;
@@ -173,6 +176,11 @@ input[type="range"] {
   }
 }
 
+
+/* 
+PAGE STYLING 
+------------
+*/
 body {
   margin: 0;
   border: 0;
@@ -207,6 +215,10 @@ main {
   overflow: hidden;
 }
 
+/* 
+LEFT PANEL STYLING 
+-------------------
+*/
 #image-controls-panel {
   height: 100%;
   min-height: 0;
@@ -368,12 +380,6 @@ main {
   }
 }
 
-#main-canvas-container {
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-}
-
 #minimap-panel {
 
   & button {
@@ -403,6 +409,22 @@ main {
   }
 }
 
+
+/* 
+MAIN CANVAS STYLING 
+-------------------
+*/
+#main-canvas-container {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+
+/* 
+RIGHT PANEL STYLING 
+-------------------
+*/
 #filter-controls-panel {
   height: 100%;
   min-height: 0;
@@ -1184,6 +1206,10 @@ main.filter-has-been-modified #filter-controls-panel > h2 span#current-filter-mo
 }
 
 
+/* 
+SPLITTER BAR STYLING 
+--------------------
+*/
 #splitter {
   height: 6px;
   cursor: row-resize;
@@ -1194,6 +1220,11 @@ main.filter-has-been-modified #filter-controls-panel > h2 span#current-filter-mo
   }
 }
 
+
+/* 
+FILTER GRAPH STYLING 
+--------------------
+*/
 #filter-builder-area {
   min-width: 0;
   min-height: 0;
@@ -1242,6 +1273,11 @@ main.filter-has-been-modified #filter-controls-panel > h2 span#current-filter-mo
   }
 }
 
+
+/* 
+DIALOGUE STYLING 
+----------------
+*/
 dialog {
   max-height: 80vh;
   max-width: 80vw;
@@ -1261,11 +1297,12 @@ dialog {
   }
 }
 
+/* "Remove images from batch" */
 #image-batch-modal {
 
   width: 60vw;
   max-width: 60rem;
-  height: 80vh;
+  max-height: 80vh;
   overflow-y: auto;
   box-sizing: border-box;
   line-height: 1.5;
@@ -1321,11 +1358,12 @@ dialog {
   }
 }
 
+/* Process and download images */
 #downloads-modal {
 
   width: 60vw;
   max-width: 60rem;
-  height: 80vh;
+  max-height: 80vh;
   overflow-y: auto;
   box-sizing: border-box;
   line-height: 1.5;
@@ -1408,11 +1446,12 @@ dialog {
 
 }
 
+/* Instructions */
 #instructions-modal {
 
   width: 60vw;
   max-width: 60rem;
-  height: 80vh;
+  max-height: 80vh;
   overflow-y: auto;
   box-sizing: border-box;
   line-height: 1.3;
@@ -1450,6 +1489,7 @@ dialog {
   color: var(--advice-color);
 }
 
+/* Change filter */
 #change-filter-modal {
 
   width: 60vw;
@@ -1549,3 +1589,58 @@ dialog {
     }
   }
 }
+
+/* Add action to filter */
+#add-action-modal {
+
+  width: 60vw;
+  max-width: 60rem;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  line-height: 1.5;
+
+  & button#add-action-process {
+    text-align: center;
+    width: 100%;
+    font-size: 1.2rem;
+    border: 1px solid var(--dialog-button-border);
+    background-color: var(--dialog-button-background);
+    border-radius: 5px;
+    padding: 0.25rem 0.5rem;
+    margin: 1rem 0 0;
+
+    &:hover {
+      background-color: var(--dialog-cta-button-background);
+      color: var(--dialog-cta-button-color);
+    }
+  }
+}
+
+/* Remove action from filter */
+#remove-action-modal {
+
+  width: 60vw;
+  max-width: 60rem;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  line-height: 1.5;
+
+  & button#remove-action-process {
+    text-align: center;
+    width: 100%;
+    font-size: 1.2rem;
+    border: 1px solid var(--dialog-button-border);
+    background-color: var(--dialog-button-background);
+    border-radius: 5px;
+    padding: 0.25rem 0.5rem;
+    margin: 1rem 0 0;
+
+    &:hover {
+      background-color: var(--dialog-cta-button-background);
+      color: var(--dialog-cta-button-color);
+    }
+  }
+}
+

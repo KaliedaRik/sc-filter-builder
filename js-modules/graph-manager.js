@@ -25,6 +25,7 @@ const ZERO_STR = '',
   L_RESULT = '[result]',
   L_BAD_LINE = '[bad-line]',
   L_SOURCES = [L_SOURCE, L_SOURCE_ALPHA],
+  CHECK_SOURCES = [L_SOURCE, SOURCE, L_SOURCE_ALPHA, SOURCE_ALPHA, L_WORK],
   
   PROCESS_IMAGE = 'process-image',
   DISPLACE = 'displace',
@@ -350,7 +351,8 @@ const generateSimpleEdgesData = (nodes) => {
 const generateEdgesData = (nodes) => {
 
   const edges = [],
-    namedOutputs = new Map();
+    namedOutputs = new Map(),
+    consumedOutputs = new Set();
 
   let workSource = SOURCE;
 
@@ -364,13 +366,20 @@ const generateEdgesData = (nodes) => {
       to: n.id,
       socket: IN,
       label: null,
+      error: L_BAD_LINE,
     });
-    else if (n.lineInLabel) edges.push({
-      from: getEdgeSource(n.lineInLabel, namedOutputs, workSource),
-      to: n.id,
-      socket: IN,
-      label: n.lineInLabel,
-    });
+
+    else if (n.lineInLabel) {
+
+      if (!CHECK_SOURCES.includes(n.lineInLabel)) consumedOutputs.add(n.lineInLabel);
+
+      edges.push({
+        from: getEdgeSource(n.lineInLabel, namedOutputs, workSource),
+        to: n.id,
+        socket: IN,
+        label: n.lineInLabel,
+      });
+    }
 
     // lineMix edge
     if (L_BAD_LINE === n.lineMixLabel) edges.push({
@@ -378,13 +387,20 @@ const generateEdgesData = (nodes) => {
       to: n.id,
       socket: MIX,
       label: null,
+      error: L_BAD_LINE,
     });
-    else if (n.lineMixLabel) edges.push({
-      from: getEdgeSource(n.lineMixLabel, namedOutputs, workSource),
-      to: n.id,
-      socket: MIX,
-      label: n.lineMixLabel,
-    });
+
+    else if (n.lineMixLabel) {
+
+      if (!CHECK_SOURCES.includes(n.lineMixLabel)) consumedOutputs.add(n.lineMixLabel);
+
+      edges.push({
+        from: getEdgeSource(n.lineMixLabel, namedOutputs, workSource),
+        to: n.id,
+        socket: MIX,
+        label: n.lineMixLabel,
+      });
+    }
 
     // Register this node's output for downstream actions
     if (L_BAD_LINE === n.lineOutLabel) edges.push({
@@ -392,6 +408,7 @@ const generateEdgesData = (nodes) => {
       to: null,
       socket: OUT,
       label: null,
+      error: L_BAD_LINE,
     });
     else if (n.lineOutLabel === L_RESULT) edges.push({
       from: n.id,
@@ -401,6 +418,28 @@ const generateEdgesData = (nodes) => {
     });
     else if (n.lineOutLabel === L_WORK) workSource = n.id;
     else if (n.lineOutLabel) namedOutputs.set(n.lineOutLabel, n.id);
+  });
+
+  namedOutputs.forEach((fromId, lineName) => {
+
+    if (!consumedOutputs.has(lineName)) {
+
+      const node = nodes.find(n => n.id === fromId);
+
+      if (node) {
+
+        node.error = node.error || 'Unused lineOut value';
+        node.lineOutLabel = L_BAD_LINE;
+      }
+
+      edges.push({
+        from: fromId,
+        to: null,
+        socket: OUT,
+        label: null,
+        error: L_BAD_LINE,
+      });
+    }
   });
 
   return edges;
