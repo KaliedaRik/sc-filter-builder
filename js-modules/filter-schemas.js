@@ -60,7 +60,7 @@ const actionSchemas = {
 
   ['alpha-to-channels']: {
     label: 'Copy alpha to channels',
-    description: 'Copies an input\'s alpha channel value over to each selected channel\'s value or, alternatively, sets that channel\'s value to zero, or leaves the channel\'s value unchanged. Setting the appropriate includeChannel flags will copy the alpha channel value to that channel; when that flag is false, setting the appropriate excludeChannel flag will set that channel\'s value to zero.',
+    description: "Copies an input's alpha channel value over to each selected channel's value or, alternatively, sets that channel's value to zero, or leaves the channel's value unchanged. Setting the appropriate 'includeChannel' flags will copy the alpha channel value to that channel; when that flag is false, setting the appropriate 'excludeChannel' flag will set that channel's value to zero.",
     action: 'alpha-to-channels',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -113,7 +113,7 @@ const actionSchemas = {
 
   ['alpha-to-luminance']: {
     label: 'Copy alpha to luminance',
-    description: '',
+    description: "For each pixel in the input, where alpha is not 0: convert to OKLAB; set L to alpha value; set A and B to 0; convert back to RGB",
     action: 'alpha-to-luminance',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -124,7 +124,7 @@ const actionSchemas = {
 
   ['area-alpha']: {
     label: 'Area alpha',
-    description: 'Places a tile schema across the input, quarters each tile and then sets the alpha channels of the pixels in selected quarters of each tile to the appropriate value specified in the areaAlphaLevels attribute.',
+    description: "Places a tile schema across the input, quarters each tile and then sets the alpha channels of the pixels in selected quarters of each tile to the appropriate value specified in the `areaAlphaLevels` attribute. Can be used to create horizontal or vertical bars, or chequerboard effects.",
     action: 'area-alpha',
     viewportAccuracy: 'scale-poor',
     hasOrigin: true,
@@ -202,7 +202,7 @@ const actionSchemas = {
 
   ['average-channels']: {
     label: 'Average channels',
-    description: 'Calculates an average value from each pixel\'s included channels and applies that value to all channels that have not been specifically excluded; excluded channels have their values set to 0.',
+    description: "Calculates an average value from each pixel's included channels and applies that value to all channels that have not been specifically excluded; excluded channels have their values set to 0.",
     action: 'average-channels',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -255,7 +255,7 @@ const actionSchemas = {
 
   ['blend']: {
     label: 'Blend operations',
-    description: '',
+    description: "Uses two inputs – 'lineIn', 'lineMix' – and combines their pixel data using various separable and non-separable blend modes. The lineMix input can be moved relative to the lineIn input using the 'offsetX' and 'offsetY' attributes.",
     action: 'blend',
     viewportAccuracy: 'poor',
     hasOrigin: true,
@@ -301,7 +301,7 @@ const actionSchemas = {
 
   ['blur']: {
     label: 'Box blur',
-    description: '',
+    description: "A bespoke box blur function. Creates visual artefacts from various settings that might be useful.",
     action: 'blur',
     viewportAccuracy: 'scale-poor',
     hasOrigin: false,
@@ -421,7 +421,7 @@ const actionSchemas = {
 
   ['channels-to-alpha']: {
     label: 'Copy channels to alpha',
-    description: 'Calculates an average value from each pixel\'s included channels and applies that value to the pixel\'s alpha channel.',
+    description: "Calculates an average value from each pixel's included channels and applies that value to the pixel's alpha channel.",
     action: 'channels-to-alpha',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -453,7 +453,7 @@ const actionSchemas = {
 
   ['chroma']: {
     label: 'Chroma clear by ranges',
-    description: 'Produces a chroma key compositing effect across the input, using an array of range arrays to determine whether a pixel\'s values lie entirely within a range\'s values and, if true, sets that pixel\'s alpha channel value to zero.',
+    description: "Produces a chroma key compositing effect across the input. Using an array of 'range' arrays, determines whether a pixel's values lie entirely within a range's values and, if true, sets that pixel's alpha channel value to zero. The modification to the alpha channel value can be feathered to create a more subtle effect.",
     action: 'chroma',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -501,7 +501,7 @@ const actionSchemas = {
 
   ['clamp-channels']: {
     label: 'Clamp channels',
-    description: 'Clamp each color channel to a range determined by a set of low and high channel values.',
+    description: "Clamp each color channel to a range determined by a set of 'low' and 'high' channel values. These attributes' values should be integer Numbers between 0 and 255.",
     action: 'clamp-channels',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -572,7 +572,7 @@ const actionSchemas = {
 
   ['colors-to-alpha']: {
     label: 'Chroma clear by reference',
-    description: 'Produces a chroma key compositing effect across the input by determining the alpha channel value for each pixel depending on the closeness to that pixel\'s color channel values to a reference color supplied in the red, green and blue arguments.',
+    description: "Produces a chroma key compositing effect across the input. Determine the alpha channel value for each pixel depending on the closeness of that pixel's color channel values to a reference color. The sensitivity of the effect can be manipulated using the 'transparentAt' and 'opaqueAt' attributes.",
     action: 'colors-to-alpha',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -633,7 +633,7 @@ const actionSchemas = {
 
   ['compose']: {
     label: 'Composition operations',
-    description: '',
+    description: "Performs a Porter-Duff compositing operation on two inputs. Note that the 'lineMix' input can be offset using the 'offsetX' and 'offsetY' attributes.",
     action: 'compose',
     viewportAccuracy: 'poor',
     hasOrigin: true,
@@ -679,7 +679,7 @@ const actionSchemas = {
 
   ['corrode']: {
     label: 'Corrode',
-    description: '',
+    description: "Performs a special form of matrix operation on each input pixel's color and alpha channels, calculating the new value using neighbouring pixel values. This is a rough equivalent to the SVG <feMorphology> filter primitive.",
     action: 'corrode',
     viewportAccuracy: 'poor',
     hasOrigin: false,
@@ -766,7 +766,7 @@ const actionSchemas = {
 
   ['displace']: {
     label: 'Displace',
-    description: '',
+    description: "Moves pixels around the input image, based on the color channel values supplied by a displacement map image. This is the SC filter engine's attempt to reproduce the SVG <feDisplacementMap> filter primitive.",
     action: 'displace',
     viewportAccuracy: 'poor',
     hasOrigin: true,
@@ -854,7 +854,7 @@ const actionSchemas = {
 
   ['emboss']: {
     label: 'Emboss',
-    description: '',
+    description: "Performs a directional difference filter across the input, using a 3x3 weighted matrix. The 'angle' and 'strength' attributes contribute to the weights used in the matrix. The function also handles some post-processing effects, controlled by the 'postProcessResults' and 'keepOnlyChangedAreas' flags, and the 'tolerance' attribute.",
     action: 'emboss',
     viewportAccuracy: 'poor',
     hasOrigin: false,
@@ -909,7 +909,7 @@ const actionSchemas = {
 
   ['flood']: {
     label: 'Flood',
-    description: 'Creates a uniform sheet of the required color, which can then be used by other filter actions.',
+    description: "Creates a uniform sheet of the required color, which can then be used by other filter actions. The color are set through the red, green, blue and alpha attributes; these attribute values should be integer Numbers between 0 and 255. The flood can be restricted to only apply to non-transparent input pixels using the excludeAlpha flag.",
     action: 'flood',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -967,7 +967,7 @@ const actionSchemas = {
 
   ['gaussian-blur']: {
     label: 'Gaussian blur',
-    description: '',
+    description: "Generates a gaussian blur effect from the input. The code behind the action uses an infinite impulse response algorithm to produce the blur. The horizontal and vertical parts of the blur can be separately set. Channels can also be excluded from the blur calculations, and the blur effect can be restricted to just the non-transparent parts of the input.",
     action: 'gaussian-blur',
     viewportAccuracy: 'scale-poor',
     hasOrigin: false,
@@ -1050,7 +1050,7 @@ const actionSchemas = {
 
   ['glitch']: {
     label: 'Glitch',
-    description: '',
+    description: "Generates a semi-random shift across the input's horizontal rows.",
     action: 'glitch',
     viewportAccuracy: 'poor',
     hasOrigin: true,
@@ -1209,7 +1209,7 @@ const actionSchemas = {
 
   ['grayscale']: {
     label: 'Desaturate',
-    description: '',
+    description: "Averages the input's appropriately weighted color channel values for each pixel, to produce a more realistic black-and-white monochrome effect.",
     action: 'grayscale',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -1220,7 +1220,7 @@ const actionSchemas = {
 
   ['invert-channels']: {
     label: 'Invert colors',
-    description: '',
+    description: "Inverts the color channel values in the input, producing an effect similar to a photograph negative. Color channels can be excluded from the calculation using the 'include' flags.",
     action: 'invert-channels',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -1252,7 +1252,7 @@ const actionSchemas = {
 
   ['lock-channels-to-levels']: {
     label: 'Posterize by value',
-    description: '',
+    description: "Produces a posterization effect on the input. Takes in four arguments – 'red', 'green', 'blue' and 'alpha' – each of which is an Array of zero or more integer Numbers (between 0 and 255). The filter works by looking at each pixel's channel value and determines which of the corresponding Array's Number values it is closest to; it then sets the channel value to that Number value.",
     action: 'lock-channels-to-levels',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -1291,7 +1291,7 @@ const actionSchemas = {
 
   ['luminance-to-alpha']: {
     label: 'Copy luminance to alpha',
-    description: '',
+    description: "For each pixel in the input: calculate OKLAB luminance from RGB colors; set alpha to luminance; set color channels to 0",
     action: 'luminance-to-alpha',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -1302,7 +1302,7 @@ const actionSchemas = {
 
   ['map-to-gradient']: {
     label: 'Map to gradient',
-    description: '',
+    description: "Applies a gradient to a grayscaled input. The type of grayscale can be set using the 'useNaturalGrayscale' flag. The grayscale is applied as part of the action and does not need to be created in a prior chained action.",
     action: 'map-to-gradient',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -1327,7 +1327,7 @@ const actionSchemas = {
 
   ['matrix']: {
     label: 'Matrix',
-    description: '',
+    description: "Applies a convolution matrix (also known as a kernel, or mask) operation to the input. The matrix dimensions must be set using the 'width' and 'height' attributes, and the weights for the matrix supplied in the 'weights' attribute's Array. The matrix does not need to be centered.",
     action: 'matrix',
     viewportAccuracy: 'scale-poor',
     hasOrigin: false,
@@ -1427,7 +1427,7 @@ const actionSchemas = {
 
   ['modify-ok-channels']: {
     label: 'Modify OK channels',
-    description: '',
+    description: "For each pixel in the input: convert to OKLAB; add a value to each of the OKLAB channels; convert back to RGB.",
     action: 'modify-ok-channels',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -1468,7 +1468,7 @@ const actionSchemas = {
 
   ['modulate-channels']: {
     label: 'Modulate channels',
-    description: '',
+    description: "Multiplies each channel's value by the supplied argument value. A channel-argument's value of 0 will set that channel's value to zero; a value of 1 will leave the channel value unchanged. If the 'saturation' flag is set to true the calculation changes to start at that pixel's grayscale values.",
     action: 'modulate-channels',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -1526,7 +1526,7 @@ const actionSchemas = {
 
   ['modulate-ok-channels']: {
     label: 'Modulate OK channels',
-    description: '',
+    description: "For each pixel in the input: convert to OKLAB; multiplies a value to each of the OKLAB channels; convert back to RGB.",
     action: 'modulate-ok-channels',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -1567,7 +1567,7 @@ const actionSchemas = {
 
   ['negative']: {
     label: 'OK Negative',
-    description: 'Invert OKLab channel colors',
+    description: "For each pixel in the input: convert to OKLCH; rotate hue value 180deg; subtract luminance from 1; convert back to RGB.",
     action: 'negative',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -1578,7 +1578,7 @@ const actionSchemas = {
 
   ['newsprint']: {
     label: 'Newsprint',
-    description: '',
+    description: "A crude (but interesting) black-white pseudo-dither effect.",
     action: 'newsprint',
     viewportAccuracy: 'poor',
     hasOrigin: false,
@@ -1599,7 +1599,7 @@ const actionSchemas = {
 
   ['offset']: {
     label: 'Offset',
-    description: '',
+    description: "Moves each channel input by an offset set for that channel.",
     action: 'offset',
     viewportAccuracy: 'poor',
     hasOrigin: true,
@@ -1697,7 +1697,7 @@ const actionSchemas = {
 
   ['ok-perceptual-curves']: {
     label: 'Tone curve',
-    description: '',
+    description: "Apply a set of ok-channel-based curve weightings to the input image.",
     action: 'ok-perceptual-curves',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -1720,7 +1720,7 @@ const actionSchemas = {
 
   ['pixelate']: {
     label: 'Pixelate',
-    description: '',
+    description: "Averages the colors within a set of rectangular blocks across the input to produce a series of obscuring tiles. Individual channels can be included in the calculation by setting their respective 'include' flags.",
     action: 'pixelate',
     viewportAccuracy: 'scale-poor',
     hasOrigin: true,
@@ -1799,7 +1799,7 @@ const actionSchemas = {
 
   ['process-image']: {
     label: 'Image asset',
-    description: 'Upload an image asset for use in other actions.',
+    description: "Loads an image into the filter engine, where it can then be used by other filter actions. Useful for effects such as watermarking an image. Used with blend, compose and displace actions.",
     action: 'process-image',
     viewportAccuracy: 'poor',
     hasOrigin: true,
@@ -1911,7 +1911,7 @@ const actionSchemas = {
 
   ['random-noise']: {
     label: 'Random noise',
-    description: '',
+    description: "Creates a stippling effect across the image. The spread of the effect can be controlled using the 'width' and 'height' attributes (which can be negative).",
     action: 'random-noise',
     viewportAccuracy: 'poor',
     hasOrigin: false,
@@ -2009,7 +2009,7 @@ const actionSchemas = {
 
   ['reduce-palette']: {
     label: 'Reduce palette',
-    description: '',
+    description: "Analyses the input and, dependent on settings, either calculates a 'commonest colors' reduced palette based on the input colors; or uses a predefined palette. It then applies that palette to the input.",
     action: 'reduce-palette',
     viewportAccuracy: 'poor',
     hasOrigin: false,
@@ -2052,7 +2052,7 @@ const actionSchemas = {
 
   ['rotate-hue']: {
     label: 'Rotate hue',
-    description: '',
+    description: "For each pixel in the input: convert to OKLCH; rotate hue value by given angle (measured in degrees); convert back to RGB.",
     action: 'rotate-hue',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -2073,7 +2073,7 @@ const actionSchemas = {
 
   ['set-channel-to-level']: {
     label: 'Set channel to level',
-    description: '',
+    description: "Sets the value of each pixel's included channel to the value supplied in the 'level' attribute.",
     action: 'set-channel-to-level',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -2122,7 +2122,7 @@ const actionSchemas = {
 
   ['step-channels']: {
     label: 'Posterize by step',
-    description: '',
+    description: "Restricts the number of color values that each channel can set by imposing regular bands on each channel. This produces a posterization effect on the input. Takes three divisor values – 'red', 'green', 'blue'; for each pixel, its color channel values are divided by the corresponding color divisor, floored to the integer value and then multiplied by the divisor.",
     action: 'step-channels',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -2169,14 +2169,9 @@ const actionSchemas = {
     },
   },
 
-  // For the tool, we shall allow the user to define just one swirl per action
-  // - To make the UI easier to manage/navigate
-  // - Each swirl is defined by an array in the form `[startX, startY, innerRadius, outerRadius, angle, easing]`
-  // - swirl arrays then get pushed into the `swirls` attribute
-  // - Might be easier to just feed the arguments into the `makeFilter({method: 'swirl'}) function and extract what we need`
   ['swirl']: {
     label: 'Swirl',
-    description: '',
+    description: "For each input pixel, move the pixel radially according to its distance from a given coordinate and associated angle for that coordinate. This filter can handle multiple swirls in a single pass.",
     action: 'swirl',
     viewportAccuracy: 'poor',
     hasOrigin: true,
@@ -2208,7 +2203,7 @@ const actionSchemas = {
 
   ['threshold']: {
     label: 'Threshold',
-    description: '',
+    description: "Creates a duotone effect across the input by: grayscaling the input. then, for each pixel, checks the color channel values against a 'level' argument: pixels with channel values above the level value are assigned to the 'high' color; otherwise they are updated to the 'low' color.",
     action: 'threshold',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -2324,7 +2319,7 @@ const actionSchemas = {
 
   ['tiles']: {
     label: 'Tiles',
-    description: '',
+    description: "Covers the input with tiles whose color matches the average channel values for the pixels included in each tile. Has a similarity to the pixelate filter action, but uses a set of coordinate points to generate the tiles which results in a more Delaunay-like output. The filter has a number of modes, set on the 'mode' attribute: 'rect', 'hex', 'random'. Each mode has its own set of attributes.",
     action: 'tiles',
     viewportAccuracy: 'scale-poor',
     hasOrigin: true,
@@ -2479,7 +2474,7 @@ const actionSchemas = {
 
   ['tint-channels']: {
     label: 'Tint',
-    description: '',
+    description: "Transforms an input's pixel values based on an interplay between the values of each pixel's red, green and blue channel values.",
     action: 'tint-channels',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -2580,7 +2575,7 @@ const actionSchemas = {
 
   ['unsharp']: {
     label: 'Unsharp',
-    description: '',
+    description: "Applies an edge-aware unsharp mask in OKLab space, sharpening only the lightness (L) channel while leaving chroma (a/b) intact. The filter converts each non-transparent pixel from RGB to OKLab, then applies a separable recursive (IIR) Gaussian blur to the L channel only. A 'detail' layer is formed by subtracting the blurred L from the original L. In parallel, a Sobel magnitude is computed on the same L channel and mapped through a smoothstep curve to produce an edge mask, ensuring that sharpening is concentrated around genuine edges.",
     action: 'unsharp',
     viewportAccuracy: 'poor',
     hasOrigin: false,
@@ -2648,7 +2643,7 @@ const actionSchemas = {
 
   ['vary-channels-by-weights']: {
     label: 'Color curve',
-    description: '',
+    description: "Applies an array of weights values to the input's pixel data. This represents a form of tone mapping.",
     action: 'vary-channels-by-weights',
     viewportAccuracy: 'good',
     hasOrigin: false,
@@ -2673,7 +2668,7 @@ const actionSchemas = {
 
   ['zoom-blur']: {
     label: 'Zoom blur',
-    description: '',
+    description: "Applies a bespoke ease-weighted radial (zoom) blur with optional angle and jitter variation. Parameters such as strength, samples, variation (per-pixel jitter driven by a seed), and angle (for an optional spin component) shape the overall character of the blur.",
     action: 'zoom-blur',
     viewportAccuracy: 'poor',
     hasOrigin: true,
@@ -4010,7 +4005,14 @@ export const getFilterSchema = (name) => {
   return null;
 };
 
-export const filterSchemaKeys = Object.keys(filterSchemas).sort();
+export const filterSchemaKeys = Object.keys(filterSchemas).sort((a, b) => {
+
+  const A = getFilterSchema(a),
+    B = getFilterSchema(b);
+
+    if (A.label > B.label) return 1;
+    return -1;
+});
 
 export const getActionSchema = (name) => {
 
