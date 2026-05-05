@@ -36,7 +36,7 @@ let currentFilterWrapper, currentFilterTitleElement,
   imageAssetsHold, userFiltersArea,
   scrawl, canvas, dom, filterImport,
   currentActionSelectEl, removeActionSelectEl,
-  currentActionRenameEl,
+  currentActionRenameEl, removeActionRenameEl,
   removeActionProcessEl;
 
 const ADD_AFTER_SOURCE = 'source',
@@ -653,8 +653,6 @@ export const buildRemoveActionSelect = () => {
 
   const wrapper = getFilterWrapper();
 
-  console.log('buildRemoveActionSelect invoked', wrapper);
-
   const makeOption = (text, value) => {
 
     const opt = document.createElement('option');
@@ -666,9 +664,6 @@ export const buildRemoveActionSelect = () => {
   const fragment = document.createDocumentFragment(),
     actions = wrapper.actions;
 
-  // We will need a check in case the actions array is empty
-  // - Can't remove an action if there's no action to remove
-  // - Disable both the (empty) selector and the Process button
   if (actions.length) {
 
     removeActionSelectEl.removeAttribute('disabled');
@@ -687,22 +682,87 @@ export const buildRemoveActionSelect = () => {
   }
   else {
 
+    removeActionSelectEl.replaceChildren();
     removeActionSelectEl.setAttribute('disabled', '');
     removeActionProcessEl.setAttribute('disabled', '');
   }
+
+  removeActionRenameEl.value = bumpFilterVersion(currentFilterTitleElement.textContent);
+};
+
+const repairLinesAfterRemoval = (actions, removedAction, removeIndex) => {
+
+  if (!removedAction) return;
+
+  const removedOut = removedAction.lineOut || '';
+
+  if (!removedOut) return;
+
+  const previous = actions[removeIndex - 1];
+
+  let replacement = '';
+
+  if (previous) replacement = previous.lineOut || '';
+  else if (removedAction.lineIn === SOURCE_ALPHA) replacement = SOURCE_ALPHA;
+  else if (removedAction.lineIn === SOURCE) replacement = SOURCE;
+  else replacement = '';
+
+  actions.forEach((action, index) => {
+
+    if (index < removeIndex) return;
+
+    if (action.lineIn === removedOut) action.lineIn = replacement;
+    if (action.lineMix === removedOut) action.lineMix = replacement;
+  });
 };
 
 export const actionRemoveActionSelect = () => {
 
-  const wrapper = getFilterWrapper();
+  const removeId = removeActionSelectEl.value;
 
-  console.log('actionRemoveActionSelect invoked', wrapper);
+  if (!removeId) {
 
-  // Will follow the same sequence as for actionAddActionSelect
-  // - Except here we're deleting an action from the filter
+    console.warn('No filter action selected for removal');
+    return;
+  }
 
-  // Always rebuild the current actions selector as the final action
-  // - We don't close the modal in case user wants to remove another filter action
+  const removeIndex = currentFilterWrapper.actions.findIndex(item => item.id === removeId);
+
+  if (removeIndex < 0) {
+
+    console.warn(`Cannot find action with id ${removeId}`);
+    return;
+  }
+
+  let newName = removeActionRenameEl.value;
+  if (!newName) newName = 'Work in progress filter';
+
+  const currentActions = structuredClone(currentFilterWrapper.filter.actions),
+    currentSchemaNames = structuredClone(currentFilterWrapper.formSchemaName),
+    removedAction = currentActions[removeIndex];
+
+  currentActions.splice(removeIndex, 1);
+  currentSchemaNames.splice(removeIndex, 1);
+
+  repairLinesAfterRemoval(currentActions, removedAction, removeIndex);
+
+  const tempFilter = scrawl.makeFilter({
+    name: newName,
+    actions: currentActions,
+  });
+
+  const starter = {
+    title: newName,
+    readableName: newName,
+    formSchemaName: currentSchemaNames,
+    packet: tempFilter.saveAsPacket(),
+    imageSource: null,
+  };
+
+  tempFilter.kill();
+
+  load(starter.packet, starter);
+
   buildRemoveActionSelect();
 };
 
@@ -799,6 +859,7 @@ export const initFilterBuilder = () => {
   buildAddFilterActionModal();
 
   removeActionSelectEl = dom[DOMID.REMOVE_ACTION_SELECT];
+  removeActionRenameEl = dom[DOMID.REMOVE_ACTION_RENAME];
   removeActionProcessEl = dom[DOMID.REMOVE_ACTION_PROCESS];
 
   // Return object

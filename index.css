@@ -1746,12 +1746,26 @@ dialog {
     background-color: var(--dialog-button-background);
     border-radius: 5px;
     padding: 0.25rem 0.5rem;
-    margin: 1rem 0 0;
 
     &:hover {
       background-color: var(--dialog-cta-button-background);
       color: var(--dialog-cta-button-color);
     }
+  }
+
+  & #remove-action-modal-area {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: 1fr 1fr;
+
+    & div {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  & hr {
+    margin: 2rem;
   }
 }
 

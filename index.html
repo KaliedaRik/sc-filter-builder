@@ -315,10 +315,19 @@
     <h2>Remove filter action</h2>
 
     <div id="remove-action-modal-area">
-      <label for="remove-action-modal-select">Action</label>
-      <select id="remove-action-modal-select" name="remove-action-modal-select">
-      </select>
+      <div>
+        <label for="remove-action-modal-select">Action to remove</label>
+        <select id="remove-action-modal-select" name="remove-action-modal-select">
+        </select>
+      </div>
+      <div>
+        <label for="remove-action-rename-filter">Rename filter</label>
+        <input type="text" id="remove-action-rename-filter" name="remove-action-rename-filter">
+        </input>
+      </div>
     </div>
+
+    <hr>
 
     <button type="button" id="remove-action-process">Process request</button>
 
