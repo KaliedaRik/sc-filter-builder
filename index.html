@@ -113,8 +113,8 @@
           data-scrawl-canvas 
           data-is-responsive="true"
           data-base-background-color="lightgreen"
-          data-label="Scrawl-canvas picture editor canvas."
-          data-description=""
+          data-label="Image preview canvas"
+          data-description="Displays the current filter applied to selected images. Updates automatically when filter settings change. Includes zoom and pan functionality."
           data-canvas-color-space="display-p3"
         >
           <div id="image-assets-hold" aria-hidden="true"></div>
@@ -195,17 +195,23 @@
           id="filter-builder-stack"
           data-scrawl-stack
           data-is-responsive="true"
+          aria-label="Filter graph editor"
+          aria-describedby="filter-graph-desc"
         >
           <canvas 
             id="filter-builder-canvas" 
             data-scrawl-canvas 
             data-is-responsive="true"
             data-base-background-color="rgb(220 220 220)"
-            data-label="Scrawl-canvas filter builder canvas."
-            data-description=""
+            data-canvas-color-space="display-p3"
+            data-label="Filter graph canvas"
+            data-description="Displays and allows interaction with filter nodes and their connections"
           ></canvas>
         </div>
 
+        <div id="filter-graph-desc" class="visually-hidden">
+          Visual representation of the filter pipeline. Each node is a filter action. Use keyboard or mouse to select a node to edit its settings. Connections show how image data flows between actions.
+        </div>
       </div>
 
       <!-- Graph button holding area -->

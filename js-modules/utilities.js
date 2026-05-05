@@ -33,8 +33,13 @@ export const FILTER_IDENTIFIER = '"Filter","filter"';
 export const ASSET_IDENTIFIER = '"type":"SC_IMAGE_ASSET"';
 
 export const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
-export const MAX_AREA = 16_000_000;
-export const MAX_DIMENSION = 4096;
+export const DEFAULT_MAX_AREA = 16_000_000;
+export const DEFAULT_MAX_DIMENSION = 4096;
+
+export const CANVAS_LIMITS = {
+  maxArea: DEFAULT_MAX_AREA,
+  maxDimension: DEFAULT_MAX_DIMENSION,
+};
   
 // Mapping HTML element ids to JS element handles
 export const DOMID = {

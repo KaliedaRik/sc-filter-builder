@@ -5,6 +5,7 @@ import {
   DOMID,
   FLAGS,
   MODIFIED_FILTER_CSS,
+  CANVAS_LIMITS,
   getFilterWrapper,
   setScrawlHandle,
   setDomHandle,
@@ -22,6 +23,7 @@ const builderCanvas = scrawl.findCanvas('filter-builder-canvas');
 // ------------------------------------------------------------------------
 // Module imports
 // ------------------------------------------------------------------------
+import { detectCanvasLimits } from './js-modules/canvas-probe.js';
 import { initDomLayout } from './js-modules/dom-layout-ui.js';
 import { initModalManagement } from './js-modules/modal-management.js';
 import { initGraphManager } from './js-modules/graph-manager.js';
@@ -123,6 +125,9 @@ setDomHandle(dom);
 // ------------------------------------------------------------------------
 // Start the page running
 // ------------------------------------------------------------------------
+detectCanvasLimits();
+console.log('Canvas limits:', CANVAS_LIMITS);
+
 initDomLayout();
 initModalManagement();
 initImageImport();

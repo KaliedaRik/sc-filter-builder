@@ -6,8 +6,7 @@ import {
   generateShortId,
   DOMID,
   ACCEPTED_IMAGE_TYPES,
-  MAX_AREA,
-  MAX_DIMENSION,
+  CANVAS_LIMITS,
   getFilterWrapper,
   getDomHandle,
   getScrawlHandle,
@@ -216,7 +215,11 @@ const createControl_imageAsset = (data, actionWrapper) => {
 
       const { naturalWidth: w, naturalHeight: h } = assetImg;
 
-      if (w <= MAX_DIMENSION && h <= MAX_DIMENSION && (w * h) <= MAX_AREA) {
+      if (
+        w <= CANVAS_LIMITS.maxDimension &&
+        h <= CANVAS_LIMITS.maxDimension &&
+        (w * h) <= CANVAS_LIMITS.maxArea
+      ) {
 
         scrawl.importDomImage(`#${assetId}`);
 
