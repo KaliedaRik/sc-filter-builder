@@ -14,9 +14,10 @@
 
   <main>
 
+    <!-- START top panels: image controls, canvas, filter controls -->
     <div id="image-work">
       
-      <!-- Top-left image controls panel -->
+      <!-- START left side image controls panel -->
       <div id="image-controls-panel">
 
         <h1>SC Filter Builder</h1>
@@ -103,44 +104,28 @@
         <button type="button" id="downloads-modal-button">Downloads</button>
 
       </div>
+      <!-- END left side image controls panel -->
 
-      <!-- Canvas app -->
+      <!-- START main canvas -->
       <div id="main-canvas-container">
         <canvas 
           id="main-canvas" 
           data-scrawl-canvas 
           data-is-responsive="true"
           data-base-background-color="lightgreen"
-          data-label="Scrawl-canvas picture editor canvas."
-          data-description=""
+          data-label="Image preview canvas"
+          data-description="Displays the current filter applied to selected images. Updates automatically when filter settings change. Includes zoom and pan functionality."
           data-canvas-color-space="display-p3"
         >
           <div id="image-assets-hold" aria-hidden="true"></div>
         </canvas>
       </div>
+      <!-- END main canvas -->
 
-      <!-- Right-side filter controls panel -->
+      <!-- START right-side filter controls panel -->
       <div id="filter-controls-panel">
 
-        <div class="filter-controls-panel-top-buttons">
-          
-          <!-- Import user filter -->
-          <div id="import-filter-button">
-            <input id="import-filter" type="file" accept=".txt" multiple>
-            <label for="import-filter">Import filter</label>
-          </div>
-
-          <!-- Download current filter -->
-          <button type="button" id="download-filter-button">Download filter</button>
-
-          <!-- Change filter -->
-          <button type="button" id="change-filter-modal-button">Change filter</button>
-
-        </div>
-        
-        <!-- Current filter details -->
-        <h2>Current filter:<br><span id="current-filter-name">[current filter name goes here]</span> <span id="current-filter-modified">(modified)</span></h2>
-
+        <!-- Image preview controls -->
         <div class="preview-controls">
 
           <div class="preview-selector">
@@ -160,40 +145,84 @@
 
         </div>
 
+        <!-- Filter management: import, download, change -->
+        <div class="filter-controls-panel-top-buttons">
+          
+          <!-- Import user filter -->
+          <div id="import-filter-button">
+            <input id="import-filter" type="file" accept=".txt" multiple>
+            <label for="import-filter">Import filter</label>
+          </div>
+
+          <!-- Download current filter -->
+          <button type="button" id="download-filter-button">Download filter</button>
+
+          <!-- Change filter -->
+          <button type="button" id="change-filter-modal-button">Change filter</button>
+
+        </div>
+        
+        <!-- Current filter details -->
+        <h2>Current filter:<br><span id="current-filter-name">[current filter name goes here]</span> <span id="current-filter-modified">(modified)</span></h2>
+
+        <!-- Filter action controls: add, remove -->
+        <div class="filter-controls-panel-top-buttons">
+          
+          <!-- Add action -->
+          <button type="button" id="add-action-modal-button">Add action</button>
+
+          <!-- Remove action -->
+          <button type="button" id="remove-action-modal-button">Remove action</button>
+
+        </div>
+
       </div>
+      <!-- END right-side filter controls panel -->
       
     </div>
+    <!-- END top panels -->
 
     <!-- splitter bar -->
     <div id="splitter"></div>
 
+    <!-- START filter graph panel -->
     <div id="filter-work">
 
-      <!-- Filter building area -->
+      <!-- Graph area -->
       <div id="filter-builder-area">
 
         <div 
           id="filter-builder-stack"
           data-scrawl-stack
           data-is-responsive="true"
+          aria-label="Filter graph editor"
+          aria-describedby="filter-graph-desc"
         >
           <canvas 
             id="filter-builder-canvas" 
             data-scrawl-canvas 
             data-is-responsive="true"
             data-base-background-color="rgb(220 220 220)"
-            data-label="Scrawl-canvas filter builder canvas."
-            data-description=""
+            data-canvas-color-space="display-p3"
+            data-label="Filter graph canvas"
+            data-description="Displays and allows interaction with filter nodes and their connections"
           ></canvas>
         </div>
 
+        <div id="filter-graph-desc" class="visually-hidden">
+          Visual representation of the filter pipeline. Each node is a filter action. Use keyboard or mouse to select a node to edit its settings. Connections show how image data flows between actions.
+        </div>
       </div>
 
-    </div>
+      <!-- Graph button holding area -->
+      <div id="filter-builder-area-hold" aria-hidden="true"></div>
 
-    <div id="filter-builder-area-hold" aria-hidden="true"></div>
+    </div>
+    <!-- END filter graph panel -->
     
   </main>
+
+  <!-- DIALOG modals -->
 
   <!-- image batch modal -->
   <dialog id='image-batch-modal' closedby="any">
@@ -217,7 +246,7 @@
 
     <h2>Downloads management</h2>
 
-    <p>Select the image formats required for each image, and the compression values where appropriate, then click on the <b>Download</b> button to start the task.</p>
+    <p>Select the image formats required for each image, and the compression values where appropriate, then click on the <b>Process and download images</b> button to start the task.</p>
 
     <div class="image-format-container">
       
@@ -268,6 +297,45 @@
     <h3>Starter filters</h3>
     
     <div id="starter-filters-area"></div>
+
+  </dialog>
+
+  <!-- Add filter action modal -->
+  <dialog id='add-action-modal' closedby="any">
+
+    <button type="button" id="add-action-modal-close" autofocus class="close">Close</button>
+
+    <h2>Add filter action</h2>
+
+    <div id="add-action-modal-area"></div>
+
+    <button type="button" id="add-action-process">Process request</button>
+
+  </dialog>
+
+  <!-- Remove filter action modal -->
+  <dialog id='remove-action-modal' closedby="any">
+
+    <button type="button" id="remove-action-modal-close" autofocus class="close">Close</button>
+
+    <h2>Remove filter action</h2>
+
+    <div id="remove-action-modal-area">
+      <div>
+        <label for="remove-action-modal-select">Action to remove</label>
+        <select id="remove-action-modal-select" name="remove-action-modal-select">
+        </select>
+      </div>
+      <div>
+        <label for="remove-action-rename-filter">Rename filter</label>
+        <input type="text" id="remove-action-rename-filter" name="remove-action-rename-filter">
+        </input>
+      </div>
+    </div>
+
+    <hr>
+
+    <button type="button" id="remove-action-process">Process request</button>
 
   </dialog>
 

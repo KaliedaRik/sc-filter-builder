@@ -109,9 +109,13 @@ F.kill = function () {
 
 F.updateFilter = function () {
 
-  const actions = this.actions.map(act => act.action);
+  if (this?.graphData?.errorFlag) this.filter.set({ actions: [] });
+  else {
 
-  this.filter.set({ actions });
+    const actions = this.actions.map(act => act.action);
+
+    this.filter.set({ actions });
+  }
 };
 
 F.updateDisplayFilter = async function () {

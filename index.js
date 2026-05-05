@@ -5,6 +5,7 @@ import {
   DOMID,
   FLAGS,
   MODIFIED_FILTER_CSS,
+  CANVAS_LIMITS,
   getFilterWrapper,
   setScrawlHandle,
   setDomHandle,
@@ -22,6 +23,7 @@ const builderCanvas = scrawl.findCanvas('filter-builder-canvas');
 // ------------------------------------------------------------------------
 // Module imports
 // ------------------------------------------------------------------------
+import { detectCanvasLimits } from './js-modules/canvas-probe.js';
 import { initDomLayout } from './js-modules/dom-layout-ui.js';
 import { initModalManagement } from './js-modules/modal-management.js';
 import { initGraphManager } from './js-modules/graph-manager.js';
@@ -88,6 +90,23 @@ const dom = scrawl.initializeDomInputs([
   ['by-id', DOMID.FILTER_STARTERS],
   ['by-id', DOMID.FILTER_CURRENT],
   ['by-id', DOMID.FILTER_USERS],
+
+  // Capture handles for the add action modal
+  ['button', DOMID.ADD_ACTION_BUTTON, 'Add action'],
+  ['button', DOMID.ADD_ACTION_CLOSE, 'Close'],
+  ['by-id', DOMID.ADD_ACTION_MODAL],
+  ['button', DOMID.ADD_ACTION_PROCESS, 'Process request'],
+  ['by-id', DOMID.ADD_ACTION_RENAME],
+  ['by-id', DOMID.ADD_ACTION_LIST],
+
+  // Capture handles for the remove action modal
+  ['button', DOMID.REMOVE_ACTION_BUTTON, 'Remove action'],
+  ['button', DOMID.REMOVE_ACTION_CLOSE, 'Close'],
+  ['by-id', DOMID.REMOVE_ACTION_MODAL],
+  ['button', DOMID.REMOVE_ACTION_PROCESS, 'Process request'],
+  ['by-id', DOMID.REMOVE_ACTION_LIST],
+  ['by-id', DOMID.REMOVE_ACTION_RENAME],
+  ['by-id', DOMID.REMOVE_ACTION_SELECT],
 
   // Capture handles to the minimap HTML elements
   ['input', DOMID.MINIMAP_X, '50'],
@@ -168,6 +187,11 @@ scrawl.makeRender({
   target: mainCanvas,
   commence,
 });
+
+
+// Canvas limits - delayed until other init code completes
+detectCanvasLimits();
+console.log('Canvas limits:', CANVAS_LIMITS);
 
 
 // ------------------------------------------------------------------------
