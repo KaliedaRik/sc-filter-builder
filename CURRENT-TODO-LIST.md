@@ -4,33 +4,26 @@ The list is evolving and I do not commit to doing anything in the current order
 ## Starter filters work and form building
 Status: DONE
 
-### Image preview
-Status: initial work for basic preview DONE
-
+### Basic image preview
+Status: DONE
 
 ## User-generated filter import, and download, work
 Status: DONE
 
-
 ## Image batch-processing and download
 Status: DONE
-
 
 ## Undo/redo functionality
 Status: will not implement
 
-
-## Image preview enhancements
+## Accurate image preview
 Status: DONE
 
-
 ## Filter graph visualisation
-Status: in development
-
-Read the current filter action list and render it as a connected graph. Initial version is view-only, except for node dragging.
-
+Status: DONE
 
 ## Filter graph editing
-Status: not started
+Status: DONE
 
-Add/delete filter actions from either the forms panel or graph. MVP editing is constrained: actions can generally be inserted only after existing actions, with exceptions for SOURCE, SOURCE_ALPHA, and process-image actions.
+## Documentation
+Status: in progress
