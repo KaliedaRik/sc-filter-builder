@@ -211,8 +211,20 @@ main {
 }
 
 #image-assets-hold {
-  height: 0;
+  display: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* 
@@ -1591,32 +1603,6 @@ dialog {
 }
 
 /* Add action to filter */
-/*#add-action-modal {
-
-  width: 60vw;
-  max-width: 60rem;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-sizing: border-box;
-  line-height: 1.5;
-
-  & button#add-action-process {
-    text-align: center;
-    width: 100%;
-    font-size: 1.2rem;
-    border: 1px solid var(--dialog-button-border);
-    background-color: var(--dialog-button-background);
-    border-radius: 5px;
-    padding: 0.25rem 0.5rem;
-    margin: 1rem 0 0;
-
-    &:hover {
-      background-color: var(--dialog-cta-button-background);
-      color: var(--dialog-cta-button-color);
-    }
-  }
-}
-*/
 #add-action-modal {
   width: 78vw;
   max-width: 72rem;
