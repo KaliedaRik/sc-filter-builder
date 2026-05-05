@@ -94,6 +94,7 @@ const dom = scrawl.initializeDomInputs([
   ['button', DOMID.ADD_ACTION_CLOSE, 'Close'],
   ['by-id', DOMID.ADD_ACTION_MODAL],
   ['button', DOMID.ADD_ACTION_PROCESS, 'Process request'],
+  ['by-id', DOMID.ADD_ACTION_RENAME],
   ['by-id', DOMID.ADD_ACTION_LIST],
 
   // Capture handles for the remove action modal

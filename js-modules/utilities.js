@@ -106,6 +106,7 @@ export const DOMID = {
   ADD_ACTION_CLOSE: 'add-action-modal-close',
   ADD_ACTION_MODAL: 'add-action-modal',
   ADD_ACTION_PROCESS: 'add-action-process',
+  ADD_ACTION_RENAME: 'add-action-rename-filter',
   ADD_ACTION_LIST: 'add-action-modal-area',
 
   // Capture handles for the remove action modal

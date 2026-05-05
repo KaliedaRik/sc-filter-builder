@@ -7,6 +7,7 @@ export const filterImages = {
   alphaToChannels: 'assets/thumb/starter-thumb_copy-alpha-to-channels.png',
   alphaToLuminance: 'assets/thumb/starter-thumb_copy-alpha-to-luminance.png',
   areaAlpha: 'assets/thumb/starter-thumb_area-alpha.png',
+  averageChannels: 'assets/thumb/starter-thumb_blank.png',
   blend: 'assets/thumb/starter-thumb_blank.png',
   blue: 'assets/thumb/starter-thumb_blue-channel.png',
   blur: 'assets/thumb/starter-thumb_box-blur.png',
@@ -121,6 +122,14 @@ export const starterFilters = {
     formSchemaName: ['gray'],
     packet: `["SC-starter-filter_gray-monochrome","Filter","filter",{"name":"SC-starter-filter_gray-monochrome","actions":[{"action":"average-channels","lineIn":"","lineOut":"","opacity":1,"includeRed":true,"includeGreen":true,"includeBlue":true}]}]`,
     imageSource: filterImages.gray,
+  },
+
+  ['SC-starter-filter_average-channels']: {
+    title: 'Average channels',
+    readableName: 'Average channels starter',
+    formSchemaName: ['averageChannels'],
+    packet: `["SC-starter-filter_gray-monochrome","Filter","filter",{"name":"SC-starter-filter_gray-monochrome","actions":[{"action":"average-channels","lineIn":"","lineOut":"","opacity":1}]}]`,
+    imageSource: filterImages.averageChannels,
   },
 
   ['SC-starter-filter_gaussian-blur']: {
@@ -619,6 +628,7 @@ export const filterGroups = [{
   title: 'Inspect image channels',
   openOnLoad: false,
   filters: [
+    'SC-starter-filter_average-channels',
     'SC-starter-filter_blue-channel',
     'SC-starter-filter_cyan-mix',
     'SC-starter-filter_exclude-blue-channel',

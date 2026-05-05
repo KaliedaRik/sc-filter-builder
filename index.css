@@ -1716,6 +1716,16 @@ dialog {
     width: 100%;
     font-size: 100%;
   }
+
+  & hr {
+    margin: 2rem;
+  }
+
+  & #current-rename-wrapper {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: 6rem 1fr;
+  }
 }
 
 /* Remove action from filter */
