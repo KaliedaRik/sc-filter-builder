@@ -203,7 +203,7 @@ const createControl_imageAsset = (data, actionWrapper) => {
     }
 
     const safeName = file.name.replace(/[^a-zA-Z0-9_-]/g, '_'),
-      assetId = `${safeName}_${generateShortId()}`,
+      assetId = `_${safeName}_${generateShortId()}`,
       assetImg = new Image(),
       assetUrl = URL.createObjectURL(file);
 

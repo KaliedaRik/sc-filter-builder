@@ -125,9 +125,6 @@ setDomHandle(dom);
 // ------------------------------------------------------------------------
 // Start the page running
 // ------------------------------------------------------------------------
-detectCanvasLimits();
-console.log('Canvas limits:', CANVAS_LIMITS);
-
 initDomLayout();
 initModalManagement();
 initImageImport();
@@ -190,6 +187,11 @@ scrawl.makeRender({
   target: mainCanvas,
   commence,
 });
+
+
+// Canvas limits - delayed until other init code completes
+detectCanvasLimits();
+console.log('Canvas limits:', CANVAS_LIMITS);
 
 
 // ------------------------------------------------------------------------

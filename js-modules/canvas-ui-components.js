@@ -1792,7 +1792,7 @@ export const initCanvasComponents = () => {
   // - While filter changes get picked up and actioned, gradient changes are not so lucky
 
   // TODO: TEST + FIX - live view no longer a thing!!!!!
-  picture = scrawl.findEntity('live-view');
+  picture = scrawl.findEntity('basic-preview');
 
 
   // Returned object

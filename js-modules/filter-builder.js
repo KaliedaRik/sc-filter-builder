@@ -5,6 +5,7 @@
 // Imports
 import {
   generateFileDate,
+  generateShortId,
   DOMID,
   PACKET_DIVIDER,
   FILTER_IDENTIFIER,
@@ -536,13 +537,13 @@ const configureInsertedActionLines = (action, request, currentActions) => {
 
   if (request.lineInMode === ADD_AFTER_SOURCE_ALPHA) {
 
-    action.lineIn = SOURCE_ALPHA;
+    action.lineIn = ADD_AFTER_SOURCE_ALPHA;
     return;
   }
 
   if (request.lineInMode === ADD_AFTER_SOURCE) {
 
-    action.lineIn = request.index === 0 ? '' : SOURCE;
+    action.lineIn = request.index === 0 ? '' : ADD_AFTER_SOURCE;
     return;
   }
 
@@ -616,29 +617,51 @@ export const actionAddActionSelect = () => {
   if (!newName) newName = 'Work in progress filter';
 
   const currentActions = structuredClone(currentFilterWrapper.filter.actions),
-    currentSchemaNames = structuredClone(currentFilterWrapper.formSchemaName),
+    formSchemaName = structuredClone(currentFilterWrapper.formSchemaName),
     selectedActionSchema = getFilterSchema(selectedAction),
     selectedActionObject = JSON.parse(selectedActionSchema.actionString);
 
   configureInsertedActionLines(selectedActionObject, request, currentActions);
 
+  const isGradient = selectedAction === 'mapToGradient';
+  let gradientPacket = '';
+
+  if (isGradient) {
+
+    const gradient = scrawl.makeGradient({
+
+      name: `gradient_${generateShortId()}`,
+      endX: '100%',
+    });
+
+    selectedActionObject.gradient = gradient.name;
+
+    gradientPacket = gradient.saveAsPacket();
+
+    gradient.kill();
+  }
+
   currentActions.splice(request.index, 0, selectedActionObject);
-  currentSchemaNames.splice(request.index, 0, selectedAction);
+  formSchemaName.splice(request.index, 0, selectedAction);
 
   const tempFilter = scrawl.makeFilter({
     name: newName,
     actions: currentActions,
   });
 
+  let packet = tempFilter.saveAsPacket();
+
+  tempFilter.kill();
+
+  if (isGradient) packet = `${gradientPacket}${PACKET_DIVIDER}${packet}`;
+
   const starter = {
     title: newName,
     readableName: newName,
-    formSchemaName: currentSchemaNames,
-    packet: tempFilter.saveAsPacket(),
+    formSchemaName,
+    packet,
     imageSource: null,
   };
-
-  tempFilter.kill();
 
   load(starter.packet, starter);
 
