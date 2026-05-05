@@ -5,24 +5,46 @@
 // Imports
 import {
   generateFileDate,
+  generateShortId,
   DOMID,
   PACKET_DIVIDER,
   FILTER_IDENTIFIER,
   ASSET_IDENTIFIER,
   MODIFIED_FILTER_CSS,
   FLAGS,
+  getFilterWrapper,
   getScrawlHandle,
   getDomHandle,
 } from './utilities.js';
 
-import { starterFilters, filterGroups } from './starter-filters.js';
+import {
+  starterFilters,
+  filterGroups,
+  filterImages,
+} from './starter-filters.js';
+
 import { wrap } from './form-objects.js';
-import { reconciliation } from './filter-schemas.js';
+
+import {
+  getFormSchemaFromAction,
+  getFilterSchema,
+  filterSchemaKeys,
+} from './filter-schemas.js';
+
 
 let currentFilterWrapper, currentFilterTitleElement,
   currentFilterInitialValues,
   imageAssetsHold, userFiltersArea,
-  scrawl, canvas, dom, filterImport;
+  scrawl, canvas, dom, filterImport,
+  currentActionSelectEl, removeActionSelectEl,
+  currentActionRenameEl, removeActionRenameEl,
+  removeActionProcessEl;
+
+const ADD_AFTER_SOURCE = 'source',
+  ADD_AFTER_SOURCE_ALPHA = 'source-alpha',
+  ADD_AS_UNCONNECTED_SOURCE = 'none',
+  ADD_USING_PREVIOUS = 'previous-out',
+  ADD_ROUTE_SEPARATOR = '::';
 
 
 // Filter modification
@@ -167,7 +189,7 @@ const importFilter = async (file) => {
 
     const title = testFilter.name || file.name;
 
-    testFilter.actions.forEach(a => formSchemaName.push(reconciliation[a.action]));
+    testFilter.actions.forEach(a => formSchemaName.push(getFormSchemaFromAction(a)));
 
     importedFilters[id] = {
       id,
@@ -215,11 +237,13 @@ const requestImportedFilter = (e) => {
   load(packet, data);
 };
 
-const downloadFilter = () => {
+const downloadFilter = (wrapper) => {
 
-  let filterName = window.prompt(
+  let filterName = wrapper.name;
+
+  filterName = window.prompt(
     'Rename filter',
-  `${currentFilterWrapper.name}_${generateFileDate()}`
+    `${filterName}_${generateFileDate()}`
   );
 
   if (filterName) {
@@ -236,7 +260,7 @@ const downloadFilter = () => {
 
       let gradientCount = 0;
 
-      currentFilterWrapper.actions.forEach(actionWrapper => {
+      wrapper.actions.forEach(actionWrapper => {
 
         const actionObject = actionWrapper.action,
           actionName = actionObject.action;
@@ -326,6 +350,448 @@ const downloadFilter = () => {
 };
 
 
+// Filter action add and remove modals
+const buildAddFilterActionModal = () => {
+
+  const parent = dom[DOMID.ADD_ACTION_LIST];
+
+  const availableActionsWrapper = document.createElement('div');
+  availableActionsWrapper.id = 'available-actions-wrapper';
+
+  const availableTitle = document.createElement('h3');
+  availableTitle.textContent = 'Available actions';
+  availableActionsWrapper.appendChild(availableTitle);
+
+  const availableFieldset = document.createElement('fieldset');
+  availableFieldset.classList.add('available-actions-fieldset');
+
+  filterSchemaKeys.forEach((key, index) => {
+
+    const schema = getFilterSchema(key),
+      imageUrl = filterImages[key];
+
+    const card = document.createElement('label');
+    card.classList.add('filter-action-card');
+    card.htmlFor = key;
+
+    const imageWrapper = document.createElement('div');
+    imageWrapper.classList.add('filter-action-image');
+
+    const imageEl = document.createElement('img');
+    imageEl.alt = "";
+    imageEl.src = imageUrl;
+
+    imageWrapper.appendChild(imageEl);
+    card.appendChild(imageWrapper);
+
+    const descriptionWrapper = document.createElement('div');
+    descriptionWrapper.classList.add('filter-action-description');
+
+    const title = document.createElement('h4');
+    title.textContent = schema.label;
+
+    const description = document.createElement('p');
+    description.textContent = schema.description;
+
+    descriptionWrapper.appendChild(title);
+    descriptionWrapper.appendChild(description);
+    card.appendChild(descriptionWrapper);
+
+    const radioInputWrapper = document.createElement('div');
+    radioInputWrapper.classList.add('filter-action-radio');
+
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.id = key;
+    input.name = 'availableActions';
+    input.value = key;
+
+    radioInputWrapper.appendChild(input);
+    card.appendChild(radioInputWrapper);
+
+    availableFieldset.appendChild(card);
+  });
+
+  availableActionsWrapper.appendChild(availableFieldset);
+
+  const currentActionsWrapper = document.createElement('div');
+  currentActionsWrapper.id = 'current-actions-wrapper';
+
+  const currentTitle = document.createElement('h3');
+  currentTitle.textContent = 'Place after';
+  currentActionsWrapper.appendChild(currentTitle);
+
+  const currentFieldset = document.createElement('fieldset');
+
+  const selectorWrapper = document.createElement('div');
+  selectorWrapper.id = 'current-selector-wrapper';
+
+  const selectLabel = document.createElement('label');
+  selectLabel.textContent = 'Action';
+  selectLabel.htmlFor = 'currentAction';
+  selectorWrapper.appendChild(selectLabel);
+
+  const select = document.createElement('select');
+  select.id = 'currentAction';
+  select.name = 'currentAction';
+  select.value = '';
+
+  currentActionSelectEl = select;
+  selectorWrapper.appendChild(select);
+  currentFieldset.appendChild(selectorWrapper);
+
+  const hr = document.createElement('hr');
+  currentFieldset.appendChild(hr);
+ 
+  const renameFilterWrapper = document.createElement('div');
+  renameFilterWrapper.id = 'current-rename-wrapper';
+
+  const renameFilterLabel = document.createElement('label');
+  renameFilterLabel.textContent = 'Rename to';
+  renameFilterLabel.htmlFor = 'add-action-rename-filter';
+  renameFilterWrapper.appendChild(renameFilterLabel);
+
+  const renameFilter = document.createElement('input');
+  renameFilter.id = 'add-action-rename-filter';
+  renameFilter.type = 'text',
+  renameFilter.value = '',
+
+  currentActionRenameEl = renameFilter;
+  renameFilterWrapper.appendChild(renameFilter);
+
+  currentFieldset.appendChild(renameFilterWrapper);
+
+  currentActionsWrapper.appendChild(currentFieldset);
+
+  parent.appendChild(availableActionsWrapper);
+  parent.appendChild(currentActionsWrapper);
+};
+
+// The addActionSelect part of the add action modal is dynamic
+// - We need to list all of the current actions within it
+export const buildAddActionSelect = () => {
+
+  const wrapper = getFilterWrapper();
+
+  const makeOption = (text, value) => {
+
+    const opt = document.createElement('option');
+    opt.textContent = text;
+    opt.value = value;
+    return opt;
+  };
+
+  const fragment = document.createDocumentFragment();
+
+  fragment.append(
+    makeOption('[source]', ADD_AFTER_SOURCE),
+    makeOption('[source-alpha]', ADD_AFTER_SOURCE_ALPHA),
+    makeOption('[none] (for process-image only)', ADD_AS_UNCONNECTED_SOURCE),
+  );
+
+  const actions = wrapper.actions;
+
+  actions.forEach(item => {
+
+    const id = item.id,
+      shortId = id.substring(0, 8),
+      label = item.formSchema.label;
+
+    fragment.append(
+      makeOption(`${label} (${shortId}) [use previous out]`, id),
+      makeOption(`${label} (${shortId}) [use source]`, `${id}${ADD_ROUTE_SEPARATOR}${ADD_AFTER_SOURCE}`),
+      makeOption(`${label} (${shortId}) [use source-alpha]`, `${id}${ADD_ROUTE_SEPARATOR}${ADD_AFTER_SOURCE_ALPHA}`),
+    );
+  });
+
+  currentActionSelectEl.replaceChildren(fragment);
+
+  currentActionRenameEl.value = bumpFilterVersion(currentFilterTitleElement.textContent);
+};
+
+
+// Handling the add action modal perform add button
+const bumpFilterVersion = (name) => {
+
+  const re = /\s*\[v(\d+)\]\s*$/;
+
+  if (re.test(name)) return name.replace(re, (match, n) => ` [v${parseInt(n, 10) + 1}]`);
+
+  return `From ${name} [v1]`;
+};
+
+const getActionIndex = (wrapper, id) => {
+
+  if (!id) return 0;
+
+  const index = wrapper.actions.findIndex(item => item.id === id);
+
+  if (index < 0) return -1;
+
+  return index + 1;
+};
+
+const configureInsertedActionLines = (action, request, currentActions) => {
+
+  if (request.selectedAction === 'image') return;
+
+  if (request.lineInMode === ADD_AFTER_SOURCE_ALPHA) {
+
+    action.lineIn = ADD_AFTER_SOURCE_ALPHA;
+    return;
+  }
+
+  if (request.lineInMode === ADD_AFTER_SOURCE) {
+
+    action.lineIn = request.index === 0 ? '' : ADD_AFTER_SOURCE;
+    return;
+  }
+
+  if (request.lineInMode === ADD_USING_PREVIOUS && request.index > 0) {
+
+    const previous = currentActions[request.index - 1],
+      previousOut = previous.lineOut || '';
+
+    action.lineIn = previousOut;
+    action.lineOut = previousOut;
+  }
+};
+
+export const actionAddActionSelect = () => {
+
+  const request = {
+    selectedAction: null,
+    insertAfterId: null,
+    insertIndex: 0,
+    lineInMode: null,
+  };
+
+  const selectedAction = dom[DOMID.ADD_ACTION_LIST].querySelector('input[name="availableActions"]:checked')?.value;
+
+  if (!selectedAction) {
+
+    console.warn('No filter action selected');
+    return;
+  }
+
+  request.selectedAction = selectedAction;
+
+  const insertAfter = currentActionSelectEl.value;
+
+  if (insertAfter === ADD_AS_UNCONNECTED_SOURCE) {
+
+    if (selectedAction !== 'image') {
+
+      console.warn(`${selectedAction} cannot be inserted after [none]`);
+      return;
+    }
+  }
+  else if (selectedAction === 'image') {
+
+    console.warn('image action can only be inserted after [none]');
+    return;
+  }
+  else if (insertAfter === ADD_AFTER_SOURCE_ALPHA) request.lineInMode = ADD_AFTER_SOURCE_ALPHA;
+  else if (insertAfter === ADD_AFTER_SOURCE) request.lineInMode = '';
+  else {
+
+    const [id, lineIn] = insertAfter.split(ADD_ROUTE_SEPARATOR);
+
+    request.insertAfterId = id
+
+    if (lineIn === ADD_AFTER_SOURCE_ALPHA) request.lineInMode = ADD_AFTER_SOURCE_ALPHA;
+    else if (lineIn === ADD_AFTER_SOURCE) request.lineInMode = ADD_AFTER_SOURCE;
+    else request.lineInMode = ADD_USING_PREVIOUS;
+  }
+
+  const idx = getActionIndex(currentFilterWrapper, request.insertAfterId);
+
+  if (idx < 0) {
+
+    console.warn(`Cannot find action with id ${request.insertAfterId}`);
+    return;
+  }
+  request.index = idx;
+
+  let newName = currentActionRenameEl.value;
+  if (!newName) newName = 'Work in progress filter';
+
+  const currentActions = structuredClone(currentFilterWrapper.filter.actions),
+    formSchemaName = structuredClone(currentFilterWrapper.formSchemaName),
+    selectedActionSchema = getFilterSchema(selectedAction),
+    selectedActionObject = JSON.parse(selectedActionSchema.actionString);
+
+  configureInsertedActionLines(selectedActionObject, request, currentActions);
+
+  const isGradient = selectedAction === 'mapToGradient';
+  let gradientPacket = '';
+
+  if (isGradient) {
+
+    const gradient = scrawl.makeGradient({
+
+      name: `gradient_${generateShortId()}`,
+      endX: '100%',
+    });
+
+    selectedActionObject.gradient = gradient.name;
+
+    gradientPacket = gradient.saveAsPacket();
+
+    gradient.kill();
+  }
+
+  currentActions.splice(request.index, 0, selectedActionObject);
+  formSchemaName.splice(request.index, 0, selectedAction);
+
+  const tempFilter = scrawl.makeFilter({
+    name: newName,
+    actions: currentActions,
+  });
+
+  let packet = tempFilter.saveAsPacket();
+
+  tempFilter.kill();
+
+  if (isGradient) packet = `${gradientPacket}${PACKET_DIVIDER}${packet}`;
+
+  const starter = {
+    title: newName,
+    readableName: newName,
+    formSchemaName,
+    packet,
+    imageSource: null,
+  };
+
+  load(starter.packet, starter);
+
+  // Always rebuild the current actions selector as the final action
+  // - We don't close the modal in case user wants to add another filter action
+  buildAddActionSelect();
+};
+
+export const closeAddActionSelect = () => currentActionSelectEl.replaceChildren();
+
+export const buildRemoveActionSelect = () => {
+
+  const wrapper = getFilterWrapper();
+
+  const makeOption = (text, value) => {
+
+    const opt = document.createElement('option');
+    opt.textContent = text;
+    opt.value = value;
+    return opt;
+  };
+
+  const fragment = document.createDocumentFragment(),
+    actions = wrapper.actions;
+
+  if (actions.length) {
+
+    removeActionSelectEl.removeAttribute('disabled');
+    removeActionProcessEl.removeAttribute('disabled');
+
+    actions.forEach(item => {
+
+      const id = item.id,
+        shortId = id.substring(0, 8),
+        label = item.formSchema.label;
+
+      fragment.append(makeOption(`${label} (${shortId})`, id));
+    });
+
+    removeActionSelectEl.replaceChildren(fragment);
+  }
+  else {
+
+    removeActionSelectEl.replaceChildren();
+    removeActionSelectEl.setAttribute('disabled', '');
+    removeActionProcessEl.setAttribute('disabled', '');
+  }
+
+  removeActionRenameEl.value = bumpFilterVersion(currentFilterTitleElement.textContent);
+};
+
+const repairLinesAfterRemoval = (actions, removedAction, removeIndex) => {
+
+  if (!removedAction) return;
+
+  const removedOut = removedAction.lineOut || '';
+
+  if (!removedOut) return;
+
+  const previous = actions[removeIndex - 1];
+
+  let replacement = '';
+
+  if (previous) replacement = previous.lineOut || '';
+  else if (removedAction.lineIn === SOURCE_ALPHA) replacement = SOURCE_ALPHA;
+  else if (removedAction.lineIn === SOURCE) replacement = SOURCE;
+  else replacement = '';
+
+  actions.forEach((action, index) => {
+
+    if (index < removeIndex) return;
+
+    if (action.lineIn === removedOut) action.lineIn = replacement;
+    if (action.lineMix === removedOut) action.lineMix = replacement;
+  });
+};
+
+export const actionRemoveActionSelect = () => {
+
+  const removeId = removeActionSelectEl.value;
+
+  if (!removeId) {
+
+    console.warn('No filter action selected for removal');
+    return;
+  }
+
+  const removeIndex = currentFilterWrapper.actions.findIndex(item => item.id === removeId);
+
+  if (removeIndex < 0) {
+
+    console.warn(`Cannot find action with id ${removeId}`);
+    return;
+  }
+
+  let newName = removeActionRenameEl.value;
+  if (!newName) newName = 'Work in progress filter';
+
+  const currentActions = structuredClone(currentFilterWrapper.filter.actions),
+    currentSchemaNames = structuredClone(currentFilterWrapper.formSchemaName),
+    removedAction = currentActions[removeIndex];
+
+  currentActions.splice(removeIndex, 1);
+  currentSchemaNames.splice(removeIndex, 1);
+
+  repairLinesAfterRemoval(currentActions, removedAction, removeIndex);
+
+  const tempFilter = scrawl.makeFilter({
+    name: newName,
+    actions: currentActions,
+  });
+
+  const starter = {
+    title: newName,
+    readableName: newName,
+    formSchemaName: currentSchemaNames,
+    packet: tempFilter.saveAsPacket(),
+    imageSource: null,
+  };
+
+  tempFilter.kill();
+
+  load(starter.packet, starter);
+
+  buildRemoveActionSelect();
+};
+
+export const closeRemoveActionSelect = () => removeActionSelectEl.replaceChildren();
+
+
 // Init function
 export const initFilterBuilder = () => {
 
@@ -337,8 +803,7 @@ export const initFilterBuilder = () => {
   imageAssetsHold = dom[DOMID.ASSETS_HOLD];
 
 
-
-  const frag = new DocumentFragment(),
+  const frag = document.createDocumentFragment(),
     starterFiltersArea = dom[DOMID.FILTER_STARTERS];
 
   filterGroups.forEach(grp => {
@@ -410,8 +875,15 @@ export const initFilterBuilder = () => {
 
   }, filterImport);
 
-  scrawl.addNativeListener('click', downloadFilter, dom[DOMID.FILTER_DOWNLOAD]);
+  scrawl.addNativeListener('click', () => downloadFilter(currentFilterWrapper), dom[DOMID.FILTER_DOWNLOAD]);
 
+
+  // Build out the permanent parts of addFilterAction modal
+  buildAddFilterActionModal();
+
+  removeActionSelectEl = dom[DOMID.REMOVE_ACTION_SELECT];
+  removeActionRenameEl = dom[DOMID.REMOVE_ACTION_RENAME];
+  removeActionProcessEl = dom[DOMID.REMOVE_ACTION_PROCESS];
 
   // Return object
   return { checkIfFilterHasChanged };

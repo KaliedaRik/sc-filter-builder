@@ -25,6 +25,7 @@ const ZERO_STR = '',
   L_RESULT = '[result]',
   L_BAD_LINE = '[bad-line]',
   L_SOURCES = [L_SOURCE, L_SOURCE_ALPHA],
+  CHECK_SOURCES = [L_SOURCE, SOURCE, L_SOURCE_ALPHA, SOURCE_ALPHA, L_WORK],
   
   PROCESS_IMAGE = 'process-image',
   DISPLACE = 'displace',
@@ -41,6 +42,9 @@ const ZERO_STR = '',
   SOCKET_RADIUS = 8;
 
 const endSockets = {};
+
+let wiresGroup,
+  socketsGroup;
 
 
 export const buildGraphData = (actionsArray) => {
@@ -350,7 +354,8 @@ const generateSimpleEdgesData = (nodes) => {
 const generateEdgesData = (nodes) => {
 
   const edges = [],
-    namedOutputs = new Map();
+    namedOutputs = new Map(),
+    consumedOutputs = new Set();
 
   let workSource = SOURCE;
 
@@ -364,13 +369,20 @@ const generateEdgesData = (nodes) => {
       to: n.id,
       socket: IN,
       label: null,
+      error: L_BAD_LINE,
     });
-    else if (n.lineInLabel) edges.push({
-      from: getEdgeSource(n.lineInLabel, namedOutputs, workSource),
-      to: n.id,
-      socket: IN,
-      label: n.lineInLabel,
-    });
+
+    else if (n.lineInLabel) {
+
+      if (!CHECK_SOURCES.includes(n.lineInLabel)) consumedOutputs.add(n.lineInLabel);
+
+      edges.push({
+        from: getEdgeSource(n.lineInLabel, namedOutputs, workSource),
+        to: n.id,
+        socket: IN,
+        label: n.lineInLabel,
+      });
+    }
 
     // lineMix edge
     if (L_BAD_LINE === n.lineMixLabel) edges.push({
@@ -378,13 +390,20 @@ const generateEdgesData = (nodes) => {
       to: n.id,
       socket: MIX,
       label: null,
+      error: L_BAD_LINE,
     });
-    else if (n.lineMixLabel) edges.push({
-      from: getEdgeSource(n.lineMixLabel, namedOutputs, workSource),
-      to: n.id,
-      socket: MIX,
-      label: n.lineMixLabel,
-    });
+
+    else if (n.lineMixLabel) {
+
+      if (!CHECK_SOURCES.includes(n.lineMixLabel)) consumedOutputs.add(n.lineMixLabel);
+
+      edges.push({
+        from: getEdgeSource(n.lineMixLabel, namedOutputs, workSource),
+        to: n.id,
+        socket: MIX,
+        label: n.lineMixLabel,
+      });
+    }
 
     // Register this node's output for downstream actions
     if (L_BAD_LINE === n.lineOutLabel) edges.push({
@@ -392,6 +411,7 @@ const generateEdgesData = (nodes) => {
       to: null,
       socket: OUT,
       label: null,
+      error: L_BAD_LINE,
     });
     else if (n.lineOutLabel === L_RESULT) edges.push({
       from: n.id,
@@ -401,6 +421,28 @@ const generateEdgesData = (nodes) => {
     });
     else if (n.lineOutLabel === L_WORK) workSource = n.id;
     else if (n.lineOutLabel) namedOutputs.set(n.lineOutLabel, n.id);
+  });
+
+  namedOutputs.forEach((fromId, lineName) => {
+
+    if (!consumedOutputs.has(lineName)) {
+
+      const node = nodes.find(n => n.id === fromId);
+
+      if (node) {
+
+        node.error = node.error || 'Unused lineOut value';
+        node.lineOutLabel = L_BAD_LINE;
+      }
+
+      edges.push({
+        from: fromId,
+        to: null,
+        socket: OUT,
+        label: null,
+        error: L_BAD_LINE,
+      });
+    }
   });
 
   return edges;
@@ -418,6 +460,8 @@ const getEdgeSource = (label, namedOutputs, workSource) => {
 
 export const addSocketsToButton = (actionWrapper) => {
 
+  socketsGroup.killArtefacts();
+
   const { buttonId, action: filterAction, killList } = actionWrapper
 
   const action = filterAction.action,
@@ -431,7 +475,7 @@ export const addSocketsToButton = (actionWrapper) => {
     const outSocket = scrawl.makeWheel({
 
       name: `${buttonId}_out`,
-      group: canvas.base,
+      group: socketsGroup,
       handle: ['center', 'center'],
       radius: SOCKET_RADIUS,
 
@@ -450,7 +494,7 @@ export const addSocketsToButton = (actionWrapper) => {
     const inSocket = scrawl.makeWheel({
 
       name: `${buttonId}_in`,
-      group: canvas.base,
+      group: socketsGroup,
       handle: ['center', 'center'],
       radius: SOCKET_RADIUS,
 
@@ -463,7 +507,7 @@ export const addSocketsToButton = (actionWrapper) => {
     const mixSocket = scrawl.makeWheel({
 
       name: `${buttonId}_mix`,
-      group: canvas.base,
+      group: socketsGroup,
       handle: ['center', 'center'],
       radius: SOCKET_RADIUS,
 
@@ -476,7 +520,7 @@ export const addSocketsToButton = (actionWrapper) => {
     const outSocket = scrawl.makeWheel({
 
       name: `${buttonId}_out`,
-      group: canvas.base,
+      group: socketsGroup,
       handle: ['center', 'center'],
       radius: SOCKET_RADIUS,
 
@@ -497,7 +541,7 @@ export const addSocketsToButton = (actionWrapper) => {
     const inSocket = scrawl.makeWheel({
 
       name: `${buttonId}_in`,
-      group: canvas.base,
+      group: socketsGroup,
       handle: ['center', 'center'],
       radius: SOCKET_RADIUS,
 
@@ -510,7 +554,7 @@ export const addSocketsToButton = (actionWrapper) => {
     const outSocket = scrawl.makeWheel({
 
       name: `${buttonId}_out`,
-      group: canvas.base,
+      group: socketsGroup,
       handle: ['center', 'center'],
       radius: SOCKET_RADIUS,
 
@@ -752,11 +796,7 @@ export const calculateButtonPositions = (wrapper) => {
 
     const button = scrawl.findElement(node.buttonId);
 
-    if (button) {
-      button.set({
-        start: [`${node.graphX}%`, `${node.graphY}%`],
-      });
-    }
+    if (button) button.set({ start: [`${node.graphX}%`, `${node.graphY}%`] });
   });
 };
 
@@ -799,7 +839,7 @@ export const wireGraph = (wrapper) => {
     scrawl.makeLabel({
 
       name: `${WIRE_GRAPH}_${from}_${to}_${socket}_error-label`,
-      group: canvas.base,
+      group: wiresGroup,
       pivot,
       lockTo: 'pivot',
       handleX: isFrom ? 'left' : 'right',
@@ -812,7 +852,7 @@ export const wireGraph = (wrapper) => {
   };
 
   // Get rid of all previous SC wiregraph artefacts 
-  scrawl.purge(WIRE_GRAPH);
+  wiresGroup.killArtefacts();
 
   const nodesObject = {}
 
@@ -841,7 +881,7 @@ export const wireGraph = (wrapper) => {
       const line = scrawl.makeLine({
 
         name: `${WIRE_GRAPH}_${fromId}_${toId}_line`,
-        group: canvas.base,
+        group: wiresGroup,
         pivot: fromPivot,
         endPivot: toPivot,
         lockTo: 'pivot',
@@ -854,7 +894,7 @@ export const wireGraph = (wrapper) => {
       const h1Pin = scrawl.makeBlock({
 
         name: `${WIRE_GRAPH}_${fromId}_${toId}_control-pin-from`,
-        group: canvas.base,
+        group: wiresGroup,
         pivot: fromPivot,
         path: line,
         lockTo: ['path', 'pivot'],
@@ -865,7 +905,7 @@ export const wireGraph = (wrapper) => {
       const h2Pin = scrawl.makeBlock({
 
         name: `${WIRE_GRAPH}_${fromId}_${toId}_control-pin-to`,
-        group: canvas.base,
+        group: wiresGroup,
         pivot: toPivot,
         path: line,
         lockTo: ['path', 'pivot'],
@@ -876,7 +916,7 @@ export const wireGraph = (wrapper) => {
       const bezier = scrawl.makeBezier({
 
         name: `${WIRE_GRAPH}_${fromId}_${toId}_bezier`,
-        group: canvas.base,
+        group: wiresGroup,
         pivot: fromPivot,
         lockTo: 'pivot',
         useStartAsControlPoint: true,
@@ -894,7 +934,7 @@ export const wireGraph = (wrapper) => {
       const lineName = scrawl.makeLabel({
 
         name: `${WIRE_GRAPH}_${fromId}_${toId}_label`,
-        group: canvas.base,
+        group: wiresGroup,
         calculateOrder: 1,
         stampOrder: 2,
         fontString: '15px bold Arial, sans-serif',
@@ -908,7 +948,7 @@ export const wireGraph = (wrapper) => {
       scrawl.makeBlock({
 
         name: `${WIRE_GRAPH}_${fromId}_${toId}_label-background`,
-        group: canvas.base,
+        group: wiresGroup,
         calculateOrder: 2,
         stampOrder: 1,
         mimic: lineName,
@@ -930,7 +970,7 @@ export const wireGraph = (wrapper) => {
     scrawl.makeLine({
 
       name: `${WIRE_GRAPH}-direct-line`,
-      group: canvas.base,
+      group: wiresGroup,
       pivot: sourceSocket,
       endPivot: resultSocket,
       lockTo: 'pivot',
@@ -951,10 +991,28 @@ export const initGraphManager = () => {
   scrawl = getScrawlHandle();
   canvas = scrawl.findCanvas('filter-builder-canvas');
 
+  socketsGroup = scrawl.makeGroup({
+    name: 'sockets-group',
+    host: canvas.base,
+    order: 1,
+  })
+
+  wiresGroup = scrawl.makeGroup({
+    name: 'wires-group',
+    host: canvas.base,
+    order: 2,
+  });
+
+  const endsGroup = scrawl.makeGroup({
+    name: 'ends-group',
+    host: canvas.base,
+    order: 3,
+  });
+
   sourceSocket = scrawl.makeOval({
 
     name: 'source-socket',
-    group: canvas.base,
+    group: endsGroup,
     start: [0, '25%'],
     handle: ['center', 'center'],
     order: 3,
@@ -966,7 +1024,7 @@ export const initGraphManager = () => {
   sourceAlphaSocket = scrawl.makeOval({
 
     name: 'source-alpha-socket',
-    group: canvas.base,
+    group: endsGroup,
     start: [0, '75%'],
     handle: ['center', 'center'],
     order: 3,
@@ -978,7 +1036,7 @@ export const initGraphManager = () => {
   resultSocket = scrawl.makeOval({
 
     name: 'result-socket',
-    group: canvas.base,
+    group: endsGroup,
     start: ['100%', '50%'],
     handle: ['center', 'center'],
     order: 3,
@@ -994,7 +1052,7 @@ export const initGraphManager = () => {
   scrawl.makeLabel({
 
     name: 'source-socket-label',
-    group: canvas.base,
+    group: endsGroup,
     order: 4,
     fontString: '12px Arial, sans-serif',
     text: 'SOURCE',

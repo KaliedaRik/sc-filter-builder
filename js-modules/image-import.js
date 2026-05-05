@@ -4,8 +4,7 @@
 import {
   DOMID,
   ACCEPTED_IMAGE_TYPES,
-  MAX_AREA,
-  MAX_DIMENSION,
+  CANVAS_LIMITS,
   getScrawlHandle,
   getDomHandle,
 } from './utilities.js';
@@ -118,7 +117,11 @@ const importImageFile = (file) => {
 
     const { naturalWidth: w, naturalHeight: h } = sizingImg;
 
-    if (w <= MAX_DIMENSION && h <= MAX_DIMENSION && (w * h) <= MAX_AREA) {
+    if (
+      w <= CANVAS_LIMITS.maxDimension &&
+      h <= CANVAS_LIMITS.maxDimension &&
+      (w * h) <= CANVAS_LIMITS.maxArea
+    ) {
 
       const stateId = `import-${counter}`;
       counter++;

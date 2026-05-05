@@ -33,8 +33,13 @@ export const FILTER_IDENTIFIER = '"Filter","filter"';
 export const ASSET_IDENTIFIER = '"type":"SC_IMAGE_ASSET"';
 
 export const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
-export const MAX_AREA = 16_000_000;
-export const MAX_DIMENSION = 4096;
+export const DEFAULT_MAX_AREA = 16_000_000;
+export const DEFAULT_MAX_DIMENSION = 4096;
+
+export const CANVAS_LIMITS = {
+  maxArea: DEFAULT_MAX_AREA,
+  maxDimension: DEFAULT_MAX_DIMENSION,
+};
   
 // Mapping HTML element ids to JS element handles
 export const DOMID = {
@@ -100,6 +105,23 @@ export const DOMID = {
   NAVIGATION_Y: 'navigation-vertical',
   NAVIGATION_CENTER: 'navigation-center',
   PREVIEW_SCALE: 'image-scale',
+
+  // Capture handles for the add action modal
+  ADD_ACTION_BUTTON: 'add-action-modal-button',
+  ADD_ACTION_CLOSE: 'add-action-modal-close',
+  ADD_ACTION_MODAL: 'add-action-modal',
+  ADD_ACTION_PROCESS: 'add-action-process',
+  ADD_ACTION_RENAME: 'add-action-rename-filter',
+  ADD_ACTION_LIST: 'add-action-modal-area',
+
+  // Capture handles for the remove action modal
+  REMOVE_ACTION_BUTTON: 'remove-action-modal-button',
+  REMOVE_ACTION_CLOSE: 'remove-action-modal-close',
+  REMOVE_ACTION_MODAL: 'remove-action-modal',
+  REMOVE_ACTION_PROCESS: 'remove-action-process',
+  REMOVE_ACTION_LIST: 'remove-action-modal-area',
+  REMOVE_ACTION_SELECT: 'remove-action-modal-select',
+  REMOVE_ACTION_RENAME: 'remove-action-rename-filter',
 
   // CSS classes used for control identification
   SCALE_CONTROLS_CSS: '.scale-controls',

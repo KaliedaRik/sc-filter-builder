@@ -5,7 +5,7 @@ The list is evolving and I do not commit to doing anything in the current order
 Status: DONE
 
 ### Image preview
-Status: initial work for basic preview DONE
+Status: DONE
 
 
 ## User-generated filter import, and download, work
@@ -25,12 +25,14 @@ Status: DONE
 
 
 ## Filter graph visualisation
-Status: in development
-
-Read the current filter action list and render it as a connected graph. Initial version is view-only, except for node dragging.
+Status: DONE
 
 
 ## Filter graph editing
-Status: not started
+Status: in progress
 
-Add/delete filter actions from either the forms panel or graph. MVP editing is constrained: actions can generally be inserted only after existing actions, with exceptions for SOURCE, SOURCE_ALPHA, and process-image actions.
+Use two new modals for this work, rather than adding (many!) "add" and "delete" buttons to the filter forms or the graph
+
+- **Add action** - opens the add-action modal. Will be a form with two selectors. The first selector will allow the user to choose which filter action they want to add. The second selector will list existing actions, plus `[source]`, `[source-alpha]` and `[none]` (only available for `process-image` actions, where it will be the only available "after" option)
+
+- **Remove action** - opens the remove-action modal. Will list all the current actions in the filters, with checkboxes next to each one. If selected, the selected action(s) will be removed from the filter

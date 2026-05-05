@@ -6,8 +6,7 @@ import {
   generateShortId,
   DOMID,
   ACCEPTED_IMAGE_TYPES,
-  MAX_AREA,
-  MAX_DIMENSION,
+  CANVAS_LIMITS,
   getFilterWrapper,
   getDomHandle,
   getScrawlHandle,
@@ -65,8 +64,6 @@ export const generateButtonHtml = (actionWrapper) => {
   // Further processing happens when the element is appended to its DOM parent
   // - This happens in the MutationObserver function, created during module initialization
   filterBuilderAreaHold.appendChild(button);
-
-  scrawl.addNativeListener('click', () => openOnlyRelatedForm(actionWrapper), button);
 
   return button;
 };
@@ -206,7 +203,7 @@ const createControl_imageAsset = (data, actionWrapper) => {
     }
 
     const safeName = file.name.replace(/[^a-zA-Z0-9_-]/g, '_'),
-      assetId = `${safeName}_${generateShortId()}`,
+      assetId = `_${safeName}_${generateShortId()}`,
       assetImg = new Image(),
       assetUrl = URL.createObjectURL(file);
 
@@ -218,7 +215,11 @@ const createControl_imageAsset = (data, actionWrapper) => {
 
       const { naturalWidth: w, naturalHeight: h } = assetImg;
 
-      if (w <= MAX_DIMENSION && h <= MAX_DIMENSION && (w * h) <= MAX_AREA) {
+      if (
+        w <= CANVAS_LIMITS.maxDimension &&
+        h <= CANVAS_LIMITS.maxDimension &&
+        (w * h) <= CANVAS_LIMITS.maxArea
+      ) {
 
         scrawl.importDomImage(`#${assetId}`);
 
@@ -3036,14 +3037,19 @@ export const initFormBuilder = (actionWrapperLibrary = null) => {
   // Make the stack elements draggable
   const stackDragGroup = scrawl.makeGroup({ name: 'stack-drag-group' });
 
+  let graphDragHappened = false;
+
   scrawl.makeDragZone({
     zone: stack,
     collisionGroup: stackDragGroup,
     endOn: ['up', 'leave'],
     preventTouchDefaultWhenDragging: true,
     processingOrder: 2,
-  });
 
+    updateOnStart: () => graphDragHappened = false,
+    updateWhileMoving: () => graphDragHappened = true,
+    updateOnEnd: () => setTimeout(() => graphDragHappened = false, 0),
+  });
 
   // MutationObservers
   const multiObserver = new MutationObserver(mutationList => {
@@ -3076,19 +3082,46 @@ export const initFormBuilder = (actionWrapperLibrary = null) => {
 
                 const el = scrawl.findElement(id);
 
+                actionWrapper.buttonElement = el.domElement;
+
+                const clickEvent = scrawl.addNativeListener(
+                  'click',
+                  (e) => {
+
+                    if (graphDragHappened) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      return;
+                    }
+
+                    openOnlyRelatedForm(actionWrapper);
+                  },
+                  el.domElement
+                );
+
+                actionWrapper.killList.push(clickEvent);
+
                 el.set({
                   start: ['center', 'center'],
                   handle: ['center', 'center'],
                   dimensions: [200, 80],
                 });
 
-                stackDragGroup.addArtefacts(el);
-                
-                // Buttons need time to settle before we can use them as pivots
-                setTimeout(() => addSocketsToButton(actionWrapper), 50);
-
-                actionWrapper.killList.push(el);
+                actionWrapper.graphElement = el;
                 actionWrapper.buttonElement = el.domElement;
+
+                addSocketsToButton(actionWrapper);
+                actionWrapper.killList.push(el);
+
+                // Needs a long timeout because of other setTimeouts
+                // - for example: FilterWrapper constructor in form-objects.js
+                setTimeout(() => {
+
+                  // DOM can be tricky; mark the artefact as dirty to get things updated
+                  el.set({ dimensions: [200, 80] });
+                  stackDragGroup.addArtefacts(el);
+
+                }, 350);
               }
             }
 

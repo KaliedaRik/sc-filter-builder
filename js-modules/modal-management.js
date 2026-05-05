@@ -9,6 +9,15 @@ import {
   closeImageModalList,
 } from './image-import.js';
 
+import {
+  buildAddActionSelect,
+  actionAddActionSelect,
+  closeAddActionSelect,
+  buildRemoveActionSelect,
+  actionRemoveActionSelect,
+  closeRemoveActionSelect,
+} from './filter-builder.js';
+
 
 let currentModal, scrawl, dom;
 
@@ -93,6 +102,28 @@ export const initModalManagement = () => {
   scrawl.addNativeListener('click', () => openModal(changeFiltersModal), changeFiltersButton);
   scrawl.addNativeListener('click', closeModal, changeFiltersCloseButton);
   scrawl.addNativeListener('close', closeModal, changeFiltersModal);
+
+  // Setup: addAction modal
+  const addActionModal = dom[DOMID.ADD_ACTION_MODAL],
+    addActionButton = dom[DOMID.ADD_ACTION_BUTTON],
+    addActionCloseButton = dom[DOMID.ADD_ACTION_CLOSE],
+    addActionProcess = dom[DOMID.ADD_ACTION_PROCESS];
+
+  scrawl.addNativeListener('click', () => openModal(addActionModal, buildAddActionSelect), addActionButton);
+  scrawl.addNativeListener('click', () => closeModal(closeAddActionSelect), addActionCloseButton);
+  scrawl.addNativeListener('close', () => closeModal(closeAddActionSelect), addActionModal);
+  scrawl.addNativeListener('click', actionAddActionSelect, addActionProcess);
+
+  // Setup: removeAction modal
+  const removeActionModal = dom[DOMID.REMOVE_ACTION_MODAL],
+    removeActionButton = dom[DOMID.REMOVE_ACTION_BUTTON],
+    removeActionCloseButton = dom[DOMID.REMOVE_ACTION_CLOSE],
+    removeActionProcess = dom[DOMID.REMOVE_ACTION_PROCESS];
+
+  scrawl.addNativeListener('click', () => openModal(removeActionModal, buildRemoveActionSelect), removeActionButton);
+  scrawl.addNativeListener('click', () => closeModal(closeRemoveActionSelect), removeActionCloseButton);
+  scrawl.addNativeListener('close', () => closeModal(closeRemoveActionSelect), removeActionModal);
+  scrawl.addNativeListener('click', actionRemoveActionSelect, removeActionProcess);
 
   return {};
 };
