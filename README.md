@@ -1,103 +1,131 @@
 # Scrawl-canvas filter builder
 
-A browser-native, local-only filter builder tool. 
+A browser-native, local-only image filter builder powered by the Scrawl-canvas filter engine.
 
-**WARNING** tool under construction!
+**Try it:** [SC Filter Builder on GitHub pages](https://kaliedarik.github.io/sc-filter-builder/)
 
-- Build a filter (using the Scrawl-canvas filter engine)
-- Import images and review the (non-destructive) filter effect on them
-- Download images (in various formats) with filter applied
+## What it does
+
+- Build reusable image filters as chains of composable actions  
+- Preview their effect across multiple images (non-destructive)  
+- Export processed images in batches (no uploads, no backend)
 
 <table>
-<tr>
-<td width="100%">
-<img src="assets/instructions-01.png" alt=""><br>
-<sub>An image gallery of max 6 images showing what we've just told above. Could be replaced by a short video</sub>
-</td>
-</tr>
+  <tr>
+    <td width="33%">
+      <figure>
+        <figcaption><sub>Filter builder UI - image import</sub></figcaption> 
+        <img src="screenshots/tool-01.webp" alt="">
+      </figure>
+    </td>
+    <td width="33%">
+      <figure>
+        <figcaption><sub>Filter builder UI - minimap pan and scale</sub></figcaption> 
+        <img src="screenshots/tool-02.webp" alt="">
+      </figure>
+    </td>
+    <td width="33%">
+      <figure>
+        <figcaption><sub>Filter builder UI - filter editing controls</sub></figcaption> 
+        <img src="screenshots/tool-03.webp" alt="">
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td width="33%">
+      <figure>
+        <figcaption><sub>Filter builder UI - import and change filters</sub></figcaption> 
+        <img src="screenshots/tool-04.webp" alt="">
+      </figure>
+    </td>
+    <td width="33%">
+      <figure>
+        <figcaption><sub>Filter builder UI - filter actions graph</sub></figcaption> 
+        <img src="screenshots/tool-05.webp" alt="">
+      </figure>
+    </td>
+    <td width="33%">
+      <figure>
+        <figcaption><sub>Filter builder UI - batch process images</sub></figcaption> 
+        <img src="screenshots/tool-06.webp" alt="">
+      </figure>
+    </td>
+  </tr>
 </table>
 
-**Try it now:** TODO: link to the GitHub page where we're hosting the proof of concept
 
-## Key Features
+### Why this tool exists
 
-### Key feature 1
+The filter builder serves two key purposes:
 
-TODO: short paragraph describing key feature 1
+1. A practical UI for building and refining image filters  
+2. A way to apply those filters consistently across multiple images
 
-### Key feature 2
+Once built, a filter can be reused across any number of images, making it easy to standardise visual output.
 
-TODO: short paragraph describing key feature 2
+This tool complements traditional editors and node-based systems by offering a lightweight, browser-native approach to building and applying reusable filters.
 
-TODO: add key feature paragraphs, as required
+## Key features
 
-## Primary Use Cases
+**Filter graph with explicit data flow**
 
-### Primary use case 1
+Each filter action defines how it connects to others (`lineIn`, `lineOut`, `lineMix`). The graph visualises this flow and updates as you edit the filter.
 
-TODO: short paragraph describing primary use case 1
+This makes it possible to understand how image data moves through the system, debug broken chains, and experiment with non-linear compositions.
 
-### Primary use case 2
+**Real-time preview (approximate + accurate)**
 
-TODO: short paragraph describing primary use case 2
+- *Fast preview*: processes only visible regions for responsiveness  
+- *Accurate preview*: applies the full filter for correctness  
 
-### Other Possible Uses
+This distinction becomes important for large images and complex filters.
 
-- TODO: short list of other possible use cases
+**Batch processing (with live preview)**
 
-## Privacy by Design
+Import multiple images to:
 
-This tool uses standard browser media APIs. Everything happens inside the browser:
-- No data is uploaded anywhere
-- No accounts are required
-- No analytics or tracking scripts
-- Processed images are saved locally
+- see how a filter behaves across different inputs  
+- tweak the filter and watch all previews update in real time  
+- export processed images in one go  
 
----
+**Fully local, no backend**
 
-# Technical details
+The tool follows a local-first approach. It has no backend, no build step, and no runtime dependencies beyond the bundled libraries.
 
-The tool has been designed to be as easy as possible to run locally, and to hack to meet individual or small business requirements (when hosted on their own infrastructure)
+Released under the MIT licence, it can be forked and adapted as needed. The interface is built using plain HTML, CSS, and modular JavaScript.
 
-## Under the Hood
+**Serializable filters (packet system)**
 
-The project is intentionally simple:
-- Vanilla **JavaScript, HTML and CSS**
-- No frameworks
-- No build process
-- Entirely client‑side
+Filters can be exported to the user's local device as text packets, ready for importing into future sessions. Packets can also be shared as standalone filter definitions (including embedded assets).
 
-The visual composition layer is powered by the [Scrawl‑canvas graphics library](https://github.com/KaliedaRik/Scrawl-canvas).
+### Example workflow
 
-TODO: list the other 3rd party tech used in the site (eg: wasm code)
+1. Import a set of images  
+2. Build a filter (for example: tone curve → tint → sharpen)
+3. Adjust the filter while previewing the results across all images  
+4. Export the processed images in one batch  
 
-## Self Hosting the Web Page
+This makes it easy to apply consistent styling across a collection of images without relying on external tools.
 
-The project can be run locally or hosted on any static web server. There are no dependencies, build steps, or installation processes. Simply clone or fork the repository and serve the files.
+## Technical details
 
-## Running the Web Page Locally
+Under the hood, the tool runs on vanilla **JavaScript, HTML, CSS**. It uses no framework and avoids Node dependencies and build steps. The code runs entirely client-side, in the browser.
 
-1. Clone or download the repository.
-2. Navigate to the project folder.
-3. Start a local web server - for example using https://github.com/tapio/live-server
-4. Open the page in a modern desktop browser.
+Everything happens inside the browser: no data leaves your machine — there is no analytics or tracking code, and no external services are called by the tool. Processed images are downloaded directly to your device.
 
-Because the tool uses browser media APIs, it must be served via HTTP rather than opened directly from the filesystem.
+The tool is powered by [Scrawl-canvas](https://github.com/KaliedaRik/Scrawl-canvas) (rendering + filter engine).
 
-## Key Files
+### Running locally
 
-- `index.html` - Defines the interface and layout of the application.
-- `index.css` - Handles styling and layout.
-- `index.js` - Contains the application logic — screen capture, canvas composition, recording, teleprompter functionality and device management.
-- `js/scrawl.js` - The minified Scrawl‑canvas library used for canvas graphics and compositing.
-- TODO: list other key files
+1. Clone or download the repository  
+2. Start a local web server (e.g. https://github.com/tapio/live-server)  
+3. Open the page in a modern browser  
 
-## Project Philosophy
+This is a static website. You can host it on any static hosting provider, for example GitHub pages, or on your own local infrastructure. No configuration is required.
 
-TODO: a short section covering the underlying philosophy
+### Known issues
 
-## Known Issues
-
-The tool depends on modern browser media APIs and therefore has some limitations.
-
-TODO: list known issues across browsers, and for individual browser/device combinations etc
+- Browser-dependent canvas limits (large images may fail)
+- Preview may differ from final output for some filters
+- Some filter combinations will produce broken graphs (by design — not everything self-heals)
+- Performance varies significantly with image size and filter complexity
