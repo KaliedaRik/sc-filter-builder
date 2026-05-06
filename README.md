@@ -86,20 +86,6 @@ Released under the MIT licence, it can be forked and adapted as needed. The inte
 
 Filters can be exported to the user's local device as text packets, ready for importing into future sessions. Packets can also be shared as standalone filter definitions (including embedded assets).
 
-## Use cases
-
-**Batch image processing with custom filters**
-
-Build a filter once, then apply it across multiple images. This is useful for:
-
-- consistent styling across a set of images; 
-- generating variations quickly; and
-- lightweight, repeatable image workflows.  
-
-**Filter development and experimentation**
-
-Build and refine filter chains visually while working with the underlying data model. This is particularly useful for experimenting with multi-step filters, colour-space investigations (OKLab/OKLCH, etc), and developing compositing and blending pipelines.
-
 ### Example workflow
 
 1. Import a set of images  
