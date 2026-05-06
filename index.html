@@ -344,76 +344,64 @@
 
     <button type="button" id="instructions-modal-close" autofocus class="close">Close</button>
 
-    <h2>Using the SC Picture Editor</h2>
+    <h2>Using the SC Filter Builder</h2>
 
-    <p>The following instructions offer basic details about how to use the SC Screen capture tool. The concept behind the tool is simple:</p>
+    <p>The following instructions offer basic details about how to use the SC filter builder tool. The basic workflow is straightforward:</p>
     <ul>
-      <li>Brief bullpoints of workflow</li>
+      <li>Import some images to process - drag files onto the canvas, or load them via the <b>Image management</b> panel.</li>
+      <li>Click on an image thumbnail to see it in the preview panel.</li>
+      <li>Choose a starter filter, or import a previously downloaded filter.</li>
+      <li>Inspect how the filter affects your images. Use the minimap to pan and zoom into image detail.</li>
+      <li>Switch between basic (fast) and accurate preview modes depending on performance and accuracy needs.</li>
+      <li>Adjust the filter by changing values, or adding and removing filter actions.</li>
+      <li>Click a filter action in the graph (bottom of the page) to open its controls.</li>
+      <li>When satisfied, process and download the filtered images.</li>
+      <li>If you've tweaked the filter, you can download it for future use.</li>
     </ul>
 
-    <p>These instructions include the following sections:</p>
-    <ul>
-      <li>An illustrated step-by-step guide.</li>
-      <li>Keyboard controls &ndash; the tool aims to be as keyboard accessible as possible.</li>
-      <li>Some tool metadata (for interest).</li>
-    </ul>
-
-    <h3>Step-by-step guide</h3>
-    <div class="how-to-grid">
-      <img src="assets/image/instructions-01.png" alt="Screenshot - initial page load" />
-      <div>Initial page load. Most of the control buttons are kept in the accordion on the left hand side. Additional control buttons across the top will open dialog modals. The controls across the bottom of the screen are currently disabled. The recording area is in white, fitted into the responsive canvas.</div>
-    </div>
-
-    <h3>Keyboard controls</h3>
+     <h3>Keyboard controls</h3>
 
     <p>The web page supports the following (hopefully cross-browser standard) keyboard controls and shortcuts.</p>
 
-    <p><b>Keyboard Navigation:</b></p>
+    <h4>Keyboard Navigation:</h4>
     <ul>
-      <li>`TAB` to navigate forwards</li>
-      <li>`SHIFT+TAB` to navigate backwards</li>
-      <li>`ENTER` to select</li>
+      <li><b>TAB</b> to navigate forwards</li>
+      <li><b>SHIFT+TAB</b> to navigate backwards</li>
+      <li><b>ENTER</b> to select</li>
     </ul>
      
-    <p><b>Additional input controls:</b></p>
+    <h4>Additional input controls:</h4>
     <ul>
-      <li>For "select" inputs &ndash; `UP-ARROW`, `DOWN-ARROW`</li>
-      <li>For "range" inputs &ndash;  `RIGHT-ARROW`, `LEFT-ARROW` </li>
-      <li>For "color" inputs &ndash; `UP-ARROW`, `RIGHT-ARROW`, `DOWN-ARROW`, `LEFT-ARROW`</li>
-      <li>For checkbox toggling &ndash; `SPACE`</li>
+      <li>For "select" inputs &ndash; <b>UP-ARROW</b>, <b>DOWN-ARROW</b></li>
+      <li>For "range" inputs &ndash;  <b>RIGHT-ARROW</b>, <b>LEFT-ARROW</b> </li>
+      <li>For "color" inputs &ndash; <b>UP-ARROW</b>, <b>RIGHT-ARROW</b>, <b>DOWN-ARROW</b>, <b>LEFT-ARROW</b></li>
+      <li>For checkbox toggling &ndash; <b>SPACE</b></li>
     </ul>
 
-    <h3>Tool metadata</h3>
+    <h3>MIT Licence</h3>
 
-    <p>This picture editing tool is a Proof of Concept, released under the MIT licence. More details about the tool, alongside its code, can be found in its <a rel="noopener noreferrer"href="https://github.com/KaliedaRik/sc-screen-recorder" target="_blank">repository on GitHub</a>.</p>
+    <p>Copyright (c) 2026 Rik Roots</p>
 
-    <p>This tool has been designed to be hackable. Feel free to use the tool as-is on its github.io page, or fork the repository to coustomise and host your own version. The tool can also be downloaded and run locally &ndash; it has no backend or toolchain.</p>
+    <p>Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:</p>
 
-    <div aria-label="MIT Licence notice">
-      <p><b>MIT Licence</b></p>
+    <ul>
+      <li>The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.</li>
+    </ul>
+ 
+    <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.</p>
 
-      <p>Copyright (c) 2026 Rik Roots</p>
-
-      <p>Permission is hereby granted, free of charge, to any person obtaining a copy
-      of this software and associated documentation files (the "Software"), to deal
-      in the Software without restriction, including without limitation the rights
-      to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-      copies of the Software, and to permit persons to whom the Software is
-      furnished to do so, subject to the following conditions:</p>
-
-      <ul>
-        <li>The above copyright notice and this permission notice shall be included in all
-      copies or substantial portions of the Software.</li>
-      </ul>
-   
-      <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-      IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-      FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-      AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-      LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-      OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-      SOFTWARE.</p>
-    </div>
   </dialog>
 
   <script type="module" src="index.js"></script>
