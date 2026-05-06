@@ -11,34 +11,46 @@ A browser-native, local-only image filter builder powered by the Scrawl-canvas f
 - Export processed images in batches (no uploads, no backend)
 
 <table>
-<tr>
-<td width="33%">
-<img src="screenshots/tool-01.webp" alt=""><br>
-<sub>Filter builder UI - image import</sub>
-</td>
-<td width="33%">
-<img src="screenshots/tool-02.webp" alt=""><br>
-<sub>Filter builder UI - minimap pan and scale</sub>
-</td>
-<td width="33%">
-<img src="screenshots/tool-03.webp" alt=""><br>
-<sub>Filter builder UI - filter editing controls</sub>
-</td>
-</tr>
-<tr>
-<td width="33%">
-<img src="screenshots/tool-04.webp" alt=""><br>
-<sub>Filter builder UI - import and change filters</sub>
-</td>
-<td width="33%">
-<img src="screenshots/tool-05.webp" alt=""><br>
-<sub>Filter builder UI - filter actions graph</sub>
-</td>
-<td width="33%">
-<img src="screenshots/tool-06.webp" alt=""><br>
-<sub>Filter builder UI - batch process images</sub>
-</td>
-</tr>
+  <tr>
+    <td width="33%">
+      <figure>
+        <img src="screenshots/tool-01.webp" alt="">
+        <figcaption>Filter builder UI - image import</figcaption> 
+      </figure>
+    </td>
+    <td width="33%">
+      <figure>
+        <img src="screenshots/tool-02.webp" alt="">
+        <figcaption>Filter builder UI - minimap pan and scale</figcaption> 
+      </figure>
+    </td>
+    <td width="33%">
+      <figure>
+        <img src="screenshots/tool-03.webp" alt="">
+        <figcaption>Filter builder UI - filter editing controls</figcaption> 
+      </figure>
+    </td>
+  </tr>
+  <tr>
+    <td width="33%">
+      <figure>
+        <img src="screenshots/tool-04.webp" alt="">
+        <figcaption>Filter builder UI - import and change filters</figcaption> 
+      </figure>
+    </td>
+    <td width="33%">
+      <figure>
+        <img src="screenshots/tool-05.webp" alt="">
+        <figcaption>Filter builder UI - filter actions graph</figcaption> 
+      </figure>
+    </td>
+    <td width="33%">
+      <figure>
+        <img src="screenshots/tool-06.webp" alt="">
+        <figcaption>Filter builder UI - batch process images</figcaption> 
+      </figure>
+    </td>
+  </tr>
 </table>
 
 
