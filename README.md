@@ -14,40 +14,40 @@ A browser-native, local-only image filter builder powered by the Scrawl-canvas f
   <tr>
     <td width="33%">
       <figure>
-        <img src="screenshots/tool-01.webp" alt="">
         <figcaption><sub>Filter builder UI - image import</sub></figcaption> 
+        <img src="screenshots/tool-01.webp" alt="">
       </figure>
     </td>
     <td width="33%">
       <figure>
-        <img src="screenshots/tool-02.webp" alt="">
         <figcaption><sub>Filter builder UI - minimap pan and scale</sub></figcaption> 
+        <img src="screenshots/tool-02.webp" alt="">
       </figure>
     </td>
     <td width="33%">
       <figure>
-        <img src="screenshots/tool-03.webp" alt="">
         <figcaption><sub>Filter builder UI - filter editing controls</sub></figcaption> 
+        <img src="screenshots/tool-03.webp" alt="">
       </figure>
     </td>
   </tr>
   <tr>
     <td width="33%">
       <figure>
-        <img src="screenshots/tool-04.webp" alt="">
         <figcaption><sub>Filter builder UI - import and change filters</sub></figcaption> 
+        <img src="screenshots/tool-04.webp" alt="">
       </figure>
     </td>
     <td width="33%">
       <figure>
-        <img src="screenshots/tool-05.webp" alt="">
         <figcaption><sub>Filter builder UI - filter actions graph</sub></figcaption> 
+        <img src="screenshots/tool-05.webp" alt="">
       </figure>
     </td>
     <td width="33%">
       <figure>
-        <img src="screenshots/tool-06.webp" alt="">
         <figcaption><sub>Filter builder UI - batch process images</sub></figcaption> 
+        <img src="screenshots/tool-06.webp" alt="">
       </figure>
     </td>
   </tr>
