@@ -12,9 +12,31 @@ A browser-native, local-only image filter builder powered by the Scrawl-canvas f
 
 <table>
 <tr>
-<td width="100%">
-<img src="assets/instructions-01.png" alt=""><br>
-<sub>Filter builder UI, image previews, and interactive graph</sub>
+<td width="33%">
+<img src="screenshots/tool-01.webp" alt=""><br>
+<sub>Filter builder UI - image import</sub>
+</td>
+<td width="33%">
+<img src="screenshots/tool-01.webp" alt=""><br>
+<sub>Filter builder UI - minimap pan and scale</sub>
+</td>
+<td width="33%">
+<img src="screenshots/tool-01.webp" alt=""><br>
+<sub>Filter builder UI - filter editing controls</sub>
+</td>
+</tr>
+<tr>
+<td width="33%">
+<img src="screenshots/tool-01.webp" alt=""><br>
+<sub>Filter builder UI - import and change filters</sub>
+</td>
+<td width="33%">
+<img src="screenshots/tool-01.webp" alt=""><br>
+<sub>Filter builder UI - filter actions graph</sub>
+</td>
+<td width="33%">
+<img src="screenshots/tool-01.webp" alt=""><br>
+<sub>Filter builder UI - batch process and download images</sub>
 </td>
 </tr>
 </table>
