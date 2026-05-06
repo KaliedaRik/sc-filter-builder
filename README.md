@@ -42,9 +42,9 @@ A browser-native, local-only image filter builder powered by the Scrawl-canvas f
 </table>
 
 
-### Why this exists
+### Why this tool exists
 
-This tool serves two key purposes:
+The filter builder serves two key purposes:
 
 1. A practical UI for building and refining image filters  
 2. A way to apply those filters consistently across multiple images
@@ -55,21 +55,20 @@ This tool complements traditional editors and node-based systems by offering a l
 
 ## Key features
 
-### Filter graph with explicit data flow
+**Filter graph with explicit data flow**
 
-Each filter action defines how it connects to others (`lineIn`, `lineOut`, `lineMix`).  
-The graph visualises this flow and updates as you edit the filter.
+Each filter action defines how it connects to others (`lineIn`, `lineOut`, `lineMix`). The graph visualises this flow and updates as you edit the filter.
 
 This makes it possible to understand how image data moves through the system, debug broken chains, and experiment with non-linear compositions.
 
-### Real-time preview (approximate + accurate)
+**Real-time preview (approximate + accurate)**
 
-- **Fast preview**: processes only visible regions for responsiveness  
-- **Accurate preview**: applies the full filter for correctness  
+- *Fast preview*: processes only visible regions for responsiveness  
+- *Accurate preview*: applies the full filter for correctness  
 
 This distinction becomes important for large images and complex filters.
 
-### Batch processing (with live preview)
+**Batch processing (with live preview)**
 
 Import multiple images to:
 
@@ -77,19 +76,19 @@ Import multiple images to:
 - tweak the filter and watch all previews update in real time  
 - export processed images in one go  
 
-### Fully local, no backend
+**Fully local, no backend**
 
 The tool follows a local-first approach. It has no backend, no build step, and no runtime dependencies beyond the bundled libraries.
 
 Released under the MIT licence, it can be forked and adapted as needed. The interface is built using plain HTML, CSS, and modular JavaScript.
 
-### Serializable filters (packet system)
+**Serializable filters (packet system)**
 
 Filters can be exported to the user's local device as text packets, ready for importing into future sessions. Packets can also be shared as standalone filter definitions (including embedded assets).
 
-## Primary use cases
+## Use cases
 
-### 1. Batch image processing with custom filters
+**Batch image processing with custom filters**
 
 Build a filter once, then apply it across multiple images. This is useful for:
 
@@ -97,7 +96,7 @@ Build a filter once, then apply it across multiple images. This is useful for:
 - generating variations quickly; and
 - lightweight, repeatable image workflows.  
 
-### 2. Filter development and experimentation
+**Filter development and experimentation**
 
 Build and refine filter chains visually while working with the underlying data model. This is particularly useful for experimenting with multi-step filters, colour-space investigations (OKLab/OKLCH, etc), and developing compositing and blending pipelines.
 
@@ -114,11 +113,9 @@ This makes it easy to apply consistent styling across a collection of images wit
 
 Under the hood, the tool runs on vanilla **JavaScript, HTML, CSS**. It uses no framework and avoids Node dependencies and build steps. The code runs entirely client-side, in the browser.
 
-The tool is powered by [Scrawl-canvas](https://github.com/KaliedaRik/Scrawl-canvas) (rendering + filter engine).
-
-### Privacy by design
-
 Everything happens inside the browser: no data leaves your machine — there is no analytics or tracking code, and no external services are called by the tool. Processed images are downloaded directly to your device.
+
+The tool is powered by [Scrawl-canvas](https://github.com/KaliedaRik/Scrawl-canvas) (rendering + filter engine).
 
 ### Running locally
 
@@ -126,26 +123,7 @@ Everything happens inside the browser: no data leaves your machine — there is 
 2. Start a local web server (e.g. https://github.com/tapio/live-server)  
 3. Open the page in a modern browser  
 
-Note that the tool must be served over HTTP — it will not work from `file://`
-
-### Self-hosting
-
-This is a static site. You can host it on:
-
-- GitHub Pages  
-- Any static hosting provider  
-- Local infrastructure  
-
-No configuration required.
-
-### Project philosophy
-
-- **Client-first** — no servers, no uploads  
-- **Transparent** — show the system, not hide it  
-- **Composable** — small actions, chained together  
-- **Hackable** — simple structure, easy to fork  
-
-This is a tool for exploration, prototyping, and lightweight production workflows.
+This is a static website. You can host it on any static hosting provider, for example GitHub pages, or on your own local infrastructure. No configuration is required.
 
 ### Known issues
 
