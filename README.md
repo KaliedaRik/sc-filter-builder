@@ -36,7 +36,7 @@ A browser-native, local-only image filter builder powered by the Scrawl-canvas f
 </td>
 <td width="33%">
 <img src="screenshots/tool-06.webp" alt=""><br>
-<sub>Filter builder UI - batch process and download images</sub>
+<sub>Filter builder UI - batch process images</sub>
 </td>
 </tr>
 </table>
